@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sila-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sila
+      POSTGRES_PASSWORD: sila
+      POSTGRES_DB: sila
+    ports:
+      - "5432:5432"
+    volumes:
+      - sila-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sila -d sila"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  sila-pg-data:
