@@ -1,0 +1,8315 @@
+{
+  "seed": 20261106,
+  "note": "Synthetic data. No real person's data.",
+  "couples": [
+    {
+      "coupleId": "C001",
+      "category": "neither carrier",
+      "a": {
+        "id": "P001A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P001B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C002",
+      "category": "neither carrier",
+      "a": {
+        "id": "P002A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P002B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C003",
+      "category": "one partner affected",
+      "a": {
+        "id": "P003A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS",
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P003B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "person_affected"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C004",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P004A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P004B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C005",
+      "category": "uncertain result",
+      "a": {
+        "id": "P005A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "uncertain"
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P005B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "uncertain_result"
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "uncertain_result"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C006",
+      "category": "uncertain result",
+      "a": {
+        "id": "P006A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "uncertain"
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P006B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "uncertain_result"
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "uncertain_result"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C007",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P007A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P007B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C008",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P008A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P008B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C009",
+      "category": "one carrier",
+      "a": {
+        "id": "P009A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P009B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C010",
+      "category": "neither carrier",
+      "a": {
+        "id": "P010A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P010B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C011",
+      "category": "neither carrier",
+      "a": {
+        "id": "P011A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P011B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C012",
+      "category": "uncertain result",
+      "a": {
+        "id": "P012A",
+        "results": {
+          "HBB": {
+            "status": "uncertain"
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P012B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "uncertain_result"
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "uncertain_result"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C013",
+      "category": "uncertain result",
+      "a": {
+        "id": "P013A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "uncertain"
+          }
+        }
+      },
+      "b": {
+        "id": "P013B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "uncertain_result"
+          }
+        ],
+        "reasons": [
+          "uncertain_result"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C014",
+      "category": "neither carrier",
+      "a": {
+        "id": "P014A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P014B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C015",
+      "category": "one carrier",
+      "a": {
+        "id": "P015A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbC"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P015B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C016",
+      "category": "both carriers, same gene: beta + beta",
+      "a": {
+        "id": "P016A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P016B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "beta thalassaemia (major or intermedia)",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C017",
+      "category": "one carrier",
+      "a": {
+        "id": "P017A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P017B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C018",
+      "category": "both carriers, same gene: HbS + beta",
+      "a": {
+        "id": "P018A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P018B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle beta thalassaemia",
+                "severity": "variable"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C019",
+      "category": "neither carrier",
+      "a": {
+        "id": "P019A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P019B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C020",
+      "category": "one carrier",
+      "a": {
+        "id": "P020A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P020B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C021",
+      "category": "one carrier",
+      "a": {
+        "id": "P021A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P021B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C022",
+      "category": "one carrier",
+      "a": {
+        "id": "P022A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbC"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P022B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C023",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P023A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P023B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C024",
+      "category": "both carriers, same gene: HbS + HbS",
+      "a": {
+        "id": "P024A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P024B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle cell anaemia",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C025",
+      "category": "one carrier",
+      "a": {
+        "id": "P025A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P025B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C026",
+      "category": "one carrier",
+      "a": {
+        "id": "P026A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P026B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C027",
+      "category": "both carriers, same gene: HbS + HbC",
+      "a": {
+        "id": "P027A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P027B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbC"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "haemoglobin SC disease",
+                "severity": "moderate"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C028",
+      "category": "neither carrier",
+      "a": {
+        "id": "P028A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P028B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C029",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P029A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P029B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C030",
+      "category": "one carrier",
+      "a": {
+        "id": "P030A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P030B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C031",
+      "category": "both carriers, same gene: HbS + beta",
+      "a": {
+        "id": "P031A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P031B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle beta thalassaemia",
+                "severity": "variable"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C032",
+      "category": "both carriers, same gene: beta + beta",
+      "a": {
+        "id": "P032A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P032B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "beta thalassaemia (major or intermedia)",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C033",
+      "category": "one carrier",
+      "a": {
+        "id": "P033A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P033B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbC"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C034",
+      "category": "neither carrier",
+      "a": {
+        "id": "P034A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P034B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C035",
+      "category": "neither carrier",
+      "a": {
+        "id": "P035A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P035B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C036",
+      "category": "neither carrier",
+      "a": {
+        "id": "P036A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P036B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C037",
+      "category": "both carriers, same gene: HbS + HbS",
+      "a": {
+        "id": "P037A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P037B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle cell anaemia",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C038",
+      "category": "one carrier",
+      "a": {
+        "id": "P038A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P038B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C039",
+      "category": "one carrier",
+      "a": {
+        "id": "P039A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P039B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C040",
+      "category": "one carrier",
+      "a": {
+        "id": "P040A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P040B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C041",
+      "category": "one carrier",
+      "a": {
+        "id": "P041A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P041B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C042",
+      "category": "one carrier",
+      "a": {
+        "id": "P042A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P042B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C043",
+      "category": "uncertain result",
+      "a": {
+        "id": "P043A",
+        "results": {
+          "HBB": {
+            "status": "uncertain"
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P043B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "uncertain_result"
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "uncertain_result"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C044",
+      "category": "both carriers, same gene: HbS + beta",
+      "a": {
+        "id": "P044A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P044B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle beta thalassaemia",
+                "severity": "variable"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C045",
+      "category": "neither carrier",
+      "a": {
+        "id": "P045A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P045B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C046",
+      "category": "neither carrier",
+      "a": {
+        "id": "P046A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P046B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C047",
+      "category": "one carrier",
+      "a": {
+        "id": "P047A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P047B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C048",
+      "category": "both carriers, same gene: HbS + HbS",
+      "a": {
+        "id": "P048A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P048B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle cell anaemia",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C049",
+      "category": "both carriers, same gene: CFTR",
+      "a": {
+        "id": "P049A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P049B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "cystic fibrosis",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C050",
+      "category": "one carrier",
+      "a": {
+        "id": "P050A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P050B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C051",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P051A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbC"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P051B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C052",
+      "category": "both carriers, same gene: GJB2",
+      "a": {
+        "id": "P052A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P052B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "inherited hearing loss (DFNB1)",
+                "severity": "moderate"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          }
+        ],
+        "reasons": [
+          "shared_risk"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C053",
+      "category": "neither carrier",
+      "a": {
+        "id": "P053A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P053B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C054",
+      "category": "both carriers, same gene: HbS + beta",
+      "a": {
+        "id": "P054A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P054B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle beta thalassaemia",
+                "severity": "variable"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C055",
+      "category": "both carriers, same gene: beta + beta",
+      "a": {
+        "id": "P055A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P055B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "beta thalassaemia (major or intermedia)",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C056",
+      "category": "neither carrier",
+      "a": {
+        "id": "P056A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P056B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C057",
+      "category": "uncertain result",
+      "a": {
+        "id": "P057A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "uncertain"
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P057B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "uncertain_result"
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "uncertain_result"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C058",
+      "category": "one carrier",
+      "a": {
+        "id": "P058A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P058B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C059",
+      "category": "neither carrier",
+      "a": {
+        "id": "P059A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P059B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C060",
+      "category": "one carrier",
+      "a": {
+        "id": "P060A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P060B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbC"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C061",
+      "category": "neither carrier",
+      "a": {
+        "id": "P061A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P061B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C062",
+      "category": "both carriers, same gene: HbS + HbS",
+      "a": {
+        "id": "P062A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P062B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle cell anaemia",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C063",
+      "category": "one carrier",
+      "a": {
+        "id": "P063A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P063B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C064",
+      "category": "both carriers, same gene: CFTR",
+      "a": {
+        "id": "P064A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P064B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "cystic fibrosis",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C065",
+      "category": "both carriers, same gene: HbS + HbS",
+      "a": {
+        "id": "P065A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P065B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle cell anaemia",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C066",
+      "category": "one partner affected",
+      "a": {
+        "id": "P066A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS",
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P066B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 2,
+                "phenotype": "sickle cell anaemia",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 2
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious",
+          "person_affected"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C067",
+      "category": "neither carrier",
+      "a": {
+        "id": "P067A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P067B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C068",
+      "category": "both carriers, same gene: beta + beta",
+      "a": {
+        "id": "P068A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P068B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "beta thalassaemia (major or intermedia)",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C069",
+      "category": "one carrier",
+      "a": {
+        "id": "P069A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P069B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C070",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P070A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P070B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C071",
+      "category": "one partner affected",
+      "a": {
+        "id": "P071A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS",
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P071B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 2,
+                "phenotype": "sickle cell anaemia",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 2
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious",
+          "person_affected"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C072",
+      "category": "neither carrier",
+      "a": {
+        "id": "P072A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P072B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C073",
+      "category": "both carriers, same gene: HbS + HbC",
+      "a": {
+        "id": "P073A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P073B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbC"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "haemoglobin SC disease",
+                "severity": "moderate"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C074",
+      "category": "both carriers, same gene: HbS + HbS",
+      "a": {
+        "id": "P074A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P074B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "sickle cell anaemia",
+                "severity": "serious"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "shared_risk_serious"
+        ],
+        "route": "counsellor_priority"
+      }
+    },
+    {
+      "coupleId": "C075",
+      "category": "one carrier",
+      "a": {
+        "id": "P075A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P075B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C076",
+      "category": "uncertain result",
+      "a": {
+        "id": "P076A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "uncertain"
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P076B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "uncertain_result"
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "uncertain_result"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C077",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P077A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbC"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P077B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C078",
+      "category": "neither carrier",
+      "a": {
+        "id": "P078A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P078B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C079",
+      "category": "neither carrier",
+      "a": {
+        "id": "P079A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P079B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C080",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P080A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P080B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C081",
+      "category": "neither carrier",
+      "a": {
+        "id": "P081A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P081B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C082",
+      "category": "partner not tested for a gene the other carries",
+      "a": {
+        "id": "P082A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P082B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "not_tested"
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "partner_needs_testing"
+          }
+        ],
+        "reasons": [
+          "partner_needs_testing"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C083",
+      "category": "one carrier",
+      "a": {
+        "id": "P083A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "beta"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P083B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C084",
+      "category": "uncertain result",
+      "a": {
+        "id": "P084A",
+        "results": {
+          "HBB": {
+            "status": "uncertain"
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P084B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "uncertain_result"
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "uncertain_result"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C085",
+      "category": "neither carrier",
+      "a": {
+        "id": "P085A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P085B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C086",
+      "category": "one carrier",
+      "a": {
+        "id": "P086A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P086B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C087",
+      "category": "neither carrier",
+      "a": {
+        "id": "P087A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P087B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C088",
+      "category": "partner not tested for a gene the other carries",
+      "a": {
+        "id": "P088A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P088B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "not_tested"
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "partner_needs_testing"
+          }
+        ],
+        "reasons": [
+          "partner_needs_testing"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C089",
+      "category": "partner not tested for a gene the other carries",
+      "a": {
+        "id": "P089A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P089B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "not_tested"
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": false,
+            "outcomes": [],
+            "affectedQuarters": 0,
+            "reason": "partner_needs_testing"
+          }
+        ],
+        "reasons": [
+          "partner_needs_testing"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C090",
+      "category": "neither carrier",
+      "a": {
+        "id": "P090A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P090B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C091",
+      "category": "neither carrier",
+      "a": {
+        "id": "P091A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P091B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C092",
+      "category": "one carrier",
+      "a": {
+        "id": "P092A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P092B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C093",
+      "category": "both carriers, different genes",
+      "a": {
+        "id": "P093A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": [
+              "CFTR-p"
+            ]
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P093B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 2
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C094",
+      "category": "neither carrier",
+      "a": {
+        "id": "P094A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P094B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C095",
+      "category": "neither carrier",
+      "a": {
+        "id": "P095A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P095B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C096",
+      "category": "neither carrier",
+      "a": {
+        "id": "P096A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P096B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C097",
+      "category": "neither carrier",
+      "a": {
+        "id": "P097A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P097B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C098",
+      "category": "both carriers, same gene: GJB2",
+      "a": {
+        "id": "P098A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "b": {
+        "id": "P098B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": [
+              "GJB2-p"
+            ]
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "affected",
+                "quarters": 1,
+                "phenotype": "inherited hearing loss (DFNB1)",
+                "severity": "moderate"
+              },
+              {
+                "kind": "carrier",
+                "quarters": 2
+              },
+              {
+                "kind": "unaffected",
+                "quarters": 1
+              }
+            ],
+            "affectedQuarters": 1
+          }
+        ],
+        "reasons": [
+          "shared_risk"
+        ],
+        "route": "counsellor"
+      }
+    },
+    {
+      "coupleId": "C099",
+      "category": "neither carrier",
+      "a": {
+        "id": "P099A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P099B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [],
+        "route": "information"
+      }
+    },
+    {
+      "coupleId": "C100",
+      "category": "one partner affected",
+      "a": {
+        "id": "P100A",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": [
+              "HbS",
+              "HbS"
+            ]
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "b": {
+        "id": "P100B",
+        "results": {
+          "HBB": {
+            "status": "tested",
+            "variants": []
+          },
+          "CFTR": {
+            "status": "tested",
+            "variants": []
+          },
+          "GJB2": {
+            "status": "tested",
+            "variants": []
+          }
+        }
+      },
+      "engineOutput": {
+        "genes": [
+          {
+            "gene": "HBB",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "carrier",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "CFTR",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          },
+          {
+            "gene": "GJB2",
+            "computable": true,
+            "outcomes": [
+              {
+                "kind": "unaffected",
+                "quarters": 4
+              }
+            ],
+            "affectedQuarters": 0
+          }
+        ],
+        "reasons": [
+          "person_affected"
+        ],
+        "route": "counsellor_priority"
+      }
+    }
+  ]
+}
