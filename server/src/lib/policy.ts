@@ -1,3 +1,6 @@
+import { and, eq, isNull } from "drizzle-orm";
+import { db } from "../db/client";
+import { consents } from "../db/schema";
 import { hasActiveConsent, type ConsentScope } from "../services/consent";
 import { getActiveLinkFor, partnerOf } from "../services/partnerLink";
 
@@ -57,5 +60,32 @@ export async function canReadCoupleRisk(actorId: string, partnerId: string): Pro
 export async function canCounsellorRead(counsellorId: string, personId: string): Promise<Decision> {
   const consent = await hasActiveConsent(personId, "counsellor_access", counsellorId);
   if (!consent) return { outcome: "denied", reason: "no_counsellor_access" };
+  return ALLOW;
+}
+
+// Share with a named relative. targetOther on the consent row is the relative
+// id. The relative does not have a Sila account; this check is used before
+// producing any relative-shaped payload.
+export async function canShareWithRelative(
+  grantorId: string,
+  relativeId: string,
+  required: Exclude<ConsentScope, null>,
+): Promise<Decision> {
+  const rows = await db
+    .select({ scope: consents.scope })
+    .from(consents)
+    .where(
+      and(
+        eq(consents.grantorId, grantorId),
+        eq(consents.purpose, "share_with_relative"),
+        eq(consents.targetOther, relativeId),
+        isNull(consents.revokedAt),
+      ),
+    );
+  const match = rows[0];
+  if (!match) return { outcome: "denied", reason: "no_share_with_relative_consent" };
+  if (required === "full_result" && match.scope !== "full_result") {
+    return { outcome: "denied", reason: "insufficient_scope" };
+  }
   return ALLOW;
 }

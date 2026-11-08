@@ -28,6 +28,7 @@ export async function grantConsent(input: GrantInput): Promise<{ id: string }> {
     grantorId: input.grantorId,
     purpose: input.purpose,
     targetUserId: input.targetUserId ?? null,
+    targetOther: input.targetOther ?? null,
   });
   const [row] = await db
     .insert(consents)
@@ -47,9 +48,15 @@ export interface RevokeInput {
   grantorId: string;
   purpose: ConsentPurpose;
   targetUserId?: string | null;
+  targetOther?: string | null;
 }
 
 export async function revokeConsent(input: RevokeInput): Promise<{ revoked: number }> {
+  const targetFilter = input.targetOther
+    ? eq(consents.targetOther, input.targetOther)
+    : input.targetUserId
+      ? eq(consents.targetUserId, input.targetUserId)
+      : and(isNull(consents.targetUserId), isNull(consents.targetOther));
   const result = await db
     .update(consents)
     .set({ revokedAt: new Date() })
@@ -57,9 +64,7 @@ export async function revokeConsent(input: RevokeInput): Promise<{ revoked: numb
       and(
         eq(consents.grantorId, input.grantorId),
         eq(consents.purpose, input.purpose),
-        input.targetUserId
-          ? eq(consents.targetUserId, input.targetUserId)
-          : isNull(consents.targetUserId),
+        targetFilter,
         isNull(consents.revokedAt),
       ),
     )

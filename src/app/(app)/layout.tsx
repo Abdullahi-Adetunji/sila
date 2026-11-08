@@ -38,6 +38,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { href: "/partner", label: "Partner" },
     { href: "/consent", label: "Consent" },
     { href: "/couple", label: "Couple result" },
+    { href: "/relatives", label: "Relatives" },
     { href: "/options", label: "Options" },
     { href: "/access-log", label: "Access log" },
   ];

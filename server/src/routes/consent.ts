@@ -32,6 +32,7 @@ const grantSchema = z.object({
 const revokeSchema = z.object({
   purpose: purposeEnum,
   targetUserId: z.string().uuid().nullish(),
+  targetOther: z.string().max(200).nullish(),
 });
 
 router.get("/", requireSession, async (req: Request, res: Response) => {
@@ -95,12 +96,17 @@ router.post("/revoke", requireSession, requireCsrf, async (req: Request, res: Re
     grantorId: req.session!.userId,
     purpose: parsed.data.purpose as ConsentPurpose,
     targetUserId: parsed.data.targetUserId ?? null,
+    targetOther: parsed.data.targetOther ?? null,
   });
   await appendAudit({
     actorId: req.session!.userId,
     action: "revoke_consent",
-    targetType: parsed.data.targetUserId ? "user" : null,
-    targetId: parsed.data.targetUserId ?? null,
+    targetType: parsed.data.targetUserId
+      ? "user"
+      : parsed.data.targetOther
+        ? "other"
+        : null,
+    targetId: parsed.data.targetUserId ?? parsed.data.targetOther ?? null,
     purpose: parsed.data.purpose,
     outcome: "allowed",
     meta: { revoked: result.revoked },

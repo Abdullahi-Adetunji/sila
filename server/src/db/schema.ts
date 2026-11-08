@@ -128,6 +128,22 @@ export const consents = pgTable(
   ],
 );
 
+// Named relatives of a person. Only a display name is stored; relatives do
+// not have Sila accounts. Target of `share_with_relative` consents via
+// consents.target_other.
+export const relatives = pgTable(
+  "relatives",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    displayName: varchar("display_name", { length: 120 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("relatives_person_idx").on(t.personId)],
+);
+
 export const auditOutcomeEnum = pgEnum("audit_outcome", ["allowed", "denied"]);
 
 // Append-only hash-chained audit log. A DB trigger (added in the migration)

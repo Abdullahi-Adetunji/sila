@@ -10,6 +10,7 @@ import auditRouter from "./routes/audit";
 import counsellorRouter from "./routes/counsellor";
 import demoRouter from "./routes/demo";
 import devRouter from "./routes/dev";
+import relativesRouter from "./routes/relatives";
 
 export function createApp(): Express {
   const app = express();
@@ -26,6 +27,7 @@ export function createApp(): Express {
   app.use("/api/counsellor", counsellorRouter);
   app.use("/api/demo", demoRouter);
   app.use("/api/dev", devRouter);
+  app.use("/api/relatives", relativesRouter);
   app.use((_req, res) => {
     res.status(404).json({ error: "not found" });
   });
