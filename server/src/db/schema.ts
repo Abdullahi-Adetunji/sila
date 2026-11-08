@@ -144,6 +144,55 @@ export const relatives = pgTable(
   (t) => [index("relatives_person_idx").on(t.personId)],
 );
 
+export const referralPriorityEnum = pgEnum("referral_priority", [
+  "information",
+  "counsellor",
+  "counsellor_priority",
+]);
+
+export const referralStepEnum = pgEnum("referral_step", [
+  "referred",
+  "counselling_booked",
+  "counselling_done",
+  "confirmatory_ordered",
+  "result_received",
+  "specialist_referral",
+  "closed",
+]);
+
+export const referrals = pgTable(
+  "referrals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    priority: referralPriorityEnum("priority").notNull(),
+    reasonSnapshot: jsonb("reason_snapshot"),
+    createdAt: text("created_at").notNull(),
+    closedAt: text("closed_at"),
+  },
+  (t) => [index("referrals_person_idx").on(t.personId)],
+);
+
+export const referralSteps = pgTable(
+  "referral_steps",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    referralId: uuid("referral_id")
+      .notNull()
+      .references(() => referrals.id, { onDelete: "cascade" }),
+    step: referralStepEnum("step").notNull(),
+    occurredAt: text("occurred_at").notNull(),
+    actorId: uuid("actor_id").references(() => users.id, { onDelete: "set null" }),
+    meta: jsonb("meta"),
+  },
+  (t) => [
+    index("referral_steps_referral_idx").on(t.referralId),
+    uniqueIndex("referral_steps_unique").on(t.referralId, t.step),
+  ],
+);
+
 export const auditOutcomeEnum = pgEnum("audit_outcome", ["allowed", "denied"]);
 
 // Append-only hash-chained audit log. A DB trigger (added in the migration)
