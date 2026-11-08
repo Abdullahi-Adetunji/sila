@@ -18,7 +18,7 @@ export default function LoginPage() {
     setError(null);
     try {
       await api.post("/api/auth/login", { email, password });
-      router.push("/couple");
+      router.push("/home");
     } catch (e: unknown) {
       if (isApiError(e) && e.status === 401) setError("Incorrect email or password.");
       else setError("Could not log you in. Please try again.");

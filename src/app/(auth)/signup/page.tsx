@@ -19,7 +19,7 @@ export default function SignupPage() {
     setError(null);
     try {
       await api.post("/api/auth/signup", { email, password, locale });
-      router.push("/partner");
+      router.push("/home");
     } catch (e: unknown) {
       if (isApiError(e) && e.status === 400) setError("Password must be at least 12 characters.");
       else if (isApiError(e) && e.status === 409) setError("That email is already registered.");
