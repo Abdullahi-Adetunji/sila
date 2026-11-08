@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setupTestDb, type TestDbHandle } from "./testDb";
 import { readResults, shredVault, storeResults, type ResultsByGene } from "../services/vault";
 import { db } from "../db/client";
@@ -6,16 +6,12 @@ import { users } from "../db/schema";
 
 let handle: TestDbHandle;
 
-beforeAll(async () => {
+beforeEach(async () => {
   handle = await setupTestDb();
 });
 
-afterAll(async () => {
+afterEach(async () => {
   await handle.close();
-});
-
-beforeEach(async () => {
-  await handle.reset();
 });
 
 async function makeUser(email: string, role: "person" | "lab" = "person"): Promise<string> {
@@ -45,7 +41,7 @@ describe("vault service", () => {
     const person = await makeUser("p2@example.com");
     const lab = await makeUser("lab2@example.com", "lab");
     await storeResults(person, lab, SAMPLE);
-    const raw = await handle.client.query<{
+    const raw = await handle.query<{
       ciphertext: string;
       payload_version: number;
       id: string;
@@ -63,7 +59,7 @@ describe("vault service", () => {
     const person = await makeUser("p3@example.com");
     const lab = await makeUser("lab3@example.com", "lab");
     await storeResults(person, lab, SAMPLE);
-    const raw = await handle.client.query<{ wrapped_data_key: string }>(
+    const raw = await handle.query<{ wrapped_data_key: string }>(
       "select wrapped_data_key from vault_keys where user_id = $1",
       [person],
     );
@@ -86,7 +82,7 @@ describe("vault service", () => {
     const lab = await makeUser("labt@example.com", "lab");
     await storeResults(person, lab, SAMPLE);
     // Flip a byte in the middle of the ciphertext.
-    await handle.client.query(
+    await handle.query(
       "update vault_results set ciphertext = overlay(ciphertext placing 'A' from 20 for 1) where user_id = $1",
       [person],
     );

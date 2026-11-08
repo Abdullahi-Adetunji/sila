@@ -3,9 +3,11 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
 
 async function main() {
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = process.env.DATABASE_ADMIN_URL ?? process.env.DATABASE_URL;
   if (!connectionString) {
-    console.error("DATABASE_URL is not set");
+    console.error(
+      "Neither DATABASE_ADMIN_URL nor DATABASE_URL is set. Migrations should run as the sila_owner role.",
+    );
     process.exit(1);
   }
   const pool = new Pool({ connectionString });

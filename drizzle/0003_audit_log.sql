@@ -19,9 +19,6 @@ CREATE INDEX "audit_log_target_idx" ON "audit_log" USING btree ("target_type","t
 CREATE UNIQUE INDEX "audit_log_hash_unique" ON "audit_log" USING btree ("hash");--> statement-breakpoint
 CREATE OR REPLACE FUNCTION audit_log_block_mutation() RETURNS TRIGGER AS $$
 BEGIN
-  IF current_setting('sila.allow_audit_mutation', true) = 'on' THEN
-    RETURN COALESCE(NEW, OLD);
-  END IF;
   RAISE EXCEPTION 'audit_log is append-only';
 END;
 $$ LANGUAGE plpgsql;--> statement-breakpoint

@@ -1,27 +1,26 @@
-import { beforeAll, afterAll, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import request from "supertest";
 import type { Express } from "express";
 import { setupTestDb, type TestDbHandle } from "./testDb";
 import { signupAs, csrf, type AuthedUser } from "./helpers";
 import { appendAudit, verifyAuditChain } from "../lib/audit";
 import { db } from "../db/client";
-import { users } from "../db/schema";
+import { auditLog, users } from "../db/schema";
 import { storeResults, type ResultsByGene } from "../services/vault";
 
 let app: Express;
 let handle: TestDbHandle;
 
 beforeAll(async () => {
-  handle = await setupTestDb();
   app = (await import("../app")).createApp();
 });
 
-afterAll(async () => {
-  await handle.close();
+beforeEach(async () => {
+  handle = await setupTestDb();
 });
 
-beforeEach(async () => {
-  await handle.reset();
+afterEach(async () => {
+  await handle.close();
 });
 
 const SAMPLE: ResultsByGene = {
@@ -47,20 +46,24 @@ async function linkPair(ea: string, eb: string): Promise<{ a: AuthedUser; b: Aut
 }
 
 describe("audit log", () => {
-  it("UPDATE and DELETE on audit_log fail at the database level", async () => {
+  it("UPDATE, DELETE and TRUNCATE on audit_log fail at the database level", async () => {
     await appendAudit({ actorId: null, action: "test_insert", outcome: "allowed" });
     await expect(
-      handle.client.exec("UPDATE audit_log SET action = 'tampered'"),
-    ).rejects.toThrow(/append-only/);
-    await expect(handle.client.exec("DELETE FROM audit_log")).rejects.toThrow(/append-only/);
+      handle.exec("UPDATE audit_log SET action = 'tampered'"),
+    ).rejects.toThrow(/append-only|permission denied/i);
+    await expect(handle.exec("DELETE FROM audit_log")).rejects.toThrow(
+      /append-only|permission denied/i,
+    );
+    await expect(handle.exec("TRUNCATE TABLE audit_log")).rejects.toThrow(
+      /append-only|permission denied|must be owner/i,
+    );
   });
 
-  it("chain verifies after a normal flow and breaks when a row is tampered", async () => {
+  it("chain verifies after a normal flow and breaks on an injected row", async () => {
     const { a, b } = await linkPair("aud-a@example.com", "aud-b@example.com");
     const lab = await labUser("aud-lab@example.com");
     await storeResults(a.id, lab, SAMPLE);
     await storeResults(b.id, lab, SAMPLE);
-    // Issue some audited actions.
     await request(app).get("/api/me/result").set("Cookie", a.cookie);
     await request(app).get("/api/couple/risk").set("Cookie", a.cookie); // denied
     await request(app).post("/api/consent").set(csrf(a)).send({
@@ -77,13 +80,20 @@ describe("audit log", () => {
     expect(good.ok).toBe(true);
     expect(good.checked).toBeGreaterThan(5);
 
-    // Tamper with the hash of the middle row (bypass the trigger).
-    await handle.client.exec("SET sila.allow_audit_mutation = 'on'");
-    await handle.client.query(
-      "UPDATE audit_log SET hash = $1 WHERE seq = (SELECT min(seq) + 2 FROM audit_log)",
-      ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"],
-    );
-    await handle.client.exec("SET sila.allow_audit_mutation = ''");
+    // The trigger does not block INSERT. Inject a row whose prev_hash does
+    // not match the previous row's hash: the chain must detect the break.
+    await db.insert(auditLog).values({
+      prevHash: "not_the_previous_hash",
+      hash: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      actorId: null,
+      action: "injected",
+      targetType: null,
+      targetId: null,
+      purpose: null,
+      outcome: "allowed",
+      meta: null,
+      createdAt: new Date().toISOString(),
+    });
     const bad = await verifyAuditChain();
     expect(bad.ok).toBe(false);
     expect(bad.reason).toBeDefined();

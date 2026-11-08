@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import request from "supertest";
 import type { Express } from "express";
 import { setupTestDb, type TestDbHandle } from "./testDb";
@@ -11,16 +11,15 @@ let app: Express;
 let handle: TestDbHandle;
 
 beforeAll(async () => {
-  handle = await setupTestDb();
   app = (await import("../app")).createApp();
 });
 
-afterAll(async () => {
-  await handle.close();
+beforeEach(async () => {
+  handle = await setupTestDb();
 });
 
-beforeEach(async () => {
-  await handle.reset();
+afterEach(async () => {
+  await handle.close();
 });
 
 const HBS_CARRIER: ResultsByGene = {

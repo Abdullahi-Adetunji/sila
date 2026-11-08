@@ -8,7 +8,17 @@ import { storeResults, type ResultsByGene } from "../server/src/services/vault";
 import { createInvite, acceptInvite } from "../server/src/services/partnerLink";
 import { grantConsent } from "../server/src/services/consent";
 
-const DEMO_PASSWORD = "sila-demo-2026-change-me";
+function requireDemoPassword(): string {
+  const v = process.env.DEMO_PASSWORD;
+  if (!v || v.length < 12) {
+    console.error(
+      "DEMO_PASSWORD is not set (or is shorter than 12 characters). Set it in .env before running the seed.",
+    );
+    process.exit(1);
+  }
+  return v;
+}
+const DEMO_PASSWORD = requireDemoPassword();
 
 interface CoupleFile {
   seed: number;
@@ -77,11 +87,11 @@ async function main() {
   await grantConsent({ grantorId: demoA, purpose: "couple_risk", targetUserId: demoB });
   await grantConsent({ grantorId: demoB, purpose: "couple_risk", targetUserId: demoA });
 
-  console.log("Demo accounts ready:");
-  console.log(`  partner.a@demo.sila  (password: ${DEMO_PASSWORD})`);
-  console.log(`  partner.b@demo.sila  (password: ${DEMO_PASSWORD})`);
-  console.log(`  counsellor@demo.sila (password: ${DEMO_PASSWORD})`);
-  console.log(`  lab@demo.sila        (password: ${DEMO_PASSWORD})`);
+  console.log("Demo accounts ready (password is the DEMO_PASSWORD from your .env):");
+  console.log("  partner.a@demo.sila");
+  console.log("  partner.b@demo.sila");
+  console.log("  counsellor@demo.sila");
+  console.log("  lab@demo.sila");
   console.log(`  counsellor id: ${demoCounsellor}`);
 }
 

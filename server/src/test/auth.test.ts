@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import request from "supertest";
 import type { Express } from "express";
 import { setupTestDb, type TestDbHandle } from "./testDb";
@@ -7,17 +7,16 @@ let app: Express;
 let handle: TestDbHandle;
 
 beforeAll(async () => {
-  handle = await setupTestDb();
   const mod = await import("../app");
   app = mod.createApp();
 });
 
-afterAll(async () => {
-  await handle.close();
+beforeEach(async () => {
+  handle = await setupTestDb();
 });
 
-beforeEach(async () => {
-  await handle.reset();
+afterEach(async () => {
+  await handle.close();
 });
 
 describe("auth routes", () => {
@@ -109,7 +108,7 @@ describe("auth routes", () => {
   it("stores a password hash, not the plaintext", async () => {
     const password = "correct horse battery staple";
     await request(app).post("/api/auth/signup").send({ email: "hash@example.com", password });
-    const rows = await handle.client.query<{ password_hash: string }>(
+    const rows = await handle.query<{ password_hash: string }>(
       "select password_hash from users where email = $1",
       ["hash@example.com"],
     );

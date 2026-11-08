@@ -9,6 +9,28 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: sila_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd=pg_isready
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: sila_test
+
     steps:
       - uses: actions/checkout@v4
 
@@ -26,5 +48,17 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
+      - name: Set up Sila roles + grants on the test Postgres
+        run: |
+          psql -h localhost -U postgres -d sila_test -f scripts/sql/setup-roles.sql
+          psql -h localhost -U postgres -d sila_test -c "ALTER ROLE sila_owner WITH LOGIN PASSWORD 'owner_pw';"
+          psql -h localhost -U postgres -d sila_test -c "ALTER ROLE sila_app   WITH LOGIN PASSWORD 'app_pw';"
+          psql -h localhost -U postgres -d sila_test -c "ALTER SCHEMA public OWNER TO sila_owner;"
+          psql -h localhost -U postgres -d sila_test -c "ALTER DATABASE sila_test OWNER TO sila_owner;"
+
+      - name: Test against real Postgres 16
+        env:
+          SILA_TEST_DB: postgres
+          SILA_PG_ADMIN_URL: postgres://sila_owner:owner_pw@localhost:5432/sila_test
+          SILA_PG_APP_URL: postgres://sila_app:app_pw@localhost:5432/sila_test
         run: npm test
