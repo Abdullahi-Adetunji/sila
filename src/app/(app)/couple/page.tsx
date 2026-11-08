@@ -86,6 +86,14 @@ export default function CoupleResultPage() {
       </header>
 
       <p className="mt-4 rounded-lg bg-carrier-soft px-3 py-2 text-xs text-ink">{T.draft[lang]}</p>
+      <p
+        role="note"
+        className="mt-3 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-muted"
+      >
+        {lang === "en"
+          ? "This is an educational result, not a diagnosis. A qualified genetic counsellor is the person who gives clinical advice."
+          : "هذه نتيجة تثقيفية وليست تشخيصاً. المرشد الوراثي المؤهّل هو من يقدّم الاستشارة السريرية."}
+      </p>
       <p className="mt-4 text-sm text-muted">{T.privacy[lang]}</p>
 
       {state.kind === "loading" && <p className="mt-6 text-sm text-muted">Loading…</p>}
