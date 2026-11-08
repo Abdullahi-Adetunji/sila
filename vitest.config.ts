@@ -1,6 +1,12 @@
 import { defineConfig } from "vitest/config";
+import { resolve } from "node:path";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src"),
+    },
+  },
   test: {
     env: {
       DATABASE_URL: "postgres://test:test@localhost:5432/test",
