@@ -12,7 +12,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE
   vault_keys,
   vault_results,
   partner_links,
-  consents
+  consents,
+  relatives,
+  referrals,
+  referral_steps
 TO sila_app;
 
 -- The audit log is append-only even for the app itself.
