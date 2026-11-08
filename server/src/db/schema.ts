@@ -1,7 +1,9 @@
 import { sql } from "drizzle-orm";
 import {
+  bigserial,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -123,5 +125,33 @@ export const consents = pgTable(
   (t) => [
     index("consents_grantor_purpose_idx").on(t.grantorId, t.purpose),
     index("consents_target_user_idx").on(t.targetUserId),
+  ],
+);
+
+export const auditOutcomeEnum = pgEnum("audit_outcome", ["allowed", "denied"]);
+
+// Append-only hash-chained audit log. A DB trigger (added in the migration)
+// blocks UPDATE and DELETE. Rows never contain genetic data.
+export const auditLog = pgTable(
+  "audit_log",
+  {
+    seq: bigserial("seq", { mode: "number" }).primaryKey(),
+    prevHash: text("prev_hash").notNull(),
+    hash: text("hash").notNull(),
+    actorId: uuid("actor_id").references(() => users.id, { onDelete: "set null" }),
+    action: text("action").notNull(),
+    targetType: text("target_type"),
+    targetId: text("target_id"),
+    purpose: text("purpose"),
+    outcome: auditOutcomeEnum("outcome").notNull(),
+    meta: jsonb("meta"),
+    // Stored as text so the exact string the hash was computed over is
+    // preserved byte-for-byte on readback.
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [
+    index("audit_log_actor_idx").on(t.actorId),
+    index("audit_log_target_idx").on(t.targetType, t.targetId),
+    uniqueIndex("audit_log_hash_unique").on(t.hash),
   ],
 );

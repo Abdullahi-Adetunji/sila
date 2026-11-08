@@ -9,6 +9,7 @@ import {
   getPendingInvitesFrom,
   partnerOf,
 } from "../services/partnerLink";
+import { appendAudit } from "../lib/audit";
 
 const router: Router = Router();
 
@@ -40,6 +41,13 @@ router.post("/invite", requireSession, requireCsrf, async (req: Request, res: Re
     return;
   }
   const link = await createInvite(req.session!.userId);
+  await appendAudit({
+    actorId: req.session!.userId,
+    action: "create_partner_invite",
+    targetType: "partner_link",
+    targetId: link.id,
+    outcome: "allowed",
+  });
   res.status(201).json({ inviteCode: link.inviteCode });
 });
 
@@ -53,9 +61,24 @@ router.post("/accept", requireSession, requireCsrf, async (req: Request, res: Re
   }
   const link = await acceptInvite(parsed.data.code, req.session!.userId);
   if (!link) {
+    await appendAudit({
+      actorId: req.session!.userId,
+      action: "accept_partner_invite",
+      targetType: "invite_code",
+      targetId: null,
+      outcome: "denied",
+      meta: { reason: "invite_not_usable" },
+    });
     res.status(404).json({ error: "invite not usable" });
     return;
   }
+  await appendAudit({
+    actorId: req.session!.userId,
+    action: "accept_partner_invite",
+    targetType: "partner_link",
+    targetId: link.id,
+    outcome: "allowed",
+  });
   res.status(200).json({
     link: {
       id: link.id,

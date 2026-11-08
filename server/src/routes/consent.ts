@@ -9,6 +9,7 @@ import {
   revokeConsent,
   type ConsentPurpose,
 } from "../services/consent";
+import { appendAudit } from "../lib/audit";
 
 const router: Router = Router();
 
@@ -72,6 +73,15 @@ router.post("/", requireSession, requireCsrf, async (req: Request, res: Response
     scope: d.scope ?? null,
     wordingVersion: d.wordingVersion,
   });
+  await appendAudit({
+    actorId: req.session!.userId,
+    action: "grant_consent",
+    targetType: d.targetUserId ? "user" : "other",
+    targetId: d.targetUserId ?? d.targetOther ?? null,
+    purpose: d.purpose,
+    outcome: "allowed",
+    meta: { scope: d.scope ?? null },
+  });
   res.status(201).json({ id: result.id });
 });
 
@@ -85,6 +95,15 @@ router.post("/revoke", requireSession, requireCsrf, async (req: Request, res: Re
     grantorId: req.session!.userId,
     purpose: parsed.data.purpose as ConsentPurpose,
     targetUserId: parsed.data.targetUserId ?? null,
+  });
+  await appendAudit({
+    actorId: req.session!.userId,
+    action: "revoke_consent",
+    targetType: parsed.data.targetUserId ? "user" : null,
+    targetId: parsed.data.targetUserId ?? null,
+    purpose: parsed.data.purpose,
+    outcome: "allowed",
+    meta: { revoked: result.revoked },
   });
   res.status(200).json({ revoked: result.revoked });
 });

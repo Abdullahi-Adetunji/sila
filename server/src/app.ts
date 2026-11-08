@@ -6,6 +6,7 @@ import meRouter from "./routes/me";
 import partnerRouter from "./routes/partner";
 import consentRouter from "./routes/consent";
 import coupleRouter from "./routes/couple";
+import auditRouter from "./routes/audit";
 
 export function createApp(): Express {
   const app = express();
@@ -18,6 +19,7 @@ export function createApp(): Express {
   app.use("/api/partner", partnerRouter);
   app.use("/api/consent", consentRouter);
   app.use("/api/couple", coupleRouter);
+  app.use("/api/me", auditRouter);
   app.use((_req, res) => {
     res.status(404).json({ error: "not found" });
   });

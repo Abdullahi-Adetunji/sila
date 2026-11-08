@@ -39,10 +39,13 @@ export async function setupTestDb(): Promise<TestDbHandle> {
   return {
     client,
     reset: async () => {
-      // Truncate app tables; keep schema in place.
+      // Truncate app tables; keep schema in place. audit_log is append-only,
+      // so flip the bypass setting around a TRUNCATE in tests only.
+      await client.exec("SET sila.allow_audit_mutation = 'on'");
       await db.execute(
-        sql`TRUNCATE TABLE consents, partner_links, vault_results, vault_keys, sessions, users RESTART IDENTITY CASCADE`,
+        sql`TRUNCATE TABLE audit_log, consents, partner_links, vault_results, vault_keys, sessions, users RESTART IDENTITY CASCADE`,
       );
+      await client.exec("SET sila.allow_audit_mutation = ''");
     },
     close: async () => {
       await client.close();

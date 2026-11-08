@@ -13,7 +13,8 @@
     "server:dev": "tsx --env-file-if-exists=.env server/src/index.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file-if-exists=.env scripts/db-migrate.ts",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "audit:verify": "tsx --env-file-if-exists=.env scripts/audit-verify.ts"
   },
   "dependencies": {
     "argon2": "^0.45.2",
