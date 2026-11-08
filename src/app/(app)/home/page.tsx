@@ -28,6 +28,11 @@ export default function HomePage() {
       body: "Shown when both of you have granted couple risk.",
     },
     {
+      href: "/options",
+      title: "Options",
+      body: "A neutral list of things couples can consider. No ranking, no recommendation.",
+    },
+    {
       href: "/access-log",
       title: "Access log",
       body: "Every access decision about your data, newest first.",

@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, isApiError } from "../../lib/api";
 import { ChildrenPicture } from "@/components/ChildrenPicture";
-import { ROUTE_TEXT, T, conditionName, odds, phenotypeName, type Lang } from "@/lib/content";
+import { T, conditionName, odds, phenotypeName, type Lang } from "@/lib/content";
 import type { ChildOutcome } from "@/lib/genetics/engine";
+import { getTemplate } from "@/content/templates";
+import { SectionLabel } from "../../components/SectionLabel";
 
 interface CoupleGeneRisk {
   gene: string;
@@ -116,15 +118,29 @@ function ReadyView({ view, lang }: { view: CoupleView; lang: Lang }) {
   const incomplete = view.genes.filter((g) => g.status === "incomplete");
   const nothingToFlag = view.reasons.length === 0;
 
+  const routeTmpl = getTemplate(
+    view.route === "information"
+      ? "route.information"
+      : view.route === "counsellor"
+        ? "route.counsellor"
+        : "route.counsellor_priority",
+  );
+
+  const hasSevere = view.reasons.includes("shared_risk_serious");
+  const hasShared = view.reasons.includes("shared_risk");
+
   return (
     <>
       {shared.map((g) => {
         const affected = g.outcomes.filter((o) => o.kind === "affected");
         return (
           <section key={g.gene} className="mt-6 rounded-2xl border border-line bg-surface p-5">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted">
-              {conditionName(lang, g.gene)}
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <SectionLabel section="education" lang={lang} />
+              <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                {conditionName(lang, g.gene)}
+              </p>
+            </div>
             {affected.map((o) => (
               <p key={o.phenotype} className="mt-2 text-lg font-semibold leading-snug">
                 {lang === "en"
@@ -138,37 +154,67 @@ function ReadyView({ view, lang }: { view: CoupleView; lang: Lang }) {
         );
       })}
 
+      {hasSevere && (
+        <SharedBanner section="education" lang={lang} tmplId="couple.shared_risk_serious" />
+      )}
+      {hasShared && !hasSevere && (
+        <SharedBanner section="education" lang={lang} tmplId="couple.shared_risk" />
+      )}
+
       {nothingToFlag && (
         <section className="mt-6 rounded-2xl border border-line bg-surface p-5">
-          <p className="text-lg font-semibold">{T.noSharedTitle[lang]}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <SectionLabel section="education" lang={lang} />
+            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+              {lang === "en" ? "Shared risk on the panel" : "الخطر المشترك في الفحص"}
+            </p>
+          </div>
+          <p className="mt-2 text-lg font-semibold">{T.noSharedTitle[lang]}</p>
           <p className="mt-2 text-sm text-muted">{T.noSharedBody[lang]}</p>
         </section>
       )}
 
-      {uncertain.map((g) => (
-        <section key={`u-${g.gene}`} className="mt-6 rounded-2xl border border-line bg-surface p-5">
-          <p className="text-base font-semibold">
-            {T.uncertain[lang]} {conditionName(lang, g.gene)}.
+      {(uncertain.length > 0 || incomplete.length > 0) && (
+        <section className="mt-6 rounded-2xl border border-carrier bg-carrier-soft p-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <SectionLabel section="education" lang={lang} />
+            <p className="text-xs font-medium uppercase tracking-wide text-ink">
+              {lang === "en" ? "Uncertainty" : "عدم اليقين"}
+            </p>
+          </div>
+          <p className="mt-2 text-base font-semibold">
+            {getTemplate("couple.incomplete").text[lang]}
           </p>
+          <ul className="mt-2 list-disc ps-6 text-sm">
+            {[...uncertain, ...incomplete].map((g) => (
+              <li key={g.gene}>{conditionName(lang, g.gene)}</li>
+            ))}
+          </ul>
         </section>
-      ))}
-
-      {incomplete.map((g) => (
-        <section key={`t-${g.gene}`} className="mt-6 rounded-2xl border border-line bg-surface p-5">
-          <p className="text-base font-semibold">
-            {T.partnerNeedsTesting[lang]} {conditionName(lang, g.gene)}.
-          </p>
-        </section>
-      ))}
+      )}
 
       {view.reasons.includes("needs_review") && (
-        <section className="mt-6 rounded-2xl border border-line bg-surface p-5">
-          <p className="text-base font-semibold">{T.personAffected[lang]}</p>
+        <section className="mt-6 rounded-2xl border border-affected bg-affected-soft p-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <SectionLabel section="clinical_advice" lang={lang} />
+            <p className="text-xs font-medium uppercase tracking-wide text-affected">
+              {lang === "en" ? "Needs specialist review" : "يحتاج مراجعة مختص"}
+            </p>
+          </div>
+          <p className="mt-2 text-base font-semibold">
+            {getTemplate("couple.needs_review").text[lang]}
+          </p>
         </section>
       )}
 
       <section className="mt-6 rounded-2xl bg-teal-soft p-5">
-        <p className="text-base font-medium">{ROUTE_TEXT[view.route][lang]}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <SectionLabel section="decision_support" lang={lang} />
+          <p className="text-xs font-medium uppercase tracking-wide text-teal">
+            {lang === "en" ? "Next step" : "الخطوة التالية"}
+          </p>
+        </div>
+        <p className="mt-2 text-base font-medium">{routeTmpl.text[lang]}</p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button className="rounded-full bg-teal px-5 py-2.5 text-sm font-medium text-white">
             {T.bookCounsellor[lang]}
@@ -183,15 +229,41 @@ function ReadyView({ view, lang }: { view: CoupleView; lang: Lang }) {
         <section className="mt-6">
           <h2 className="text-base font-semibold">{T.optionsTitle[lang]}</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            {(["opt1", "opt2", "opt3", "opt4", "opt5"] as const).map((k) => (
+            {(
+              [
+                "options.talk_counsellor",
+                "options.confirm_test",
+                "options.pregnancy_testing",
+                "options.fertility_services",
+                "options.continue_with_care",
+              ] as const
+            ).map((k) => (
               <li key={k} className="rounded-lg border border-line bg-surface px-4 py-3">
-                {T[k][lang]}
+                {getTemplate(k).text[lang]}
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-xs text-muted">{T.optionsNote[lang]}</p>
+          <p className="mt-3 text-xs text-muted">{getTemplate("options.header").text[lang]}</p>
         </section>
       )}
     </>
+  );
+}
+
+function SharedBanner({
+  section,
+  lang,
+  tmplId,
+}: {
+  section: "education" | "decision_support" | "clinical_advice";
+  lang: Lang;
+  tmplId: string;
+}) {
+  const tmpl = getTemplate(tmplId);
+  return (
+    <section className="mt-6 rounded-2xl border border-teal bg-teal-soft p-5">
+      <SectionLabel section={section} lang={lang} />
+      <p className="mt-2 text-base font-semibold">{tmpl.text[lang]}</p>
+    </section>
   );
 }
