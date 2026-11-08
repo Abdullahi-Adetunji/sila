@@ -15,6 +15,13 @@
       "when": 1794142563244,
       "tag": "0001_vault",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794142755441,
+      "tag": "0002_consent_and_partner_link",
+      "breakpoints": true
     }
   ]
 }

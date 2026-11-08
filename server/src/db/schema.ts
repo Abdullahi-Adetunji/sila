@@ -70,3 +70,58 @@ export const vaultResults = pgTable(
   },
   (t) => [uniqueIndex("vault_results_user_unique").on(t.userId)],
 );
+
+export const partnerLinkStatusEnum = pgEnum("partner_link_status", [
+  "pending",
+  "active",
+  "broken",
+]);
+
+export const partnerLinks = pgTable(
+  "partner_links",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    inviterId: uuid("inviter_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    inviteeId: uuid("invitee_id").references(() => users.id, { onDelete: "cascade" }),
+    inviteCode: varchar("invite_code", { length: 32 }).notNull(),
+    status: partnerLinkStatusEnum("status").notNull().default("pending"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+  },
+  (t) => [
+    uniqueIndex("partner_links_invite_code_idx").on(t.inviteCode),
+    index("partner_links_inviter_idx").on(t.inviterId),
+    index("partner_links_invitee_idx").on(t.inviteeId),
+  ],
+);
+
+export const consentPurposeEnum = pgEnum("consent_purpose", [
+  "couple_risk",
+  "share_with_partner",
+  "share_with_relative",
+  "counsellor_access",
+  "evaluation_data",
+]);
+
+export const consents = pgTable(
+  "consents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    grantorId: uuid("grantor_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    purpose: consentPurposeEnum("purpose").notNull(),
+    targetUserId: uuid("target_user_id").references(() => users.id, { onDelete: "cascade" }),
+    targetOther: text("target_other"),
+    scope: text("scope"),
+    wordingVersion: varchar("wording_version", { length: 32 }).notNull(),
+    grantedAt: timestamp("granted_at", { withTimezone: true }).notNull().defaultNow(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (t) => [
+    index("consents_grantor_purpose_idx").on(t.grantorId, t.purpose),
+    index("consents_target_user_idx").on(t.targetUserId),
+  ],
+);

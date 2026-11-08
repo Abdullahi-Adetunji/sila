@@ -41,7 +41,7 @@ export async function setupTestDb(): Promise<TestDbHandle> {
     reset: async () => {
       // Truncate app tables; keep schema in place.
       await db.execute(
-        sql`TRUNCATE TABLE vault_results, vault_keys, sessions, users RESTART IDENTITY CASCADE`,
+        sql`TRUNCATE TABLE consents, partner_links, vault_results, vault_keys, sessions, users RESTART IDENTITY CASCADE`,
       );
     },
     close: async () => {

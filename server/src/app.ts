@@ -3,6 +3,8 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import authRouter from "./routes/auth";
 import meRouter from "./routes/me";
+import partnerRouter from "./routes/partner";
+import consentRouter from "./routes/consent";
 
 export function createApp(): Express {
   const app = express();
@@ -12,6 +14,8 @@ export function createApp(): Express {
   app.use(cookieParser());
   app.use("/api/auth", authRouter);
   app.use("/api/me", meRouter);
+  app.use("/api/partner", partnerRouter);
+  app.use("/api/consent", consentRouter);
   app.use((_req, res) => {
     res.status(404).json({ error: "not found" });
   });
