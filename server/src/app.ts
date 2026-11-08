@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import authRouter from "./routes/auth";
+import meRouter from "./routes/me";
 
 export function createApp(): Express {
   const app = express();
@@ -10,6 +11,7 @@ export function createApp(): Express {
   app.use(express.json({ limit: "32kb" }));
   app.use(cookieParser());
   app.use("/api/auth", authRouter);
+  app.use("/api/me", meRouter);
   app.use((_req, res) => {
     res.status(404).json({ error: "not found" });
   });
