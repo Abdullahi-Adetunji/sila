@@ -22,7 +22,6 @@ type Stage =
   | "resume";
 
 interface VolunteerShape {
-  id: string;
   language: Lang;
   readingBand: "low" | "medium" | "high" | "unknown";
   formOrder: "AB" | "BA";
@@ -74,6 +73,7 @@ export default function VolunteerLanding() {
   const [stage, setStage] = useState<Stage>("info");
   const [readingBand, setReadingBand] = useState<"low" | "medium" | "high" | "unknown">("unknown");
   const [volunteer, setVolunteer] = useState<VolunteerShape | null>(null);
+  const [code, setCode] = useState<string | null>(null);
   const [resumeCode, setResumeCode] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -102,12 +102,13 @@ export default function VolunteerLanding() {
         body: JSON.stringify({ language: lang, readingBand }),
       });
       if (!res.ok) throw new Error(String(res.status));
-      const body = (await res.json()) as { volunteer: VolunteerShape };
+      const body = (await res.json()) as { code: string; volunteer: VolunteerShape };
       try {
-        localStorage.setItem(CODE_KEY, body.volunteer.id);
+        localStorage.setItem(CODE_KEY, body.code);
       } catch {
         /* ignore */
       }
+      setCode(body.code);
       setVolunteer(body.volunteer);
       setStage("consent");
     } catch {
@@ -116,12 +117,12 @@ export default function VolunteerLanding() {
   }
 
   async function agree() {
-    if (!volunteer) return;
+    if (!code) return;
     setError(null);
     try {
       const body = await volunteerFetch<{ volunteer: VolunteerShape }>(
         "/api/volunteer/consent",
-        volunteer.id,
+        code,
         { method: "POST" },
       );
       setVolunteer(body.volunteer);
@@ -139,10 +140,11 @@ export default function VolunteerLanding() {
         resumeCode,
       );
       try {
-        localStorage.setItem(CODE_KEY, body.volunteer.id);
+        localStorage.setItem(CODE_KEY, resumeCode);
       } catch {
         /* ignore */
       }
+      setCode(resumeCode);
       setVolunteer(body.volunteer);
       setStage(body.volunteer.consentedAt ? "code" : "consent");
     } catch {
@@ -151,18 +153,19 @@ export default function VolunteerLanding() {
   }
 
   async function withdraw() {
-    if (!volunteer) return;
+    if (!code) return;
     setError(null);
     try {
       await fetch("/api/volunteer/withdraw", {
         method: "POST",
-        headers: { "x-volunteer-code": volunteer.id },
+        headers: { "x-volunteer-code": code },
       });
       try {
         localStorage.removeItem(CODE_KEY);
       } catch {
         /* ignore */
       }
+      setCode(null);
       setVolunteer(null);
       setStage("info");
     } catch {
@@ -258,12 +261,12 @@ export default function VolunteerLanding() {
           </>
         )}
 
-        {stage === "code" && volunteer && (
+        {stage === "code" && volunteer && code && (
           <>
             <h2 className="text-2xl font-semibold">{VOLUNTEER.codeHeading[lang]}</h2>
             <p className="mt-2 text-sm text-muted">{VOLUNTEER.codeBody[lang]}</p>
             <p className="mt-4 rounded-xl border border-teal bg-teal-soft p-4 text-center font-mono text-xl tracking-widest">
-              {volunteer.id}
+              {code}
             </p>
             <button
               onClick={() => setStage("quiz_before")}
@@ -280,27 +283,27 @@ export default function VolunteerLanding() {
           </>
         )}
 
-        {stage === "quiz_before" && volunteer && (
+        {stage === "quiz_before" && volunteer && code && (
           <Quiz
             phase="before"
             lang={lang}
-            volunteer={volunteer}
+            code={code}
             onDone={() => setStage("result")}
           />
         )}
 
-        {stage === "result" && volunteer && (
-          <CoupleResultView lang={lang} volunteer={volunteer} onContinue={() => setStage("quiz_after")} />
+        {stage === "result" && volunteer && code && (
+          <CoupleResultView lang={lang} code={code} onContinue={() => setStage("quiz_after")} />
         )}
 
-        {stage === "quiz_after" && volunteer && (
+        {stage === "quiz_after" && volunteer && code && (
           <Quiz
             phase="after"
             lang={lang}
-            volunteer={volunteer}
+            code={code}
             onDone={async () => {
               try {
-                await volunteerFetch("/api/volunteer/complete", volunteer.id, { method: "POST" });
+                await volunteerFetch("/api/volunteer/complete", code, { method: "POST" });
               } catch {
                 /* ignore */
               }
@@ -364,12 +367,12 @@ export default function VolunteerLanding() {
 function Quiz({
   phase,
   lang,
-  volunteer,
+  code,
   onDone,
 }: {
   phase: "before" | "after";
   lang: Lang;
-  volunteer: VolunteerShape;
+  code: string;
   onDone: () => void;
 }) {
   const [items, setItems] = useState<QuizItem[] | null>(null);
@@ -378,10 +381,10 @@ function Quiz({
   const load = useCallback(async () => {
     const body = await volunteerFetch<{ items: QuizItem[] }>(
       `/api/volunteer/quiz?phase=${phase}`,
-      volunteer.id,
+      code,
     );
     setItems(body.items);
-  }, [phase, volunteer.id]);
+  }, [phase, code]);
 
   useEffect(() => {
     void load();
@@ -390,7 +393,7 @@ function Quiz({
   async function answer(a: number) {
     if (!items) return;
     const it = items[index];
-    await volunteerFetch("/api/volunteer/quiz/response", volunteer.id, {
+    await volunteerFetch("/api/volunteer/quiz/response", code, {
       method: "POST",
       body: JSON.stringify({ phase, itemId: it.id, answer: a }),
     });
@@ -430,36 +433,36 @@ function Quiz({
 
 function CoupleResultView({
   lang,
-  volunteer,
+  code,
   onContinue,
 }: {
   lang: Lang;
-  volunteer: VolunteerShape;
+  code: string;
   onContinue: () => void;
 }) {
   const [view, setView] = useState<CoupleView | null>(null);
   const [refStage, setRefStage] = useState<"none" | "form" | "submitted">("none");
 
   useEffect(() => {
-    volunteerFetch<CoupleView>("/api/volunteer/couple-view", volunteer.id).then((v) => {
+    volunteerFetch<CoupleView>("/api/volunteer/couple-view", code).then((v) => {
       setView(v);
-      void volunteerFetch("/api/volunteer/ttr", volunteer.id, {
+      void volunteerFetch("/api/volunteer/ttr", code, {
         method: "POST",
         body: JSON.stringify({ kind: "opened_result" }),
       }).catch(() => {});
     });
-  }, [volunteer.id]);
+  }, [code]);
 
   async function openReferralForm() {
     setRefStage("form");
-    await volunteerFetch("/api/volunteer/ttr", volunteer.id, {
+    await volunteerFetch("/api/volunteer/ttr", code, {
       method: "POST",
       body: JSON.stringify({ kind: "opened_referral_form" }),
     }).catch(() => {});
   }
 
   async function submitReferral() {
-    await volunteerFetch("/api/volunteer/ttr", volunteer.id, {
+    await volunteerFetch("/api/volunteer/ttr", code, {
       method: "POST",
       body: JSON.stringify({ kind: "submitted_referral" }),
     }).catch(() => {});

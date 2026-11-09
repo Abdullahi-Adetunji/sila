@@ -20,6 +20,7 @@ const PRIVACY_FILES = [
   "volunteer.test.ts",
   "quiz.test.ts",
   "ttr.test.ts",
+  "anonymity.test.ts",
 ];
 
 interface MinimalTask {

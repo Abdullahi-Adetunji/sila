@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../db/client";
 import { volunteers, quizResponses, timeToReferralEvents } from "../db/schema";
 import { newParticipantCode } from "../lib/participantCode";
+import { volunteerHmac } from "../lib/volunteerHmac";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const couplesJsonPath = resolve(here, "../../../data/synthetic/couples.json");
@@ -22,6 +23,9 @@ export type Language = "en" | "ar";
 export type ReadingBand = "low" | "medium" | "high" | "unknown";
 export type FormOrder = "AB" | "BA";
 
+// The `id` field is the HMAC of the participant code. The raw code is never
+// stored on disk; it is only on the volunteer's device and briefly in the
+// `x-volunteer-code` request header.
 export interface Volunteer {
   id: string;
   language: Language;
@@ -37,8 +41,9 @@ export interface Volunteer {
 export async function joinVolunteer(input: {
   language: Language;
   readingBand?: ReadingBand;
-}): Promise<Volunteer> {
-  const id = newParticipantCode();
+}): Promise<{ code: string; volunteer: Volunteer }> {
+  const code = newParticipantCode();
+  const id = volunteerHmac(code);
   const now = new Date().toISOString();
   const order: FormOrder = Math.random() < 0.5 ? "AB" : "BA";
   const ids = coupleIds();
@@ -54,51 +59,51 @@ export async function joinVolunteer(input: {
       startedAt: now,
     })
     .returning();
-  return normalise(row);
+  return { code, volunteer: normalise(row) };
 }
 
 export async function getByCode(code: string): Promise<Volunteer | null> {
-  const rows = await db.select().from(volunteers).where(eq(volunteers.id, code));
+  const rows = await db.select().from(volunteers).where(eq(volunteers.id, volunteerHmac(code)));
   const row = rows[0];
   if (!row) return null;
   if (row.withdrawnAt) return null;
   return normalise(row);
 }
 
-export async function consent(code: string): Promise<Volunteer | null> {
+// Internal mutators take the HMAC id (what is stored in the DB). The raw
+// code is converted to its HMAC by getByCode at the single entry point.
+export async function consentById(id: string): Promise<Volunteer | null> {
   const now = new Date().toISOString();
   const [row] = await db
     .update(volunteers)
     .set({ consentedAt: now })
-    .where(eq(volunteers.id, code))
+    .where(eq(volunteers.id, id))
     .returning();
   return row ? normalise(row) : null;
 }
 
-export async function complete(code: string): Promise<Volunteer | null> {
+export async function completeById(id: string): Promise<Volunteer | null> {
   const now = new Date().toISOString();
   const [row] = await db
     .update(volunteers)
     .set({ completedAt: now })
-    .where(eq(volunteers.id, code))
+    .where(eq(volunteers.id, id))
     .returning();
   return row ? normalise(row) : null;
 }
 
-// Hard delete. Removes the volunteer row and every response and event tied
-// to it. The participant code becomes unusable afterwards.
-export async function withdraw(code: string): Promise<boolean> {
+export async function withdrawById(id: string): Promise<boolean> {
   const deletedResponses = await db
     .delete(quizResponses)
-    .where(eq(quizResponses.volunteerId, code))
+    .where(eq(quizResponses.volunteerId, id))
     .returning({ id: quizResponses.id });
   const deletedEvents = await db
     .delete(timeToReferralEvents)
-    .where(eq(timeToReferralEvents.volunteerId, code))
+    .where(eq(timeToReferralEvents.volunteerId, id))
     .returning({ id: timeToReferralEvents.id });
   const deleted = await db
     .delete(volunteers)
-    .where(eq(volunteers.id, code))
+    .where(eq(volunteers.id, id))
     .returning({ id: volunteers.id });
   return deleted.length > 0 || deletedResponses.length > 0 || deletedEvents.length > 0;
 }

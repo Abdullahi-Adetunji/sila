@@ -3,6 +3,7 @@ import request from "supertest";
 import type { Express } from "express";
 import { setupTestDb, type TestDbHandle } from "./testDb";
 import { isValidParticipantCode } from "../lib/participantCode";
+import { volunteerHmac } from "../lib/volunteerHmac";
 
 let app: Express;
 let handle: TestDbHandle;
@@ -19,13 +20,9 @@ afterEach(async () => {
   await handle.close();
 });
 
-async function join(language: "en" | "ar" = "en") {
-  const res = await request(app)
-    .post("/api/volunteer/join")
-    .send({ language, readingBand: "medium" });
-  expect(res.status).toBe(201);
-  return res.body.volunteer as {
-    id: string;
+interface JoinResult {
+  code: string;
+  volunteer: {
     language: string;
     readingBand: string;
     formOrder: "AB" | "BA";
@@ -33,16 +30,24 @@ async function join(language: "en" | "ar" = "en") {
   };
 }
 
+async function join(language: "en" | "ar" = "en"): Promise<JoinResult> {
+  const res = await request(app)
+    .post("/api/volunteer/join")
+    .send({ language, readingBand: "medium" });
+  expect(res.status).toBe(201);
+  return { code: res.body.code as string, volunteer: res.body.volunteer };
+}
+
 describe("volunteer mode: join / me / consent / withdraw", () => {
   it("join issues a participant code and never asks for a name or email", async () => {
-    const v = await join();
-    expect(v.id).toHaveLength(10);
-    expect(isValidParticipantCode(v.id)).toBe(true);
+    const { code, volunteer: v } = await join();
+    expect(code).toHaveLength(10);
+    expect(isValidParticipantCode(code)).toBe(true);
     expect(["AB", "BA"]).toContain(v.formOrder);
     expect(v.coupleId).toMatch(/^C\d{3}$/);
-    // Response carries no name/email/genetic-looking fields.
+    // Response carries no id / email / genetic-looking fields on /volunteer.
     const text = JSON.stringify(v);
-    for (const needle of ["email", "name", "HbS", "variants", "password"]) {
+    for (const needle of ["email", "name", "HbS", "variants", "password", "id"]) {
       expect(text).not.toContain(needle);
     }
   });
@@ -54,13 +59,31 @@ describe("volunteer mode: join / me / consent / withdraw", () => {
       ["volunteers"],
     );
     const names = columns.rows.map((r) => r.column_name);
-    for (const forbidden of ["email", "name", "first_name", "last_name", "variant", "variants"]) {
+    for (const forbidden of [
+      "email",
+      "name",
+      "first_name",
+      "last_name",
+      "variant",
+      "variants",
+      "ip",
+      "ip_address",
+      "user_agent",
+      "remote_addr",
+    ]) {
       expect(names).not.toContain(forbidden);
     }
-    // Sanity: the fields we expect are present.
     for (const needed of ["id", "language", "reading_band", "form_order", "couple_id"]) {
       expect(names).toContain(needed);
     }
+  });
+
+  it("the stored id is the HMAC of the code, not the code itself", async () => {
+    const { code } = await join();
+    const rows = await handle.query<{ id: string }>("select id from volunteers");
+    expect(rows.rows.length).toBe(1);
+    expect(rows.rows[0].id).not.toBe(code);
+    expect(rows.rows[0].id).toBe(volunteerHmac(code));
   });
 
   it("GET /me requires a valid code", async () => {
@@ -75,29 +98,27 @@ describe("volunteer mode: join / me / consent / withdraw", () => {
   });
 
   it("consent records consentedAt and is returned on /me", async () => {
-    const v = await join();
-    const agree = await request(app)
-      .post("/api/volunteer/consent")
-      .set("x-volunteer-code", v.id);
+    const { code } = await join();
+    const agree = await request(app).post("/api/volunteer/consent").set("x-volunteer-code", code);
     expect(agree.status).toBe(200);
     expect(agree.body.volunteer.consentedAt).toBeTruthy();
-    const me = await request(app).get("/api/volunteer/me").set("x-volunteer-code", v.id);
+    const me = await request(app).get("/api/volunteer/me").set("x-volunteer-code", code);
     expect(me.body.volunteer.consentedAt).toBeTruthy();
+    // /me does not echo the code anywhere.
+    expect(JSON.stringify(me.body)).not.toContain(code);
   });
 
   it("withdraw deletes the volunteer row; the code becomes unknown", async () => {
-    const v = await join();
-    const out = await request(app)
-      .post("/api/volunteer/withdraw")
-      .set("x-volunteer-code", v.id);
+    const { code } = await join();
+    const out = await request(app).post("/api/volunteer/withdraw").set("x-volunteer-code", code);
     expect(out.status).toBe(200);
     expect(out.body.withdrawn).toBe(true);
-    const me = await request(app).get("/api/volunteer/me").set("x-volunteer-code", v.id);
+    const me = await request(app).get("/api/volunteer/me").set("x-volunteer-code", code);
     expect(me.status).toBe(401);
 
     const rows = await handle.query<{ n: string }>(
       "select count(*)::text as n from volunteers where id = $1",
-      [v.id],
+      [volunteerHmac(code)],
     );
     expect(Number(rows.rows[0].n)).toBe(0);
   });
@@ -105,15 +126,15 @@ describe("volunteer mode: join / me / consent / withdraw", () => {
   it("a volunteer cannot read another volunteer's row through /me", async () => {
     const a = await join();
     const b = await join();
-    const meA = await request(app).get("/api/volunteer/me").set("x-volunteer-code", a.id);
-    expect(meA.body.volunteer.id).toBe(a.id);
-    expect(meA.body.volunteer.coupleId).toBe(a.coupleId);
-    // A's code never returns B's fields.
-    expect(meA.body.volunteer.id).not.toBe(b.id);
+    const meA = await request(app).get("/api/volunteer/me").set("x-volunteer-code", a.code);
+    expect(meA.body.volunteer.coupleId).toBe(a.volunteer.coupleId);
+    expect(meA.body.volunteer.coupleId === b.volunteer.coupleId).toBe(
+      a.volunteer.coupleId === b.volunteer.coupleId,
+    );
   });
 
-  it("the volunteer id in responses is the participant code (no account id, no email)", async () => {
-    const v = await join();
-    expect(v.id).toMatch(/^[BCDFGHJKMNPQRSTVWXZ23456789]{10}$/);
+  it("the participant code alphabet is enforced", async () => {
+    const { code } = await join();
+    expect(code).toMatch(/^[BCDFGHJKMNPQRSTVWXZ23456789]{10}$/);
   });
 });

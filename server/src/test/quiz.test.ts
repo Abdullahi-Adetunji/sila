@@ -2,6 +2,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import request from "supertest";
 import type { Express } from "express";
 import { setupTestDb, type TestDbHandle } from "./testDb";
+import { volunteerHmac } from "../lib/volunteerHmac";
 
 let app: Express;
 let handle: TestDbHandle;
@@ -18,16 +19,11 @@ afterEach(async () => {
   await handle.close();
 });
 
-async function join(language: "en" | "ar" = "en") {
+async function join(language: "en" | "ar" = "en"): Promise<{ code: string; formOrder: "AB" | "BA" }> {
   const res = await request(app)
     .post("/api/volunteer/join")
     .send({ language, readingBand: "medium" });
-  return res.body.volunteer as {
-    id: string;
-    language: "en" | "ar";
-    formOrder: "AB" | "BA";
-    coupleId: string;
-  };
+  return { code: res.body.code as string, formOrder: res.body.volunteer.formOrder };
 }
 
 async function consent(code: string) {
@@ -37,23 +33,23 @@ async function consent(code: string) {
 
 describe("quiz endpoints: counterbalance, scoring, consent gating, privacy", () => {
   it("quiz is gated behind consent", async () => {
-    const v = await join();
+    const { code } = await join();
     const noConsent = await request(app)
       .get("/api/volunteer/quiz?phase=before")
-      .set("x-volunteer-code", v.id);
+      .set("x-volunteer-code", code);
     expect(noConsent.status).toBe(403);
     expect(noConsent.body.error).toBe("consent_required");
   });
 
   it("before and after draw from different forms and share no item text", async () => {
-    const v = await join();
-    await consent(v.id);
+    const { code } = await join();
+    await consent(code);
     const before = await request(app)
       .get("/api/volunteer/quiz?phase=before")
-      .set("x-volunteer-code", v.id);
+      .set("x-volunteer-code", code);
     const after = await request(app)
       .get("/api/volunteer/quiz?phase=after")
-      .set("x-volunteer-code", v.id);
+      .set("x-volunteer-code", code);
     expect(before.status).toBe(200);
     expect(after.status).toBe(200);
     expect(before.body.items[0].form).not.toBe(after.body.items[0].form);
@@ -67,49 +63,49 @@ describe("quiz endpoints: counterbalance, scoring, consent gating, privacy", () 
   });
 
   it("the correct index is never returned to the client", async () => {
-    const v = await join();
-    await consent(v.id);
+    const { code } = await join();
+    await consent(code);
     const res = await request(app)
       .get("/api/volunteer/quiz?phase=before")
-      .set("x-volunteer-code", v.id);
+      .set("x-volunteer-code", code);
     const text = JSON.stringify(res.body);
     expect(text).not.toContain("correct");
   });
 
   it("recording a response works and later withdraw removes it", async () => {
-    const v = await join();
-    await consent(v.id);
+    const { code } = await join();
+    await consent(code);
     const before = await request(app)
       .get("/api/volunteer/quiz?phase=before")
-      .set("x-volunteer-code", v.id);
+      .set("x-volunteer-code", code);
     const item = before.body.items[0];
     const r = await request(app)
       .post("/api/volunteer/quiz/response")
-      .set("x-volunteer-code", v.id)
+      .set("x-volunteer-code", code)
       .send({ phase: "before", itemId: item.id, answer: 0 });
     expect(r.status).toBe(204);
 
     const stored = await handle.query<{ n: string }>(
       "select count(*)::text as n from quiz_responses where volunteer_id = $1",
-      [v.id],
+      [volunteerHmac(code)],
     );
     expect(Number(stored.rows[0].n)).toBe(1);
 
-    const out = await request(app).post("/api/volunteer/withdraw").set("x-volunteer-code", v.id);
+    const out = await request(app).post("/api/volunteer/withdraw").set("x-volunteer-code", code);
     expect(out.status).toBe(200);
     const after = await handle.query<{ n: string }>(
       "select count(*)::text as n from quiz_responses where volunteer_id = $1",
-      [v.id],
+      [volunteerHmac(code)],
     );
     expect(Number(after.rows[0].n)).toBe(0);
   });
 
   it("the couple-view endpoint returns no per-person fields and no plaintext variant id", async () => {
-    const v = await join();
-    await consent(v.id);
+    const { code } = await join();
+    await consent(code);
     const res = await request(app)
       .get("/api/volunteer/couple-view")
-      .set("x-volunteer-code", v.id);
+      .set("x-volunteer-code", code);
     expect(res.status).toBe(200);
     const text = JSON.stringify(res.body);
     for (const forbidden of [
