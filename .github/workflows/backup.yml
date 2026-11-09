@@ -1,0 +1,76 @@
+name: Backup
+
+# Daily encrypted logical backup of the Neon database. The dump is
+# pg_dump --format=custom, then encrypted to the public key in
+# AGE_RECIPIENT, and retained as a GitHub Actions artifact for 30 days.
+# The private key is held off-GitHub (by the operator, in their password
+# manager + ~/.sila/) so an attacker with push rights to this repo cannot
+# decrypt a leaked artifact.
+on:
+  workflow_dispatch:
+  schedule:
+    # 03:00 UTC daily. Keep the cadence rare enough that one failure does
+    # not exhaust the free Actions minutes.
+    - cron: "0 3 * * *"
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Postgres 16 client and age
+        run: |
+          set -euo pipefail
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+            | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16 age
+          pg_dump --version
+          age --version
+
+      - name: Verify Neon PG version matches pg_dump
+        env:
+          DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}
+        run: |
+          set -euo pipefail
+          ver=$(psql "$DATABASE_ADMIN_URL" -At -c "show server_version_num")
+          echo "server_version_num=$ver"
+          # 160000 = PG 16.x, 170000 = PG 17.x. Warn (don't fail) if we ever
+          # end up with a mismatched client; a minor-version mismatch is
+          # fine for logical dumps, a major one is not.
+          if [ "$ver" -lt 160000 ] || [ "$ver" -ge 180000 ]; then
+            echo "::warning::Neon server_version_num=$ver outside the PG 16 band — restore test is required."
+          fi
+
+      - name: pg_dump + age-encrypt
+        env:
+          DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}
+          AGE_RECIPIENT: ${{ secrets.AGE_RECIPIENT }}
+        run: |
+          set -euo pipefail
+          if [ -z "${AGE_RECIPIENT:-}" ]; then
+            echo "AGE_RECIPIENT secret is not set"
+            exit 1
+          fi
+          stamp=$(date -u +%Y%m%d-%H%M%SZ)
+          out="sila-${stamp}.dump.age"
+          pg_dump "$DATABASE_ADMIN_URL" \
+            --format=custom --no-owner --no-privileges --verbose \
+            | age -r "$AGE_RECIPIENT" -o "$out"
+          echo "wrote $out ($(stat -c%s "$out") bytes)"
+          echo "FILE=$out" >> "$GITHUB_ENV"
+
+      - name: Upload encrypted dump as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sila-db-backup-${{ github.run_id }}
+          path: ${{ env.FILE }}
+          retention-days: 30
+          if-no-files-found: error

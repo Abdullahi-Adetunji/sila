@@ -1,179 +1,289 @@
-# Deploy runbook
+# Deploy runbook — Render + Neon (Frankfurt)
 
-**Audience.** Whoever is running the first Fly.io deploy of Sila. The CI runs on every push already; this document covers the one-shot provisioning + the subsequent deploys.
+**Audience.** Whoever is running the Render + Neon deploy of Sila. The CI runs on every push already; this document covers the one-shot provisioning and the subsequent deploys.
+
+Scope: one free Render web service in `frankfurt`, one Neon Postgres project in `eu-central-1`, GitHub Actions for migrations + deploy trigger and for nightly encrypted backups.
+
+---
 
 ## 0. One-time prerequisites
 
-- `fly auth login` already done.
-- A `FLY_API_TOKEN` is stored as a GitHub repository secret named `FLY_API_TOKEN`. Generate one with `fly tokens create deploy -x 72h` (longer for the pilot window).
-- Your local `.env` is **not** used by the deploy; secrets are set via `fly secrets set`.
+- GitHub CLI (`gh`) authenticated to the repo, or ready to click through Settings → Secrets.
+- `RENDER_API_KEY` and `NEON_OWNER_URL` in a **gitignored** `.env` at the repo root. The owner URL is the Neon owner role (direct, not pooled) for the project in the Frankfurt region.
+- `openssl`, `age-keygen`, `age` and `psql` (PG 16 client) installed locally.
+- A password manager you will actually open.
 
-## 1. Create the two apps
+---
 
-```sh
-fly apps create sila-api
-fly apps create sila-web
-```
+## 1. Create the two Postgres roles and lock them down
 
-## 2. Create managed Postgres in fra
+The Neon owner URL is for the automated owner role Neon created. Sila's owner is a separate role, so the API never runs as the Neon-level owner.
 
 ```sh
-# Fly managed Postgres (automated daily encrypted backups included).
-fly mpg create --name sila-db --region fra --plan basic --org <your-org>
-# Attach to the api app so DATABASE_URL + related are populated.
-fly mpg attach sila-db --app sila-api
+set -a; . .env; set +a    # loads RENDER_API_KEY and NEON_OWNER_URL
+psql "$NEON_OWNER_URL" -f scripts/sql/setup-roles.sql
 ```
 
-If `fly mpg` is not available in your org, fall back to the legacy unmanaged Postgres:
+Then, in psql, set fresh long passwords. **Never** reuse the docker-compose defaults.
 
 ```sh
-fly postgres create --name sila-db --region fra --vm-size shared-cpu-1x --volume-size 10
-fly postgres attach --app sila-api sila-db
-# Then schedule your own daily `pg_dump` to Fly Volumes or S3. See
-# docs/pilot-path.md for the backup drill expectations.
+SILA_OWNER_PW=$(openssl rand -base64 36 | tr -d '=+/' | cut -c1-32)
+SILA_APP_PW=$(openssl rand -base64 36 | tr -d '=+/' | cut -c1-32)
+psql "$NEON_OWNER_URL" \
+  -c "ALTER ROLE sila_owner WITH LOGIN PASSWORD '$SILA_OWNER_PW';" \
+  -c "ALTER ROLE sila_app   WITH LOGIN PASSWORD '$SILA_APP_PW';"
+# Neon databases are named 'neondb' by default. Adjust if yours differs.
+psql "$NEON_OWNER_URL" \
+  -c "ALTER DATABASE neondb OWNER TO sila_owner;" \
+  -c "ALTER SCHEMA  public OWNER TO sila_owner;"
 ```
 
-Record the connection string Fly prints. We will use it for both `DATABASE_URL` (sila_app) and `DATABASE_ADMIN_URL` (sila_owner) after creating those roles.
-
-## 3. Create the two Postgres roles and lock them down
-
-Connect as the admin role Fly created:
+Construct the two connection URLs. Both point at Neon's **direct** endpoint (non-pooled) — the pooler is a PgBouncer that drops prepared statements and can confuse drizzle on wake.
 
 ```sh
-fly mpg connect sila-db
-# Or: fly pg connect -a sila-db
+# Example host: ep-foo-bar-123456.eu-central-1.aws.neon.tech
+NEON_HOST=$(python3 -c "from urllib.parse import urlparse; import os; print(urlparse(os.environ['NEON_OWNER_URL']).hostname)")
+NEON_DB=$(python3 -c "from urllib.parse import urlparse; import os; print(urlparse(os.environ['NEON_OWNER_URL']).path.strip('/'))")
+export DATABASE_ADMIN_URL="postgres://sila_owner:$SILA_OWNER_PW@$NEON_HOST/$NEON_DB?sslmode=require"
+export DATABASE_URL="postgres://sila_app:$SILA_APP_PW@$NEON_HOST/$NEON_DB?sslmode=require"
 ```
 
-Then in `psql`:
+Run migrations and grants.
 
-```sql
-\i scripts/sql/setup-roles.sql
--- Generate two FRESH long passwords; NEVER the docker-compose defaults.
-ALTER ROLE sila_owner WITH LOGIN PASSWORD '<generated-pw-1>';
-ALTER ROLE sila_app   WITH LOGIN PASSWORD '<generated-pw-2>';
--- Hand ownership of the Sila database and schema to sila_owner.
-ALTER DATABASE sila         OWNER TO sila_owner;
-ALTER SCHEMA  public        OWNER TO sila_owner;
+```sh
+DATABASE_ADMIN_URL="$DATABASE_ADMIN_URL" npx tsx scripts/db-migrate.ts
+psql "$DATABASE_ADMIN_URL" -f scripts/sql/grant-app.sql
 ```
 
-If your database is not named `sila`, adjust the `ALTER DATABASE` line. The grants file applied later also lives in `scripts/sql/grant-app.sql`; it is run automatically by the api app's `deploy.release_command`.
-
-## 4. Generate the application secrets
+## 2. Generate application secrets (local only)
 
 ```sh
 export SILA_KEK=$(node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))")
 export SESSION_SECRET=$(node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))")
+export VOLUNTEER_HMAC_KEY=$(node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))")
 export DEMO_PASSWORD=$(node -e "console.log(require('crypto').randomBytes(16).toString('base64url'))")
 export EVALUATOR_PASSWORD=$(node -e "console.log(require('crypto').randomBytes(16).toString('base64url'))")
 ```
 
-Keep these in your password manager; Fly will never print them back.
-
-## 5. Set secrets on the api app
+Save them to `.env.render` (which is gitignored by the existing `.env*` rule):
 
 ```sh
-# Replace <sila_owner-pw> / <sila_app-pw> with the values you set in step 3,
-# and the host with what Fly printed. Fly stores these encrypted.
-fly secrets set -a sila-api \
-  DATABASE_URL="postgres://sila_app:<sila_app-pw>@sila-db.flycast:5432/sila" \
-  DATABASE_ADMIN_URL="postgres://sila_owner:<sila_owner-pw>@sila-db.flycast:5432/sila" \
-  SILA_KEK="$SILA_KEK" \
-  SESSION_SECRET="$SESSION_SECRET" \
-  DEMO_PASSWORD="$DEMO_PASSWORD" \
-  EVALUATOR_PASSWORD="$EVALUATOR_PASSWORD" \
-  DEMO_MODE="true" \
-  NODE_ENV="production"
+umask 077
+cat > .env.render <<EOF
+DATABASE_URL=$DATABASE_URL
+SILA_KEK=$SILA_KEK
+SESSION_SECRET=$SESSION_SECRET
+VOLUNTEER_HMAC_KEY=$VOLUNTEER_HMAC_KEY
+DEMO_PASSWORD=$DEMO_PASSWORD
+EVALUATOR_PASSWORD=$EVALUATOR_PASSWORD
+DEMO_MODE=true
+NODE_ENV=production
+EOF
+chmod 600 .env.render
 ```
 
-## 6. Set secrets on the web app
+**Copy `SILA_KEK` into your password manager now.** If `SILA_KEK` is lost, every vault becomes unreadable. The `.env.render` is a working copy; the password manager is the source of truth.
 
-Only one real secret is needed; the internal API host is already in `fly/web.fly.toml`.
+## 3. Age key pair for backups
 
 ```sh
-fly secrets set -a sila-web NODE_ENV=production
+mkdir -p ~/.sila && chmod 700 ~/.sila
+age-keygen -o ~/.sila/sila-backup-key.txt
+chmod 600 ~/.sila/sila-backup-key.txt
+# The public key (recipient) is on the last line of that file:
+AGE_RECIPIENT=$(grep -oE 'age1[a-z0-9]+' ~/.sila/sila-backup-key.txt | head -1)
+echo "AGE_RECIPIENT=$AGE_RECIPIENT"
 ```
 
-## 7. First deploy
+**Copy the private key (the whole `~/.sila/sila-backup-key.txt` file) to your password manager now.**
 
-Deploys run via GitHub Actions (`.github/workflows/deploy.yml`). Fire a manual run:
+## 4. Create the Render service (auto-deploy OFF)
+
+Through the Render REST API, authenticated via `RENDER_API_KEY`. Set `autoDeploy: "no"` so pushes do **not** trigger deploys; only the GitHub Actions `Deploy` workflow does.
+
+```sh
+# Confirm no second free service already exists.
+curl -s -H "Authorization: Bearer $RENDER_API_KEY" https://api.render.com/v1/services \
+  | python3 -c "import json,sys; svcs=[s['service'] for s in json.load(sys.stdin)]; \
+    print('free services:', [s['name'] for s in svcs if s.get('serviceDetails',{}).get('plan')=='free'])"
+
+# Create the service. Replace <owner-id> and <repo> with yours.
+curl -s -X POST -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+  https://api.render.com/v1/services -d @- <<JSON
+{
+  "type": "web_service",
+  "name": "sila",
+  "ownerId": "<owner-id>",
+  "repo": "https://github.com/<you>/sila",
+  "autoDeploy": "no",
+  "branch": "main",
+  "serviceDetails": {
+    "region": "frankfurt",
+    "plan": "free",
+    "env": "docker",
+    "envSpecificDetails": { "dockerfilePath": "./Dockerfile" },
+    "healthCheckPath": "/api/healthz"
+  }
+}
+JSON
+```
+
+Save the returned `id` as `SERVICE_ID`. Then create a deploy hook and set the env vars.
+
+```sh
+# Deploy hook — URL returned here goes into the GitHub secret RENDER_DEPLOY_HOOK.
+curl -s -X POST -H "Authorization: Bearer $RENDER_API_KEY" \
+  https://api.render.com/v1/services/$SERVICE_ID/deploy-hooks | tee /tmp/hook.json
+export RENDER_DEPLOY_HOOK=$(python3 -c "import json;print(json.load(open('/tmp/hook.json'))['url'])")
+
+# Env vars — bulk set.
+python3 -c "
+import json, os
+env = {}
+for line in open('.env.render'):
+    line=line.strip()
+    if not line or line.startswith('#'): continue
+    k,v=line.split('=',1); env[k]=v
+print(json.dumps([{'key':k,'value':v} for k,v in env.items()]))
+" > /tmp/envvars.json
+curl -s -X PUT -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+  https://api.render.com/v1/services/$SERVICE_ID/env-vars -d @/tmp/envvars.json
+```
+
+## 5. GitHub secrets
+
+Three secrets go on the repo. If `gh` is installed:
+
+```sh
+gh secret set DATABASE_ADMIN_URL --body "$DATABASE_ADMIN_URL"
+gh secret set RENDER_DEPLOY_HOOK --body "$RENDER_DEPLOY_HOOK"
+gh secret set AGE_RECIPIENT --body "$AGE_RECIPIENT"
+```
+
+Without `gh`, do it on the web:
+
+1. `https://github.com/<you>/sila/settings/secrets/actions`.
+2. Click **New repository secret**. Add `DATABASE_ADMIN_URL`, value = the owner URL you built in step 1.
+3. Add `RENDER_DEPLOY_HOOK`, value = the URL from the deploy-hook creation in step 4.
+4. Add `AGE_RECIPIENT`, value = the `age1...` public key from step 3.
+
+## 6. First deploy
 
 ```sh
 gh workflow run deploy.yml --ref main
+# or on the web: Actions → Deploy → Run workflow → main
 ```
 
 The workflow will:
-- Check that the latest `ci.yml` run on `main` is green.
-- Deploy the api (its `release_command` runs the migrations + grants).
-- Deploy the web.
+- Refuse to run if `ci.yml` is not green on this SHA.
+- Install deps, run migrations as `sila_owner`, apply `grant-app.sql`.
+- POST the Render deploy hook; Render pulls the image and starts a build.
 
-Or, from your local machine (bypasses the CI-green precheck — avoid for anything that isn't a hotfix):
+Watch the build logs in Render until the service is `live` and `/api/healthz` returns 200. Cold first build takes ~5–10 minutes.
 
-```sh
-flyctl deploy --config fly/api.fly.toml --remote-only
-flyctl deploy --config fly/web.fly.toml --remote-only
-```
+## 7. Seed the live database, once
 
-## 8. Seed the database, once
+Seeding runs from this machine so `.env.render`'s `SILA_KEK` is the one the seeded vaults are wrapped under. Read the file; do not print it.
 
 ```sh
-fly ssh console -a sila-api \
-  -C "sh -c 'DEMO_PASSWORD=$DEMO_PASSWORD EVALUATOR_PASSWORD=$EVALUATOR_PASSWORD npm run seed'"
+set -a; . .env.render; set +a
+DEMO_PASSWORD="$DEMO_PASSWORD" EVALUATOR_PASSWORD="$EVALUATOR_PASSWORD" \
+  DATABASE_URL="$DATABASE_URL" SILA_KEK="$SILA_KEK" \
+  SESSION_SECRET="$SESSION_SECRET" VOLUNTEER_HMAC_KEY="$VOLUNTEER_HMAC_KEY" \
+  npm run seed
 ```
 
 The seed is idempotent on users; a re-run only re-stores results and re-grants the demo couple's consents.
 
-## 9. Verify
+## 8. Wake + verify
+
+Render's free service sleeps after 15 minutes of inactivity. Wake it before each test run:
 
 ```sh
-# Replace with your actual web host (fly shows it after deploy).
-export BASE_URL=https://sila-web.fly.dev
+export BASE_URL=https://<your-service>.onrender.com
+# Waking takes 20–40 seconds. Poll up to 90s.
+i=0; until curl -fsS "$BASE_URL/api/healthz" >/dev/null 2>&1; do
+  i=$((i+1)); [ $i -ge 45 ] && echo "wake timeout" && exit 1; sleep 2
+done
+echo "live"
 
-# Attack suite (demo-on profile since DEMO_MODE=true on the live site).
+# Black-box attack suite (demo-mode-on profile).
 SILA_EXPECT_DEMO_MODE=true BASE_URL="$BASE_URL" npm run attack
 
-# Playwright end-to-end (phone viewport).
+# Playwright end-to-end.
 BASE_URL="$BASE_URL" npx playwright install chromium
 BASE_URL="$BASE_URL" npx playwright test
 
-# Screenshots for the submission package.
+# Submission screenshots.
 BASE_URL="$BASE_URL" npm run screenshots
 ```
 
-Update the "Live URL" line at the top of [README.md](../README.md), commit, and tag the release:
+Paste the resulting `data/review/attack_report.json` and `data/review/e2e_report.json` into [docs/evaluation-results.md](evaluation-results.md). Leave the volunteer and clinician cells empty.
+
+## 9. Finalise
 
 ```sh
+# Update the Live URL line at the top of README.md, the heading of
+# docs/demo-script.md, and the landing-page footer link.
+#   README.md               line 3
+#   docs/demo-script.md     any mention of the live URL
+#   src/app/(landing)/...   footer href
+
+git commit -am "live URL"
+git push origin main
+# wait for CI to go green, then tag
 git tag v1.0.0-pilot
 git push origin v1.0.0-pilot
 ```
 
-## 10. Backups drill
+## 10. Backup restore drill (before any volunteer uses the site)
 
-Within 24 hours of the first deploy, run a test restore.
-
-### Fly managed Postgres
+The daily workflow writes an encrypted artifact. Do one practice restore.
 
 ```sh
-# List automated snapshots.
-fly mpg snapshots list sila-db
-# Restore the latest to a new cluster.
-fly mpg restore --snapshot <id> --name sila-db-restore --region fra
-fly mpg connect sila-db-restore
-# In psql: verify `select count(*) from users;` and `select count(*) from volunteers;`
-# are the expected numbers from production.
-# When done:
-fly mpg destroy sila-db-restore
+# Download the most recent artifact.
+gh run list --workflow=backup.yml --limit 1 --json databaseId -q '.[0].databaseId' > /tmp/run_id
+gh run download "$(cat /tmp/run_id)" --name "sila-db-backup-$(cat /tmp/run_id)" --dir /tmp/backup
+ls /tmp/backup/*.dump.age
+
+# Decrypt with the private key held locally.
+age -d -i ~/.sila/sila-backup-key.txt -o /tmp/backup/latest.dump /tmp/backup/*.dump.age
+
+# Create a Neon branch (so we don't disturb prod).
+# In the Neon console: Branches → Create branch from current → name "restore-drill".
+# Copy its connection URL as $RESTORE_URL.
+pg_restore --no-owner --clean --if-exists -d "$RESTORE_URL" /tmp/backup/latest.dump
+
+# Sanity check row counts.
+psql "$RESTORE_URL" -c "select
+  (select count(*) from users) as users,
+  (select count(*) from vault_results) as results,
+  (select count(*) from volunteers) as volunteers,
+  (select count(*) from audit_log) as audit_rows;"
+
+# Delete the Neon branch when you're done.
 ```
 
-### Fallback (unmanaged) Postgres
+If the row counts match production within a reasonable delta for the time of day, the backup is good. Record the test in [evaluation-results.md](evaluation-results.md) under "privacy and backups".
 
-Document the `pg_dump` cadence and keep two off-site encrypted copies. Run a restore drill to a throwaway cluster the same day. The volunteer data cannot be recreated once a session is done; the drill is non-optional.
-
-## 11. Rotating the KEK in production
+## 11. Rotating `SILA_KEK` in production
 
 ```sh
 export SILA_KEK_NEXT=$(node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))")
-fly ssh console -a sila-api \
-  -C "sh -c 'SILA_KEK_NEXT=$SILA_KEK_NEXT npm run kek:rotate'"
-fly secrets set -a sila-api SILA_KEK="$SILA_KEK_NEXT"
-fly apps restart sila-api
+
+# Rotate from this machine — the live DATABASE_URL + current SILA_KEK are in .env.render.
+set -a; . .env.render; set +a
+SILA_KEK_NEXT="$SILA_KEK_NEXT" DATABASE_URL="$DATABASE_URL" SILA_KEK="$SILA_KEK" \
+  npm run kek:rotate
+
+# Point the live service at the new KEK, then restart it.
+curl -s -X PUT -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+  https://api.render.com/v1/services/$SERVICE_ID/env-vars/SILA_KEK \
+  -d "{\"value\":\"$SILA_KEK_NEXT\"}"
+# Update .env.render too.
+sed -i.bak "s|^SILA_KEK=.*|SILA_KEK=$SILA_KEK_NEXT|" .env.render && rm .env.render.bak
+# Copy the new SILA_KEK into your password manager now.
+
+# Trigger a deploy (picks up the new secret).
+curl -s -X POST "$RENDER_DEPLOY_HOOK"
 ```

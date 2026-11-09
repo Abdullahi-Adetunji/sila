@@ -1,0 +1,91 @@
+name: Deploy
+
+# Manual or tag only: no automatic deploy on push. The precheck step refuses
+# to run if the latest ci.yml run for this SHA is not green.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify CI is green for this ref
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          sha="${GITHUB_SHA}"
+          echo "Looking up CI workflow runs for $sha"
+          conclusion=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${sha}" \
+            --jq '.workflow_runs[0].conclusion // ""')
+          echo "CI conclusion on ${sha}: ${conclusion:-<none>}"
+          if [ "$conclusion" != "success" ]; then
+            echo "Refusing to deploy: no successful CI run for this ref."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply migrations as sila_owner
+        env:
+          # The ADMIN URL is only ever in GitHub secrets, never on the
+          # Render service. It is scoped to the sila_owner role.
+          DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}
+        run: npx tsx scripts/db-migrate.ts
+
+      - name: Apply sila_app grants
+        env:
+          DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}
+        run: |
+          node -e "
+            const { Pool } = require('pg');
+            const fs = require('fs');
+            (async () => {
+              const p = new Pool({ connectionString: process.env.DATABASE_ADMIN_URL });
+              const sql = fs.readFileSync('scripts/sql/grant-app.sql', 'utf8');
+              await p.query(sql);
+              await p.end();
+              console.log('[grants] applied');
+            })().catch(e => { console.error(e); process.exit(1); });
+          "
+
+      - name: Trigger Render deploy
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          set -euo pipefail
+          if [ -z "${RENDER_DEPLOY_HOOK:-}" ]; then
+            echo "RENDER_DEPLOY_HOOK secret is not set"
+            exit 1
+          fi
+          # Render's deploy hook returns 201 with a JSON body on success.
+          # We do not block on the build; the service's health check and
+          # the verification step in the runbook are the acceptance gates.
+          http_code=$(curl -s -o /tmp/hook.json -w '%{http_code}' \
+            -X POST "$RENDER_DEPLOY_HOOK")
+          echo "deploy hook http=$http_code"
+          cat /tmp/hook.json || true
+          if [ "$http_code" != "201" ] && [ "$http_code" != "200" ]; then
+            exit 1
+          fi

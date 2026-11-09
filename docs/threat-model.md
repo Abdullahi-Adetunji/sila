@@ -13,8 +13,10 @@ flowchart LR
         UI[Next.js app at /]
         VOL[Volunteer flow at /volunteer]
     end
-    subgraph Edge["Edge host (M5 target)"]
-        NX[Next.js SSR + /api rewrite]
+    subgraph Edge["Render container (Frankfurt)"]
+        NX[Next.js on 0.0.0.0:$PORT]
+        EX[Express on 127.0.0.1:4000]
+        NX -- rewrite /api/* --> EX
     end
     subgraph API["Express API (sila_app role)"]
         AUTH[/api/auth/*]
@@ -38,17 +40,18 @@ flowchart LR
         VOLT[(volunteers / quiz_responses / time_to_referral_events)]
         A[(audit_log — append-only, hash-chained)]
     end
-    subgraph Secrets["Host secret store (M5)"]
-        KEK[SILA_KEK]
-        SS[SESSION_SECRET]
-        OWN[sila_owner password]
-        APP[sila_app password]
-        DP[DEMO_PASSWORD]
+    subgraph Secrets["Secrets"]
+        KEK[SILA_KEK — Render env + password manager]
+        SS[SESSION_SECRET — Render env]
+        VHK[VOLUNTEER_HMAC_KEY — Render env]
+        OWN[sila_owner password — GitHub secret only]
+        APP[sila_app password — Render env as DATABASE_URL]
+        DP[DEMO_PASSWORD / EVALUATOR_PASSWORD — Render env]
     end
     LAB[Simulated lab]:::ext --> V
 
-    UI --> NX --> API
-    VOL --> NX --> VOLR
+    UI --> NX --> EX --> API
+    VOL --> NX --> EX --> VOLR
     AUTH --> U
     ME --> V
     ME --> A
@@ -148,11 +151,19 @@ Not every threat is an attacker. Three real-world threats that no amount of cryp
 
 ---
 
-## 4. Residual risks (named honestly)
+## 4. Hosting topology and data processors
+
+- **Render** runs the Sila container in the `frankfurt` region. It terminates TLS at its edge, forwards HTTPS to the container, and provides daily automated image rebuilds. Render stores the service's environment variables encrypted at rest. Render acts as a **processor of synthetic data and anonymous quiz answers only**. The private key for the backup artifacts is not on Render.
+- **Neon** runs the Postgres database in the Frankfurt region. Automated base backups run in Neon's platform; our own encrypted logical backup runs daily in GitHub Actions and is held outside both Render and Neon (as a GitHub Actions artifact plus the private key in the operator's password manager). Neon acts as a **processor of synthetic data and anonymous quiz answers only**.
+- **Process isolation inside the container.** Render's free plan runs a single container per service. The Sila image runs two Node processes side by side: Next.js (`0.0.0.0:$PORT`, public) and Express (`127.0.0.1:4000`). The API has no public listener — Next.js reaches it via a rewrite inside the container. This is isolation by **binding**, not by a private network: anything that compromises the Next.js process can also reach the API. For the pilot this is an accepted trade-off (free hosting, synthetic data); a real pilot would use two services on a private network.
+
+## 5. Residual risks (named honestly)
 
 - **Device compromise.** If the participant's device is compromised while they are logged in, the attacker inherits the session.
 - **Lab trust.** The simulated lab is trusted to upload correct results. In production, the clinical adviser will specify who may hold the `lab` role and how uploads are authenticated beyond password.
-- **KEK custody.** `SILA_KEK` is in the host secret store. If both the KEK and the database are exfiltrated, the attacker can decrypt. KEK rotation (`npm run kek:rotate`) limits the blast radius of a point-in-time leak but does not undo a historical one.
+- **KEK custody.** `SILA_KEK` is on Render (encrypted at rest). If both the KEK and the database are exfiltrated, the attacker can decrypt. KEK rotation (`npm run kek:rotate`) limits the blast radius of a point-in-time leak but does not undo a historical one.
+- **argon2 parameters.** Passwords are hashed at m=19 MiB, t=2, p=1 — the OWASP ASVS minimum, chosen so Next.js and Express fit together in Render's free 512 MB instance. The previous Sila setting was m=64 MiB, t=3. The trade-off and the rehash-on-login policy are documented in [docs/security-controls.md §4](security-controls.md).
+- **Shared-container trust boundary.** Because the API binds to `127.0.0.1` instead of a private network, a compromise of the Next.js process or of the base image reaches the API immediately. This is called out under "Hosting topology" above; acceptable for a synthetic-data pilot, not for real patient data.
 - **Clinical sign-off is still pending.** Every template on the app is `status: draft` until the clinician flips it. Shipping before approval would misrepresent the wording.
 - **Postgres role enforcement in CI only.** The role-privilege test (`roles.test.ts`) runs against real Postgres in CI; local PGLite does not exercise it. The CI pipeline is therefore the gate.
 - **No CSRF on volunteer endpoints.** Volunteer routes are code-authenticated via a header that cannot be set from a cross-origin web page (fetch cannot send a custom header without a preflight that will be blocked without CORS allowance). Documented as adequate; worth re-checking if a browser extension context becomes in-scope.
