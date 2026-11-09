@@ -14,6 +14,7 @@ const MIN_GROUP = 5;
 
 const here = dirname(fileURLToPath(import.meta.url));
 const privacyReportPath = resolve(here, "../../../data/review/privacy_report.json");
+const attackReportPath = resolve(here, "../../../data/review/attack_report.json");
 
 export type Language = "en" | "ar";
 export type ReadingBand = "low" | "medium" | "high" | "unknown";
@@ -75,6 +76,25 @@ export async function clinicianAccuracy(): Promise<ClinicianAccuracy> {
     mismatches: (r.mismatches as ClinicianAccuracy["mismatches"]) ?? [],
     ranAt: r.ranAt,
   };
+}
+
+export interface AttackReport {
+  status: "awaiting_run" | "ready";
+  baseUrl?: string;
+  endedAt?: string;
+  passed?: number;
+  failed?: number;
+  findings?: Array<{ name: string; passed: boolean; detail?: string }>;
+}
+
+export function attackReport(): AttackReport {
+  if (!existsSync(attackReportPath)) return { status: "awaiting_run" };
+  try {
+    const raw = JSON.parse(readFileSync(attackReportPath, "utf8")) as Omit<AttackReport, "status">;
+    return { ...raw, status: "ready" };
+  } catch {
+    return { status: "awaiting_run" };
+  }
 }
 
 export function privacyReport(): PrivacyReport {

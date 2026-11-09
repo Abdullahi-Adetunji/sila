@@ -5,6 +5,7 @@ import { db } from "../db/client";
 import { users } from "../db/schema";
 import { appendAudit } from "../lib/audit";
 import {
+  attackReport,
   clinicianAccuracy,
   comprehensionByLanguage,
   comprehensionByReadingBand,
@@ -68,6 +69,22 @@ router.get("/privacy", requireSession, async (req: Request, res: Response) => {
     res.send(
       toCsv(
         rows.map((r) => ({ file: r.file, pass: r.counts.pass ?? 0, fail: r.counts.fail ?? 0 })),
+      ),
+    );
+    return;
+  }
+  res.json(rep);
+});
+
+router.get("/attack", requireSession, async (req: Request, res: Response) => {
+  if (!(await requireEvaluator(req, res))) return;
+  const rep = attackReport();
+  if (req.query.format === "csv") {
+    const rows = rep.findings ?? [];
+    res.setHeader("content-type", "text/csv; charset=utf-8");
+    res.send(
+      toCsv(
+        rows.map((f) => ({ name: f.name, passed: f.passed ? "Y" : "N", detail: f.detail ?? "" })),
       ),
     );
     return;

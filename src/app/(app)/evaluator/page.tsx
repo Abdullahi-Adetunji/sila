@@ -19,6 +19,14 @@ interface PrivacyReport {
   blocked?: number;
   endedAt?: string;
 }
+interface AttackReport {
+  status: "awaiting_run" | "ready";
+  baseUrl?: string;
+  endedAt?: string;
+  passed?: number;
+  failed?: number;
+  findings?: Array<{ name: string; passed: boolean; detail?: string }>;
+}
 interface Cell {
   axis: "language" | "reading_band";
   value: string;
@@ -34,6 +42,7 @@ export default function EvaluatorDashboard() {
   const { user } = useSession();
   const [clinician, setClinician] = useState<ClinicianAccuracy | null>(null);
   const [privacy, setPrivacy] = useState<PrivacyReport | null>(null);
+  const [attack, setAttack] = useState<AttackReport | null>(null);
   const [compLang, setCompLang] = useState<Cell[] | null>(null);
   const [compBand, setCompBand] = useState<Cell[] | null>(null);
   const [ttrLang, setTtrLang] = useState<Cell[] | null>(null);
@@ -42,9 +51,10 @@ export default function EvaluatorDashboard() {
 
   const load = useCallback(async () => {
     try {
-      const [c, p, cL, cB, tL, tB] = await Promise.all([
+      const [c, p, a, cL, cB, tL, tB] = await Promise.all([
         api.get<ClinicianAccuracy>("/api/evaluator/clinician-accuracy"),
         api.get<PrivacyReport>("/api/evaluator/privacy"),
+        api.get<AttackReport>("/api/evaluator/attack"),
         api.get<{ cells: Cell[] }>("/api/evaluator/comprehension/by-language"),
         api.get<{ cells: Cell[] }>("/api/evaluator/comprehension/by-reading-band"),
         api.get<{ cells: Cell[] }>("/api/evaluator/time-to-referral/by-language"),
@@ -52,6 +62,7 @@ export default function EvaluatorDashboard() {
       ]);
       setClinician(c);
       setPrivacy(p);
+      setAttack(a);
       setCompLang(cL.cells);
       setCompBand(cB.cells);
       setTtrLang(tL.cells);
@@ -105,7 +116,7 @@ export default function EvaluatorDashboard() {
         )}
       </Card>
 
-      <Card title="Privacy and access-control" csv={asCsvLink("/evaluator/privacy")}>
+      <Card title="Privacy and access-control (Vitest)" csv={asCsvLink("/evaluator/privacy")}>
         {privacy?.status === "awaiting_run" && (
           <p className="text-sm text-muted">Awaiting a test run that writes privacy_report.json.</p>
         )}
@@ -117,6 +128,39 @@ export default function EvaluatorDashboard() {
             <li>Failed assertions: {privacy.failed}</li>
             <li>Last run: {privacy.endedAt}</li>
           </ul>
+        )}
+      </Card>
+
+      <Card title="Black-box attack suite (npm run attack)" csv={asCsvLink("/evaluator/attack")}>
+        {attack?.status === "awaiting_run" && (
+          <p className="text-sm text-muted">
+            Awaiting a run. Point the suite at the deployed site with BASE_URL and run
+            <code className="ml-1">npm run attack</code>.
+          </p>
+        )}
+        {attack?.status === "ready" && (
+          <>
+            <ul className="space-y-1 text-sm">
+              <li>
+                Blocked (passed) attacks: <strong>{attack.passed}</strong>
+              </li>
+              <li>Failing cases: {attack.failed}</li>
+              <li>BASE_URL: {attack.baseUrl}</li>
+              <li>Last run: {attack.endedAt}</li>
+            </ul>
+            {attack.failed && attack.findings && attack.findings.some((f) => !f.passed) ? (
+              <ul className="mt-3 list-disc space-y-1 ps-6 text-xs text-red-700">
+                {attack.findings
+                  .filter((f) => !f.passed)
+                  .map((f) => (
+                    <li key={f.name}>
+                      {f.name}
+                      {f.detail ? ` — ${f.detail}` : null}
+                    </li>
+                  ))}
+              </ul>
+            ) : null}
+          </>
         )}
       </Card>
 
