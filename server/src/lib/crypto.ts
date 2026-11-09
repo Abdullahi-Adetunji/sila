@@ -4,8 +4,6 @@ import {
   randomBytes,
   timingSafeEqual,
 } from "node:crypto";
-import { env } from "../env";
-
 const AES = "aes-256-gcm" as const;
 const IV_LEN = 12;
 const TAG_LEN = 16;
@@ -19,10 +17,22 @@ function toBase64url(b: Buffer): string {
   return b.toString("base64url");
 }
 
+// Reads process.env.SILA_KEK fresh on every call so a rotation (which
+// updates process.env) is picked up without needing to re-import modules.
 function getKek(): Buffer {
-  const kek = fromBase64url(env.SILA_KEK);
+  const raw = process.env.SILA_KEK;
+  if (!raw) throw new Error("SILA_KEK not set");
+  const kek = fromBase64url(raw);
   if (kek.length !== KEY_LEN) {
     throw new Error("SILA_KEK must decode to 32 bytes (base64url)");
+  }
+  return kek;
+}
+
+export function decodeKek(encoded: string): Buffer {
+  const kek = fromBase64url(encoded);
+  if (kek.length !== KEY_LEN) {
+    throw new Error("KEK must decode to 32 bytes (base64url)");
   }
   return kek;
 }
@@ -56,14 +66,25 @@ function decryptGcm(key: Buffer, packed: Buffer, aad: Buffer): Buffer {
 // Wrap a per-person data key with the KEK. AAD binds the wrapper to the user id
 // and key version so a row cannot be swapped between people or versions.
 export function wrapDataKey(dataKey: Buffer, userId: string, keyVersion: number): string {
-  if (dataKey.length !== KEY_LEN) throw new Error("data key must be 32 bytes");
-  const aad = Buffer.from(`kek:${userId}|v${keyVersion}`);
-  return toBase64url(encryptGcm(getKek(), dataKey, aad));
+  return wrapDataKeyWith(getKek(), dataKey, userId, keyVersion);
 }
 
 export function unwrapDataKey(wrapped: string, userId: string, keyVersion: number): Buffer {
+  return unwrapDataKeyWith(getKek(), wrapped, userId, keyVersion);
+}
+
+// Explicit-KEK variants used by the rotation script: it reads one row,
+// unwraps with the OLD kek, wraps with the NEW kek, and stores it. The
+// runtime always goes through the env-based pair above.
+export function wrapDataKeyWith(kek: Buffer, dataKey: Buffer, userId: string, keyVersion: number): string {
+  if (dataKey.length !== KEY_LEN) throw new Error("data key must be 32 bytes");
   const aad = Buffer.from(`kek:${userId}|v${keyVersion}`);
-  return decryptGcm(getKek(), fromBase64url(wrapped), aad);
+  return toBase64url(encryptGcm(kek, dataKey, aad));
+}
+
+export function unwrapDataKeyWith(kek: Buffer, wrapped: string, userId: string, keyVersion: number): Buffer {
+  const aad = Buffer.from(`kek:${userId}|v${keyVersion}`);
+  return decryptGcm(kek, fromBase64url(wrapped), aad);
 }
 
 export function resultAad(userId: string, recordId: string, payloadVersion: number): Buffer {
