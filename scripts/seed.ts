@@ -69,6 +69,7 @@ async function main() {
   const demoA = await upsertUser("partner.a@demo.sila", "person");
   const demoB = await upsertUser("partner.b@demo.sila", "person");
   const demoCounsellor = await upsertUser("counsellor@demo.sila", "counsellor");
+  const demoEvaluator = await upsertUser("evaluator@demo.sila", "evaluator");
 
   const HBS_CARRIER: ResultsByGene = {
     HBB: { status: "tested", variants: ["HbS"] },
@@ -91,8 +92,10 @@ async function main() {
   console.log("  partner.a@demo.sila");
   console.log("  partner.b@demo.sila");
   console.log("  counsellor@demo.sila");
+  console.log("  evaluator@demo.sila");
   console.log("  lab@demo.sila");
   console.log(`  counsellor id: ${demoCounsellor}`);
+  console.log(`  evaluator id:  ${demoEvaluator}`);
 }
 
 main()

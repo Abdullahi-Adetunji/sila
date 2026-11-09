@@ -46,6 +46,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (user.role === "counsellor") {
     tabs.push({ href: "/counsellor-queue", label: "Queue" });
   }
+  if (user.role === "evaluator") {
+    tabs.push({ href: "/evaluator", label: "Evaluator" });
+  }
 
   return (
     <div className="min-h-screen">

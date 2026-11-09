@@ -13,6 +13,7 @@ import devRouter from "./routes/dev";
 import relativesRouter from "./routes/relatives";
 import referralsRouter from "./routes/referrals";
 import volunteerRouter from "./routes/volunteer";
+import evaluatorRouter from "./routes/evaluator";
 
 export function createApp(): Express {
   const app = express();
@@ -32,6 +33,7 @@ export function createApp(): Express {
   app.use("/api/relatives", relativesRouter);
   app.use("/api/referrals", referralsRouter);
   app.use("/api/volunteer", volunteerRouter);
+  app.use("/api/evaluator", evaluatorRouter);
   app.use((_req, res) => {
     res.status(404).json({ error: "not found" });
   });

@@ -16,7 +16,8 @@
     "db:push": "drizzle-kit push",
     "audit:verify": "tsx --env-file-if-exists=.env scripts/audit-verify.ts",
     "seed": "tsx --env-file-if-exists=.env scripts/seed.ts",
-    "review:export": "tsx scripts/review-export.ts"
+    "review:export": "tsx scripts/review-export.ts",
+    "clinician:import": "tsx --env-file-if-exists=.env scripts/clinician-import.ts"
   },
   "dependencies": {
     "argon2": "^0.45.2",

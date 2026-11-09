@@ -1,5 +1,6 @@
 import { defineConfig } from "vitest/config";
 import { resolve } from "node:path";
+import PrivacyReporter from "./scripts/privacy-reporter";
 
 export default defineConfig({
   resolve: {
@@ -8,6 +9,7 @@ export default defineConfig({
     },
   },
   test: {
+    reporters: ["default", new PrivacyReporter()],
     env: {
       DATABASE_URL: "postgres://test:test@localhost:5432/test",
       // 32 bytes of zeros, base64url-encoded (43 chars). Test-only.
