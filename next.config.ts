@@ -38,6 +38,8 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
+  // Required for the Dockerfile.web multi-stage build on Fly.io.
+  output: "standalone",
   async rewrites() {
     return [
       {

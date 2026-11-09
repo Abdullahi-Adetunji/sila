@@ -1,0 +1,36 @@
+# Private Express API. No public services; only reachable from the web app
+# via Fly's internal 6pn network at sila-api.internal:4000.
+
+app = "sila-api"
+primary_region = "fra"
+
+[build]
+  dockerfile = "Dockerfile.api"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "4000"
+
+# Migrations and grants run once per deploy, as sila_owner (DATABASE_ADMIN_URL).
+[deploy]
+  release_command = "sh scripts/deploy-release.sh"
+
+# Expose the API on the Fly internal network only. internal_port is used by
+# .internal DNS, and no [[services]] with a public port is declared, so the
+# API is not reachable from the public internet.
+[[services]]
+  internal_port = 4000
+  protocol = "tcp"
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[services.tcp_checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "15s"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "512mb"

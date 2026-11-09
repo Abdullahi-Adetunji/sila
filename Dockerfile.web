@@ -1,0 +1,27 @@
+# Multi-stage Next.js build for Fly.io. Outputs a minimal standalone server.
+
+FROM node:20-bookworm-slim AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+
+FROM node:20-bookworm-slim AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NODE_ENV=production
+RUN npm run build
+
+FROM node:20-bookworm-slim AS run
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+# Keep the next.config.ts headers at runtime.
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+# docs/data-governance.md is read by the /docs/data-governance Next.js page.
+COPY --from=build /app/docs ./docs
+EXPOSE 3000
+CMD ["node", "server.js"]
