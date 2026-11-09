@@ -21,6 +21,8 @@ const PRIVACY_FILES = [
   "quiz.test.ts",
   "ttr.test.ts",
   "anonymity.test.ts",
+  "demoScoping.test.ts",
+  "routeInventory.test.ts",
 ];
 
 interface MinimalTask {

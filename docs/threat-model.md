@@ -157,3 +157,18 @@ Not every threat is an attacker. Three real-world threats that no amount of cryp
 - **Postgres role enforcement in CI only.** The role-privilege test (`roles.test.ts`) runs against real Postgres in CI; local PGLite does not exercise it. The CI pipeline is therefore the gate.
 - **No CSRF on volunteer endpoints.** Volunteer routes are code-authenticated via a header that cannot be set from a cross-origin web page (fetch cannot send a custom header without a preflight that will be blocked without CORS allowance). Documented as adequate; worth re-checking if a browser extension context becomes in-scope.
 - **Static review-sheet files on disk.** `npm run review:export` writes CSVs with bilingual draft text under `data/review/`. Those files are kept out of git (`/data/review/` is `.gitignore`-d) but exist on the local disk. Clear the folder after sharing with reviewers.
+- **Next.js CSP allows `'unsafe-inline'` for scripts (and styles).** The Content-Security-Policy on every Next.js page is:
+  ```
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  style-src  'self' 'unsafe-inline';
+  img-src    'self' data:;
+  font-src   'self' data:;
+  connect-src 'self';
+  frame-ancestors 'none';
+  base-uri 'none';
+  form-action 'self';
+  object-src 'none'
+  ```
+  For scripts specifically: `'self'` (same-origin bundles) and `'unsafe-inline'` (inline `<script>` blocks that contain source directly). Next.js injects a couple of inline scripts for hydration and for streaming; stripping `'unsafe-inline'` requires serving a per-request **nonce** from middleware and threading it through every inline script, which Next.js 16 supports but needs testing.
+  The pragmatic choice for the 20 Nov submission is to keep `'unsafe-inline'` and record it here. Everything else is locked down: scripts cannot be loaded from a different origin, `object-src` and `frame-ancestors` are `'none'`, `base-uri` is `'none'`, form posts stay same-origin. The API's own CSP is still `default-src 'none'` since it only returns JSON. **Follow-up for post-pilot**: implement the Next.js nonce middleware pattern and tighten `script-src` to `'self' 'nonce-<rand>'`.

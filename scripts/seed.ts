@@ -8,17 +8,18 @@ import { storeResults, type ResultsByGene } from "../server/src/services/vault";
 import { createInvite, acceptInvite } from "../server/src/services/partnerLink";
 import { grantConsent } from "../server/src/services/consent";
 
-function requireDemoPassword(): string {
-  const v = process.env.DEMO_PASSWORD;
+function requirePassword(name: string): string {
+  const v = process.env[name];
   if (!v || v.length < 12) {
     console.error(
-      "DEMO_PASSWORD is not set (or is shorter than 12 characters). Set it in .env before running the seed.",
+      `${name} is not set (or is shorter than 12 characters). Set it in .env before running the seed.`,
     );
     process.exit(1);
   }
   return v;
 }
-const DEMO_PASSWORD = requireDemoPassword();
+const DEMO_PASSWORD = requirePassword("DEMO_PASSWORD");
+const EVALUATOR_PASSWORD = requirePassword("EVALUATOR_PASSWORD");
 
 interface CoupleFile {
   seed: number;
@@ -37,7 +38,10 @@ async function upsertUser(
 ): Promise<string> {
   const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email));
   if (existing.length) return existing[0].id;
-  const passwordHash = await hashPassword(DEMO_PASSWORD);
+  // evaluator uses its own password; it is intentionally NOT on the demo
+  // one-click panel.
+  const password = role === "evaluator" ? EVALUATOR_PASSWORD : DEMO_PASSWORD;
+  const passwordHash = await hashPassword(password);
   const [row] = await db
     .insert(users)
     .values({ email, passwordHash, role, locale })
@@ -88,12 +92,12 @@ async function main() {
   await grantConsent({ grantorId: demoA, purpose: "couple_risk", targetUserId: demoB });
   await grantConsent({ grantorId: demoB, purpose: "couple_risk", targetUserId: demoA });
 
-  console.log("Demo accounts ready (password is the DEMO_PASSWORD from your .env):");
-  console.log("  partner.a@demo.sila");
-  console.log("  partner.b@demo.sila");
-  console.log("  counsellor@demo.sila");
-  console.log("  evaluator@demo.sila");
-  console.log("  lab@demo.sila");
+  console.log("Demo accounts ready:");
+  console.log("  partner.a@demo.sila    (password: DEMO_PASSWORD)");
+  console.log("  partner.b@demo.sila    (password: DEMO_PASSWORD)");
+  console.log("  counsellor@demo.sila   (password: DEMO_PASSWORD)");
+  console.log("  lab@demo.sila          (password: DEMO_PASSWORD)");
+  console.log("  evaluator@demo.sila    (password: EVALUATOR_PASSWORD, NOT on one-click panel)");
   console.log(`  counsellor id: ${demoCounsellor}`);
   console.log(`  evaluator id:  ${demoEvaluator}`);
 }
