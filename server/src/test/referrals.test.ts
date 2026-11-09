@@ -110,7 +110,7 @@ describe("referrals", () => {
       .set(csrf(p))
       .send({ priority: "counsellor", reasonSnapshot: null, counsellorId: c.id });
 
-    advance(60 * 60 * 1000); // 1 simulated hour later
+    advance(60 * 60 * 1000, [p.id]); // 1 simulated hour later, only for this person
     const step = await request(app)
       .post(`/api/referrals/${made.body.referral.id}/step`)
       .set(csrf(c))

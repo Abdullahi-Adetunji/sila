@@ -34,7 +34,9 @@ export async function createReferral(input: {
   priority: ReferralPriority;
   reasonSnapshot: unknown;
 }): Promise<Referral> {
-  const createdAt = nowIso();
+  // Timestamp is scoped to this person's clock, so an /api/dev/clock advance
+  // only shifts demo users' referrals, never anyone else's.
+  const createdAt = nowIso(input.personId);
   const [row] = await db
     .insert(referrals)
     .values({
@@ -80,7 +82,10 @@ export async function addStep(input: {
   actorId: string;
   meta?: unknown;
 }): Promise<Referral> {
-  const occurredAt = nowIso();
+  // The step's timestamp is on the referred person's clock, not the
+  // counsellor's, so advance() moves time for the case being tracked.
+  const current = await getReferral(input.referralId);
+  const occurredAt = nowIso(current?.personId);
   await db.insert(referralSteps).values({
     referralId: input.referralId,
     step: input.step,

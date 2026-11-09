@@ -48,10 +48,13 @@ Current:
 
 Review:
 - Labelling someone with two variants as "affected" is a strong clinical claim. For HbS/HbS it is accurate; for HbS/beta thal or compound HbC/beta it depends on which variants and on the person's clinical history. Our engine uses `personGeneStatus === "affected"` when `variants.length === 2`, which flattens this nuance.
+- **Phase.** A screening report often does not state the phase of the two variants — whether they sit on the same parental copy (cis) or on different copies (trans). "Two variants" is only "affected" when they are in trans. This matters most for CFTR compound heterozygotes and for HbS with beta thal. The suggested wording below hedges accordingly; the clinician may want to add an explicit phase note.
 - Better wording keeps the fact (two variants on record) and defers the clinical meaning to the specialist.
 
 Suggested change:
-> Your result shows two variants on record for this condition. What this means clinically depends on which variants, and a specialist should review it with you.
+> Your result shows two variants on record for this condition. Whether both copies are affected depends on which variants and on whether they sit on different copies of the gene (phase). A specialist should review it with you.
+
+Also open as a separate decision: **should Sila show a two-variant result directly, with an offer of counselling, or hold it until a counsellor has made contact first?** See `panel-decisions.md` decision 7.
 
 ### `individual.uncertain`
 
@@ -162,6 +165,15 @@ Review:
 - `options.pregnancy_testing` is vague ("Testing during a future pregnancy"). Specific modalities (CVS, amniocentesis, NIPT) can be explained by the counsellor; adding them to this panel could dilute neutrality. Keep abstract unless the clinician asks for specifics.
 - `options.fertility_services` is vague ("Options available through fertility services"). Same reasoning; IVF with PGT-M should be named by a counsellor in context.
 - `options.continue_with_care` explicitly supports continuing without changing anything. Important for neutrality.
+- **Local context check needed on every option.** Each option must be checked against what is legal and available in the target country, and against its cultural and religious context. Pregnancy-related options in particular must not imply any particular course. A separate decision (panel-decisions.md decision 8) lists this for the clinician and the cultural reviewer.
+
+## Consanguinity (new, proposal only)
+
+- Many couples in the target context are related by family (for example, first cousins). For such couples the chance of a rare inherited condition that is not on the Sila panel is higher than for unrelated couples.
+- **Proposal, not approved.** Show every couple a short, non-personal explainer:
+  > If you are related to each other by family (for example, cousins), the chance of a rare inherited condition that is not on this panel is a little higher than for unrelated couples. A counsellor can talk this through with you.
+- No question is asked. No data is stored. The sentence is shown on the couple result for every couple, framed with a `SectionLabel: education` chip, worded so a couple who are not related feels neither accused nor highlighted.
+- See `panel-decisions.md` decision 7 for the wording, whether a figure should appear, and whether Sila should ever ask about relatedness (which would make it sensitive data and require its own `consent purpose`).
 
 ---
 

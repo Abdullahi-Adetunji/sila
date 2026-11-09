@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, isApiError } from "../../lib/api";
 import { ChildrenPicture } from "@/components/ChildrenPicture";
-import { T, conditionName, odds, phenotypeName, type Lang } from "@/lib/content";
+import { T, conditionName, phenotypeName, type Lang } from "@/lib/content";
 import type { ChildOutcome } from "@/lib/genetics/engine";
 import { getTemplate } from "@/content/templates";
 import { SectionLabel } from "../../components/SectionLabel";
@@ -150,14 +150,19 @@ function ReadyView({ view, lang }: { view: CoupleView; lang: Lang }) {
               </p>
             </div>
             {affected.map((o) => (
-              <p key={o.phenotype} className="mt-2 text-lg font-semibold leading-snug">
-                {lang === "en"
-                  ? `Each pregnancy has ${odds("en", o.quarters)} of a child with ${phenotypeName("en", o.phenotype!)}.`
-                  : `في كل حمل ${odds("ar", o.quarters)} أن يولد طفل مصاب ب${phenotypeName("ar", o.phenotype!)}.`}
-              </p>
+              <div key={o.phenotype} className="mt-2">
+                <p className="text-lg font-semibold leading-snug">
+                  {dualFramingFor(o.quarters, lang)}{" "}
+                  <span className="text-muted">
+                    ({phenotypeName(lang, o.phenotype!)})
+                  </span>
+                </p>
+              </div>
             ))}
             <ChildrenPicture outcomes={g.outcomes} lang={lang} />
-            <p className="mt-4 text-sm text-muted">{T.everyPregnancy[lang]}</p>
+            <p className="mt-4 text-sm text-ink">
+              {getTemplate("couple.independence").text[lang]}
+            </p>
           </section>
         );
       })}
@@ -256,6 +261,18 @@ function ReadyView({ view, lang }: { view: CoupleView; lang: Lang }) {
       )}
     </>
   );
+}
+
+function dualFramingFor(quarters: number, lang: Lang): string {
+  const id =
+    quarters === 1
+      ? "couple.chance.affected.1_in_4"
+      : quarters === 2
+        ? "couple.chance.affected.1_in_2"
+        : quarters === 3
+          ? "couple.chance.affected.3_in_4"
+          : "couple.chance.affected.every";
+  return getTemplate(id).text[lang];
 }
 
 function SharedBanner({

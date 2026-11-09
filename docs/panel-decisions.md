@@ -83,3 +83,60 @@ The couple view uses `couple.needs_review` when the engine's reasons include `pe
 
 - Vagueness is acceptable — **yes / no**.
 - If no, the clinician should propose wording that gives enough clinical signal without naming the partner.
+
+---
+
+## Decision 7. Consanguinity: shown wording, figure, and whether to ask
+
+**Why.** For couples related by family (for example, first cousins), the chance of a rare inherited condition not covered by this panel is higher than for unrelated couples. The panel cannot guarantee that risk is bounded by the panel alone.
+
+**Current build.** Nothing about consanguinity is shown.
+
+**Three sub-decisions for the clinician:**
+- A. **Wording.** Approve or edit this draft (`template id: consanguinity.explainer`, currently proposed in clinical-review-notes.md, not yet in the catalog):
+  > If you are related to each other by family (for example, cousins), the chance of a rare inherited condition that is not on this panel is a little higher than for unrelated couples. A counsellor can talk this through with you.
+- B. **Figure.** Keep qualitative (as drafted), or quote a number from a cited source for a specific population. If a number is wanted, the clinician names the population and the source.
+- C. **Whether to ask about relatedness at all.** Asking turns relatedness into sensitive personal data. If Sila ever asks, a new `consent purpose` ("consanguinity_data") would be added and the person could revoke, and the answer would never be shared with the partner without an explicit separate grant. Current proposal: do not ask. Show the explainer to every couple instead.
+
+**Clinician's call.** Mark A — approved/edited, B — qualitative/number, C — ask/don't ask.
+
+---
+
+## Decision 8. Disclosure of a possible condition in the person themselves
+
+**Why.** `individual.affected` runs when a person's own result shows two variants on record. Today the UI displays this directly on `/me`, with a note that a specialist should review. An alternative is to hold the result (show a short "your result needs specialist review" card instead of the full carrier/affected wording) until a counsellor has made contact.
+
+**Options.**
+- A. **Show directly with an offer of counselling** (status quo). The person sees `individual.affected` wording and a referral prompt.
+- B. **Hold until counsellor contact.** The `affected` branch renders a neutral "this result needs a specialist to walk you through it" card and a counsellor-access consent prompt, but no clinical detail, until a counsellor has acknowledged the case.
+
+**Clinician's call.** Mark A or B.
+
+---
+
+## Decision 9. Phase of two variants
+
+**Why.** A screening report often does not state whether two variants in the same gene sit on the same copy (cis) or on different copies (trans). "Two variants" is only "affected" when they are in trans. This matters most for CFTR compound heterozygotes and for HbS + beta thal.
+
+**Current build.** The engine treats `variants.length === 2` as `affected`. No phase information is stored.
+
+**Options.**
+- A. **Keep current behaviour**, and note the limitation in the `individual.affected` template (the suggested wording in clinical-review-notes.md already hedges on phase).
+- B. **Extend the vault schema** to record phase per variant pair when the lab report provides it. Would require a schema migration and clinician agreement on the labels (cis / trans / unknown).
+
+**Clinician's call.** Mark A or B.
+
+---
+
+## Decision 10. Local-context check on every option
+
+**Why.** Every option on `/options` must be checked against what is legal and available in the target country and against its cultural and religious context. Pregnancy-related options in particular must not imply any particular course.
+
+**Current options.**
+- `options.talk_counsellor` — universally available.
+- `options.confirm_test` — universally available.
+- `options.pregnancy_testing` — CVS and amniocentesis availability varies; NIPT not always offered.
+- `options.fertility_services` — IVF with PGT-M is legally and religiously sensitive in parts of the target context.
+- `options.continue_with_care` — universally available.
+
+**Clinician's and cultural reviewer's call.** For each of the five options, mark **keep / edit / remove** for the pilot setting. If any option is removed, we remove it from the catalog and the /options and /couple screens (both read from the templates, so it is one-file change).

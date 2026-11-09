@@ -311,6 +311,71 @@ export const TEMPLATES: Template[] = [
     text: { en: "Referral closed.", ar: "أُغلقت الإحالة." },
   }),
 
+  // ---------- Couple chance per pregnancy: dual framing + independence ----------
+  // Shown for every per-condition affected chance. The engine already returns
+  // the "affected" quarters; the templates below express it in both framings
+  // in each language so no one has to remember how to flip the fraction.
+  t({
+    id: "couple.chance.affected.1_in_4",
+    version: 1,
+    status: "draft",
+    approvedBy: null,
+    sectionLabel: "education",
+    note: "Dual framing for 1-in-4 (one quarter affected). Shown with a condition name.",
+    text: {
+      en: "Each pregnancy has a 1 in 4 chance a child is affected, and a 3 in 4 chance a child is not affected.",
+      ar: "في كل حمل احتمال 1 من 4 أن يكون الطفل مصاباً، واحتمال 3 من 4 أن لا يكون مصاباً.",
+    },
+  }),
+  t({
+    id: "couple.chance.affected.1_in_2",
+    version: 1,
+    status: "draft",
+    approvedBy: null,
+    sectionLabel: "education",
+    note: "Dual framing for 2-in-4.",
+    text: {
+      en: "Each pregnancy has a 1 in 2 chance a child is affected, and a 1 in 2 chance a child is not affected.",
+      ar: "في كل حمل احتمال 1 من 2 أن يكون الطفل مصاباً، واحتمال 1 من 2 أن لا يكون مصاباً.",
+    },
+  }),
+  t({
+    id: "couple.chance.affected.3_in_4",
+    version: 1,
+    status: "draft",
+    approvedBy: null,
+    sectionLabel: "education",
+    note: "Dual framing for 3-in-4.",
+    text: {
+      en: "Each pregnancy has a 3 in 4 chance a child is affected, and a 1 in 4 chance a child is not affected.",
+      ar: "في كل حمل احتمال 3 من 4 أن يكون الطفل مصاباً، واحتمال 1 من 4 أن لا يكون مصاباً.",
+    },
+  }),
+  t({
+    id: "couple.chance.affected.every",
+    version: 1,
+    status: "draft",
+    approvedBy: null,
+    sectionLabel: "education",
+    note: "Dual framing for 4-in-4 (certainty).",
+    text: {
+      en: "Every pregnancy has this chance of an affected child. This is the arithmetic of the two results; a specialist should walk you through it.",
+      ar: "لكل حمل هذا الاحتمال بإصابة الطفل. هذه هي الحسبة بين النتيجتين؛ ينبغي أن يرافقكما مختص.",
+    },
+  }),
+  t({
+    id: "couple.independence",
+    version: 1,
+    status: "draft",
+    approvedBy: null,
+    sectionLabel: "education",
+    note: "Independence-between-pregnancies note. Shown with every shared-risk framing.",
+    text: {
+      en: "The chance is the same in every pregnancy, whatever happened in earlier pregnancies. It does not mean one child in every four.",
+      ar: "الاحتمال نفسه في كل حمل، مهما كان ما حدث في الحمول السابقة. ولا يعني أن طفلاً واحداً من كل أربعة سيُصاب.",
+    },
+  }),
+
   // ---------- Relative sharing wording ----------
   t({
     id: "relative.share.explainer",
