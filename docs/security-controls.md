@@ -19,7 +19,7 @@ This is isolation by binding, not by network. The threat model notes it under re
 
 ### Liveness vs readiness
 
-- `GET /healthz` and `GET /api/healthz` are **liveness** checks: 200 if the process is accepting requests, no DB call. Render's health check and any external uptime monitor point here. That keeps Render awake without preventing Neon's free compute from auto-suspending.
+- `GET /health` and `GET /api/health` are **liveness** checks: 200 if the process is accepting requests, no DB call. Render's health check and any external uptime monitor point here. That keeps Render awake without preventing Neon's free compute from auto-suspending.
 - `GET /api/ready` is **readiness**: it runs `select 1` on the pool and returns 503 on failure. The verification scripts (attack suite, Playwright, screenshots) poll this after waking Render. Nothing else should.
 
 ## 3. Database access control

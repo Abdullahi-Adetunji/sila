@@ -81,12 +81,12 @@ export function createApp(): Express {
   // ping this. Keeping it DB-free matters because Neon's free compute
   // auto-suspends after ~5 minutes of inactivity; if the liveness check
   // touched the database, every ping would wake Neon and the compute would
-  // never sleep. start.sh also polls the loopback /healthz while deciding
+  // never sleep. start.sh also polls the loopback /health while deciding
   // whether to start Next.
-  app.get("/healthz", (_req, res) => {
+  app.get("/health", (_req, res) => {
     res.status(200).json({ ok: true });
   });
-  app.get("/api/healthz", (_req, res) => {
+  app.get("/api/health", (_req, res) => {
     res.status(200).json({ ok: true });
   });
   // Readiness: touches the DB with "select 1". Use this from the

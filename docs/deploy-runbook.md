@@ -122,13 +122,13 @@ curl -s -X POST -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: app
     "plan": "free",
     "env": "docker",
     "envSpecificDetails": { "dockerfilePath": "./Dockerfile" },
-    "healthCheckPath": "/api/healthz"
+    "healthCheckPath": "/api/health"
   }
 }
 JSON
 ```
 
-`/api/healthz` is liveness only (no DB call). An external uptime monitor that pings it every few minutes keeps Render awake without preventing Neon's free compute from auto-suspending. Use `/api/ready` (runs `select 1`) from the verification scripts only — never from Render's health check or from an uptime monitor, or Neon will never sleep.
+`/api/health` is liveness only (no DB call). An external uptime monitor that pings it every few minutes keeps Render awake without preventing Neon's free compute from auto-suspending. Use `/api/ready` (runs `select 1`) from the verification scripts only — never from Render's health check or from an uptime monitor, or Neon will never sleep.
 
 Save the returned `id` as `SERVICE_ID`. Then create a deploy hook and set the env vars.
 
@@ -181,7 +181,7 @@ The workflow will:
 - Install deps, run migrations as `sila_owner`, apply `grant-app.sql`.
 - POST the Render deploy hook; Render pulls the image and starts a build.
 
-Watch the build logs in Render until the service is `live` and `/api/healthz` returns 200. Cold first build takes ~5–10 minutes.
+Watch the build logs in Render until the service is `live` and `/api/health` returns 200. Cold first build takes ~5–10 minutes.
 
 ## 7. Seed the live database, once
 
@@ -205,7 +205,7 @@ Render's free service sleeps after 15 minutes of inactivity. Wake it before each
 export BASE_URL=https://<your-service>.onrender.com
 
 # Step 1: wake Render (liveness only, no DB — this does not wake Neon).
-i=0; until curl -fsS "$BASE_URL/api/healthz" >/dev/null 2>&1; do
+i=0; until curl -fsS "$BASE_URL/api/health" >/dev/null 2>&1; do
   i=$((i+1)); [ $i -ge 45 ] && echo "wake timeout" && exit 1; sleep 2
 done
 echo "render live"
