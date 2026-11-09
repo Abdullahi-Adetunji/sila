@@ -48,6 +48,14 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Audit runtime dependencies (fail on high/critical)
+        run: npm audit --audit-level=high --omit=dev
+
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --no-git --redact --exit-code=1 --source=.
+
       - name: Set up Sila roles + grants on the test Postgres
         run: |
           psql -h localhost -U postgres -d sila_test -f scripts/sql/setup-roles.sql
