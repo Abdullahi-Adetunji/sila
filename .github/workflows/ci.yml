@@ -8,6 +8,7 @@ on:
 
 jobs:
   check:
+    name: lint + typecheck + test
     runs-on: ubuntu-latest
 
     services:
@@ -36,7 +37,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: npm
 
       - name: Install dependencies
@@ -70,3 +71,23 @@ jobs:
           SILA_PG_ADMIN_URL: postgres://sila_owner:owner_pw@localhost:5432/sila_test
           SILA_PG_APP_URL: postgres://sila_app:app_pw@localhost:5432/sila_test
         run: npm test
+
+  docker:
+    name: docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the Sila runtime image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          load: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: sila:ci

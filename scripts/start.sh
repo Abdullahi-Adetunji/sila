@@ -29,7 +29,7 @@ while [ "$i" -lt 30 ]; do
     echo "[start] api exited before coming up; aborting"
     exit 1
   fi
-  if wget -q -O - "http://${SILA_API_HOST}:${SILA_API_PORT}/healthz" >/dev/null 2>&1; then
+  if node -e "require('http').get('http://${SILA_API_HOST}:${SILA_API_PORT}/healthz', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))" >/dev/null 2>&1; then
     echo "[start] api is up"
     break
   fi

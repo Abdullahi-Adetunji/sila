@@ -23,25 +23,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Verify CI is green for this ref
+      - name: Verify CI is green for this ref (all jobs incl. docker build)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           sha="${GITHUB_SHA}"
           echo "Looking up CI workflow runs for $sha"
-          conclusion=$(gh api \
+          run=$(gh api \
             "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${sha}" \
-            --jq '.workflow_runs[0].conclusion // ""')
-          echo "CI conclusion on ${sha}: ${conclusion:-<none>}"
-          if [ "$conclusion" != "success" ]; then
-            echo "Refusing to deploy: no successful CI run for this ref."
+            --jq '.workflow_runs[0] | {id: .id, conclusion: .conclusion}')
+          conclusion=$(echo "$run" | jq -r '.conclusion // ""')
+          run_id=$(echo "$run" | jq -r '.id // ""')
+          echo "CI run for ${sha}: id=${run_id:-<none>} conclusion=${conclusion:-<none>}"
+          if [ "$conclusion" != "success" ] || [ -z "$run_id" ]; then
+            echo "Refusing to deploy: CI is not success for this ref."
             exit 1
           fi
+          # Double-check: every job inside that run must have conclusion=success.
+          # (ci.yml has two jobs: "lint + typecheck + test" and "docker build".)
+          mapfile -t bad < <(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs" \
+            --jq '.jobs[] | select(.conclusion != "success") | .name')
+          if [ "${#bad[@]}" -gt 0 ]; then
+            echo "Refusing to deploy: some CI jobs did not succeed: ${bad[*]}"
+            exit 1
+          fi
+          echo "All CI jobs green for ${sha}."
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: npm
 
       - name: Install dependencies
