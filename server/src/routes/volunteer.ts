@@ -16,6 +16,7 @@ import {
   responsesFor,
   syntheticCoupleView,
 } from "../services/quiz";
+import { recordTtrEvent } from "../services/ttr";
 
 const router: Router = Router();
 
@@ -159,6 +160,29 @@ router.get("/quiz/progress", async (req: Request, res: Response) => {
   }
   const [before, after] = await Promise.all([responsesFor(v.id, "before"), responsesFor(v.id, "after")]);
   res.json({ beforeAnswered: before.length, afterAnswered: after.length });
+});
+
+const ttrSchema = z.object({
+  kind: z.enum(["opened_result", "opened_referral_form", "submitted_referral"]),
+});
+
+router.post("/ttr", async (req: Request, res: Response) => {
+  const v = await fromHeader(req);
+  if (!v) {
+    res.status(401).json({ error: "unknown or withdrawn code" });
+    return;
+  }
+  if (!v.consentedAt) {
+    res.status(403).json({ error: "consent_required" });
+    return;
+  }
+  const parsed = ttrSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "invalid request" });
+    return;
+  }
+  await recordTtrEvent(v.id, parsed.data.kind);
+  res.status(204).send();
 });
 
 router.get("/couple-view", async (req: Request, res: Response) => {

@@ -438,10 +438,33 @@ function CoupleResultView({
   onContinue: () => void;
 }) {
   const [view, setView] = useState<CoupleView | null>(null);
+  const [refStage, setRefStage] = useState<"none" | "form" | "submitted">("none");
 
   useEffect(() => {
-    volunteerFetch<CoupleView>("/api/volunteer/couple-view", volunteer.id).then(setView);
+    volunteerFetch<CoupleView>("/api/volunteer/couple-view", volunteer.id).then((v) => {
+      setView(v);
+      void volunteerFetch("/api/volunteer/ttr", volunteer.id, {
+        method: "POST",
+        body: JSON.stringify({ kind: "opened_result" }),
+      }).catch(() => {});
+    });
   }, [volunteer.id]);
+
+  async function openReferralForm() {
+    setRefStage("form");
+    await volunteerFetch("/api/volunteer/ttr", volunteer.id, {
+      method: "POST",
+      body: JSON.stringify({ kind: "opened_referral_form" }),
+    }).catch(() => {});
+  }
+
+  async function submitReferral() {
+    await volunteerFetch("/api/volunteer/ttr", volunteer.id, {
+      method: "POST",
+      body: JSON.stringify({ kind: "submitted_referral" }),
+    }).catch(() => {});
+    setRefStage("submitted");
+  }
 
   if (!view)
     return (
@@ -513,6 +536,34 @@ function CoupleResultView({
       <section className="mt-6 rounded-2xl bg-teal-soft p-5">
         <SectionLabel section={routeTmpl.sectionLabel} lang={lang} />
         <p className="mt-2 text-base font-medium">{routeTmpl.text[lang]}</p>
+        {view.route !== "information" && refStage === "none" && (
+          <button
+            onClick={openReferralForm}
+            className="mt-4 rounded-full bg-teal px-4 py-2 text-xs font-medium text-white"
+          >
+            {lang === "en" ? "Request a counsellor" : "طلب استشارة من مرشد"}
+          </button>
+        )}
+        {view.route !== "information" && refStage === "form" && (
+          <div className="mt-4 rounded-xl border border-line bg-surface p-3 text-sm">
+            <p>
+              {lang === "en"
+                ? "Submit a referral request. (In this prototype, submission only records the time-to-referral milestone.)"
+                : "أرسل طلب إحالة. (في هذا النموذج الأولي، الإرسال يسجّل زمن الوصول إلى الإحالة فقط.)"}
+            </p>
+            <button
+              onClick={submitReferral}
+              className="mt-3 rounded-full bg-teal px-4 py-2 text-xs font-medium text-white"
+            >
+              {lang === "en" ? "Submit referral" : "إرسال الإحالة"}
+            </button>
+          </div>
+        )}
+        {refStage === "submitted" && (
+          <p className="mt-4 rounded-xl border border-teal bg-teal-soft p-3 text-sm">
+            {lang === "en" ? "Referral submitted." : "تم إرسال الإحالة."}
+          </p>
+        )}
       </section>
 
       <button
