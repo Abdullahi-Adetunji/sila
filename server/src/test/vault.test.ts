@@ -81,10 +81,20 @@ describe("vault service", () => {
     const person = await makeUser("tamp@example.com");
     const lab = await makeUser("labt@example.com", "lab");
     await storeResults(person, lab, SAMPLE);
-    // Flip a byte in the middle of the ciphertext.
+    // Flip a base64url character in the middle of the ciphertext. Pick a
+    // replacement that is guaranteed to differ from whatever is at that
+    // position — otherwise the overlay is a no-op and the decrypt
+    // (correctly) succeeds, making the test a 1-in-64 flake per run.
+    const before = (
+      await handle.query<{ ciphertext: string }>(
+        "select ciphertext from vault_results where user_id = $1",
+        [person],
+      )
+    ).rows[0].ciphertext;
+    const replacement = before.charAt(19) === "A" ? "B" : "A";
     await handle.query(
-      "update vault_results set ciphertext = overlay(ciphertext placing 'A' from 20 for 1) where user_id = $1",
-      [person],
+      "update vault_results set ciphertext = overlay(ciphertext placing $1 from 20 for 1) where user_id = $2",
+      [replacement, person],
     );
     await expect(readResults(person)).rejects.toThrow();
   });
