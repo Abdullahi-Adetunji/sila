@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type Express, type Router } from "express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import authRouter from "./routes/auth";
@@ -15,25 +15,34 @@ import referralsRouter from "./routes/referrals";
 import volunteerRouter from "./routes/volunteer";
 import evaluatorRouter from "./routes/evaluator";
 
+// The mount list is exported so the route-inventory test can enumerate
+// every route with its true mount prefix. Add new routers here, not with
+// a loose app.use() call.
+export const MOUNTS: ReadonlyArray<{ prefix: string; router: Router }> = [
+  { prefix: "/api/auth", router: authRouter },
+  { prefix: "/api/me", router: meRouter },
+  { prefix: "/api/partner", router: partnerRouter },
+  { prefix: "/api/consent", router: consentRouter },
+  { prefix: "/api/couple", router: coupleRouter },
+  { prefix: "/api/me", router: auditRouter },
+  { prefix: "/api/counsellor", router: counsellorRouter },
+  { prefix: "/api/demo", router: demoRouter },
+  { prefix: "/api/dev", router: devRouter },
+  { prefix: "/api/relatives", router: relativesRouter },
+  { prefix: "/api/referrals", router: referralsRouter },
+  { prefix: "/api/volunteer", router: volunteerRouter },
+  { prefix: "/api/evaluator", router: evaluatorRouter },
+];
+
 export function createApp(): Express {
   const app = express();
   app.set("trust proxy", 1);
   app.use(helmet());
   app.use(express.json({ limit: "32kb" }));
   app.use(cookieParser());
-  app.use("/api/auth", authRouter);
-  app.use("/api/me", meRouter);
-  app.use("/api/partner", partnerRouter);
-  app.use("/api/consent", consentRouter);
-  app.use("/api/couple", coupleRouter);
-  app.use("/api/me", auditRouter);
-  app.use("/api/counsellor", counsellorRouter);
-  app.use("/api/demo", demoRouter);
-  app.use("/api/dev", devRouter);
-  app.use("/api/relatives", relativesRouter);
-  app.use("/api/referrals", referralsRouter);
-  app.use("/api/volunteer", volunteerRouter);
-  app.use("/api/evaluator", evaluatorRouter);
+  for (const m of MOUNTS) {
+    app.use(m.prefix, m.router);
+  }
   app.use((_req, res) => {
     res.status(404).json({ error: "not found" });
   });
