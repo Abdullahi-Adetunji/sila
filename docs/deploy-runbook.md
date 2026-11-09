@@ -128,6 +128,8 @@ curl -s -X POST -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: app
 JSON
 ```
 
+`/api/healthz` is liveness only (no DB call). An external uptime monitor that pings it every few minutes keeps Render awake without preventing Neon's free compute from auto-suspending. Use `/api/ready` (runs `select 1`) from the verification scripts only — never from Render's health check or from an uptime monitor, or Neon will never sleep.
+
 Save the returned `id` as `SERVICE_ID`. Then create a deploy hook and set the env vars.
 
 ```sh
@@ -201,11 +203,20 @@ Render's free service sleeps after 15 minutes of inactivity. Wake it before each
 
 ```sh
 export BASE_URL=https://<your-service>.onrender.com
-# Waking takes 20–40 seconds. Poll up to 90s.
+
+# Step 1: wake Render (liveness only, no DB — this does not wake Neon).
 i=0; until curl -fsS "$BASE_URL/api/healthz" >/dev/null 2>&1; do
   i=$((i+1)); [ $i -ge 45 ] && echo "wake timeout" && exit 1; sleep 2
 done
-echo "live"
+echo "render live"
+
+# Step 2: wake Neon for the test run (readiness — runs select 1 on the DB).
+# Do this before the attack / Playwright run, because those will exercise
+# the database and a cold Neon would make the first calls time out.
+i=0; until curl -fsS "$BASE_URL/api/ready" >/dev/null 2>&1; do
+  i=$((i+1)); [ $i -ge 30 ] && echo "ready timeout" && exit 1; sleep 2
+done
+echo "db ready"
 
 # Black-box attack suite (demo-mode-on profile).
 SILA_EXPECT_DEMO_MODE=true BASE_URL="$BASE_URL" npm run attack

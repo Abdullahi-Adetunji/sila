@@ -1,6 +1,7 @@
 import express, { type Express, type Router } from "express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import { pool } from "./db/client";
 import authRouter from "./routes/auth";
 import meRouter from "./routes/me";
 import partnerRouter from "./routes/partner";
@@ -76,14 +77,29 @@ export function createApp(): Express {
 
   app.use(express.json({ limit: "32kb" }));
   app.use(cookieParser());
-  // Health endpoints served without any DB access. Render polls /api/healthz
-  // from the public internet via the Next.js rewrite; start.sh polls the bare
-  // /healthz on the loopback address while deciding whether to start Next.
+  // Liveness: no DB. Render's health check and any external uptime monitor
+  // ping this. Keeping it DB-free matters because Neon's free compute
+  // auto-suspends after ~5 minutes of inactivity; if the liveness check
+  // touched the database, every ping would wake Neon and the compute would
+  // never sleep. start.sh also polls the loopback /healthz while deciding
+  // whether to start Next.
   app.get("/healthz", (_req, res) => {
     res.status(200).json({ ok: true });
   });
   app.get("/api/healthz", (_req, res) => {
     res.status(200).json({ ok: true });
+  });
+  // Readiness: touches the DB with "select 1". Use this from the
+  // verification scripts after a deploy, not from Render's health check and
+  // not from an uptime monitor — doing so would prevent Neon from
+  // suspending and defeat the point of the free tier.
+  app.get("/api/ready", async (_req, res) => {
+    try {
+      await pool.query("select 1");
+      res.status(200).json({ ready: true });
+    } catch {
+      res.status(503).json({ ready: false });
+    }
   });
   for (const m of MOUNTS) {
     app.use(m.prefix, m.router);

@@ -17,6 +17,11 @@ Render's free plan runs one container per service. Sila's image runs two Node pr
 
 This is isolation by binding, not by network. The threat model notes it under residual risks: a process-level compromise inside the container reaches both.
 
+### Liveness vs readiness
+
+- `GET /healthz` and `GET /api/healthz` are **liveness** checks: 200 if the process is accepting requests, no DB call. Render's health check and any external uptime monitor point here. That keeps Render awake without preventing Neon's free compute from auto-suspending.
+- `GET /api/ready` is **readiness**: it runs `select 1` on the pool and returns 503 on failure. The verification scripts (attack suite, Playwright, screenshots) poll this after waking Render. Nothing else should.
+
 ## 3. Database access control
 
 - Two Postgres roles: `sila_owner` owns the schema and runs migrations; `sila_app` is the runtime. `sila_app` has `SELECT` + `INSERT` only on `audit_log`, full CRUD on the data tables, and owns nothing. CI runs the real role tests against Postgres 16 (`server/src/test/roles.test.ts`, 7 tests, skipped locally under PGLite).
