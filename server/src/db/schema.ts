@@ -144,6 +144,89 @@ export const relatives = pgTable(
   (t) => [index("relatives_person_idx").on(t.personId)],
 );
 
+export const volunteerLanguageEnum = pgEnum("volunteer_language", ["en", "ar"]);
+export const readingBandEnum = pgEnum("reading_band", ["low", "medium", "high", "unknown"]);
+export const formOrderEnum = pgEnum("form_order", ["AB", "BA"]);
+
+// Volunteers are anonymous. No name, no email, no genetic data. The row holds
+// only enough to counterbalance forms and segment the evaluation.
+export const volunteers = pgTable(
+  "volunteers",
+  {
+    id: text("id").primaryKey(), // participant code
+    language: volunteerLanguageEnum("language").notNull(),
+    readingBand: readingBandEnum("reading_band").notNull().default("unknown"),
+    formOrder: formOrderEnum("form_order").notNull(),
+    coupleId: text("couple_id").notNull(),
+    startedAt: text("started_at").notNull(),
+    consentedAt: text("consented_at"),
+    completedAt: text("completed_at"),
+    withdrawnAt: text("withdrawn_at"),
+  },
+  (t) => [index("volunteers_started_idx").on(t.startedAt)],
+);
+
+export const quizPhaseEnum = pgEnum("quiz_phase", ["before", "after"]);
+export const quizFormEnum = pgEnum("quiz_form", ["A", "B"]);
+
+export const quizResponses = pgTable(
+  "quiz_responses",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    volunteerId: text("volunteer_id")
+      .notNull()
+      .references(() => volunteers.id, { onDelete: "cascade" }),
+    phase: quizPhaseEnum("phase").notNull(),
+    form: quizFormEnum("form").notNull(),
+    itemId: text("item_id").notNull(),
+    answer: text("answer").notNull(),
+    correct: integer("correct").notNull(), // 0 or 1
+    answeredAt: text("answered_at").notNull(),
+  },
+  (t) => [
+    index("quiz_responses_volunteer_idx").on(t.volunteerId),
+    uniqueIndex("quiz_responses_unique").on(t.volunteerId, t.phase, t.itemId),
+  ],
+);
+
+export const ttrKindEnum = pgEnum("ttr_kind", [
+  "opened_result",
+  "opened_referral_form",
+  "submitted_referral",
+]);
+
+// Time-to-referral milestones. Written only during real volunteer sessions.
+export const timeToReferralEvents = pgTable(
+  "time_to_referral_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    volunteerId: text("volunteer_id")
+      .notNull()
+      .references(() => volunteers.id, { onDelete: "cascade" }),
+    kind: ttrKindEnum("kind").notNull(),
+    at: text("at").notNull(),
+  },
+  (t) => [index("ttr_volunteer_idx").on(t.volunteerId)],
+);
+
+export const privacyReportRuns = pgTable("privacy_report_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  startedAt: text("started_at").notNull(),
+  endedAt: text("ended_at").notNull(),
+  passed: integer("passed").notNull(),
+  failed: integer("failed").notNull(),
+  summary: jsonb("summary"),
+});
+
+export const clinicianImportRuns = pgTable("clinician_import_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  ranAt: text("ran_at").notNull(),
+  rowsImported: integer("rows_imported").notNull(),
+  riskAccuracyPct: integer("risk_accuracy_pct"),
+  escalationAccuracyPct: integer("escalation_accuracy_pct"),
+  mismatches: jsonb("mismatches"),
+});
+
 export const referralPriorityEnum = pgEnum("referral_priority", [
   "information",
   "counsellor",

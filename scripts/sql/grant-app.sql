@@ -15,7 +15,12 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE
   consents,
   relatives,
   referrals,
-  referral_steps
+  referral_steps,
+  volunteers,
+  quiz_responses,
+  time_to_referral_events,
+  privacy_report_runs,
+  clinician_import_runs
 TO sila_app;
 
 -- The audit log is append-only even for the app itself.
