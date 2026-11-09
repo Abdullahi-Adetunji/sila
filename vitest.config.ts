@@ -19,5 +19,7 @@ export default defineConfig({
     },
     testTimeout: 20_000,
     hookTimeout: 30_000,
+    // Playwright specs live under tests/e2e and run with `npm run test:e2e`.
+    exclude: ["node_modules/**", ".next/**", "tests/e2e/**"],
   },
 });

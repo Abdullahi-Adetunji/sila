@@ -19,7 +19,9 @@
     "review:export": "tsx scripts/review-export.ts",
     "clinician:import": "tsx --env-file-if-exists=.env scripts/clinician-import.ts",
     "attack": "tsx attack/index.ts",
-    "kek:rotate": "tsx --env-file-if-exists=.env scripts/kek-rotate.ts"
+    "kek:rotate": "tsx --env-file-if-exists=.env scripts/kek-rotate.ts",
+    "test:e2e": "playwright test",
+    "screenshots": "tsx scripts/screenshots.ts"
   },
   "dependencies": {
     "argon2": "^0.45.2",
@@ -37,6 +39,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.15",
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/postcss": "^4",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
