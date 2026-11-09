@@ -54,8 +54,11 @@ cleanup() {
 trap cleanup TERM INT
 
 # Wait for either child to exit, then tear the other down and exit non-zero
-# so Render restarts the container.
-wait -n "${API_PID}" "${WEB_PID}" || true
+# so Render restarts the container. Dash (the /bin/sh on bookworm-slim) has
+# no `wait -n`, so poll both pids with kill -0 instead.
+while kill -0 "${API_PID}" 2>/dev/null && kill -0 "${WEB_PID}" 2>/dev/null; do
+  sleep 2
+done
 echo "[start] one process exited; stopping the other"
 cleanup
 exit 1
