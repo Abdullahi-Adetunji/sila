@@ -88,4 +88,20 @@ describe("vault service", () => {
     );
     await expect(readResults(person)).rejects.toThrow();
   });
+
+  it("a ciphertext moved to another person's vault row fails to decrypt (AAD binding)", async () => {
+    const victim = await makeUser("victim@example.com");
+    const attacker = await makeUser("attacker@example.com");
+    const lab = await makeUser("labm@example.com", "lab");
+    await storeResults(victim, lab, SAMPLE);
+    await storeResults(attacker, lab, SAMPLE);
+    // Take the victim's ciphertext and splat it onto the attacker's row.
+    // The AAD is bound to person_id and record_id and payload_version, so
+    // decryption as the attacker must fail.
+    await handle.query(
+      "update vault_results set ciphertext = (select ciphertext from vault_results where user_id = $1) where user_id = $2",
+      [victim, attacker],
+    );
+    await expect(readResults(attacker)).rejects.toThrow();
+  });
 });
