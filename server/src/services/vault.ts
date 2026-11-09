@@ -10,7 +10,7 @@ import {
   unwrapDataKey,
   wrapDataKey,
 } from "../lib/crypto";
-import type { GeneResult } from "@/lib/genetics/engine";
+import type { GeneResult } from "../../../src/lib/genetics/engine";
 
 export type ResultsByGene = Record<string, GeneResult>;
 export const PAYLOAD_VERSION = 1;

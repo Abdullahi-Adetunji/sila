@@ -4,7 +4,7 @@ import { sql, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/client";
 import { users } from "../db/schema";
-import { hashPassword, verifyPassword } from "../lib/password";
+import { hashPassword, needsRehash, verifyPassword } from "../lib/password";
 import { SESSION_COOKIE, SESSION_TTL_MS, createSession, deleteSession } from "../lib/session";
 import { requireSession } from "../middleware/requireSession";
 
@@ -93,6 +93,17 @@ router.post("/login", loginLimiter, async (req: Request, res: Response) => {
   if (!ok || !row) {
     res.status(401).json({ error: "invalid email or password" });
     return;
+  }
+  // Transparent rehash on login when the stored hash uses parameters that
+  // differ from the current ARGON2_OPTIONS. Failure to update is tolerated:
+  // the login itself succeeded, and the next login will try again.
+  if (await needsRehash(row.passwordHash)) {
+    try {
+      const upgraded = await hashPassword(password);
+      await db.update(users).set({ passwordHash: upgraded }).where(eq(users.id, row.id));
+    } catch (e) {
+      console.error("password rehash failed", e);
+    }
   }
   const session = await createSession(row.id);
   res

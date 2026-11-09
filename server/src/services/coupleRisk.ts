@@ -2,8 +2,8 @@ import {
   assessCouple,
   type ChildOutcome,
   type PersonResult,
-} from "@/lib/genetics/engine";
-import { PANEL, type Bilingual } from "@/lib/genetics/panel";
+} from "../../../src/lib/genetics/engine";
+import { PANEL, type Bilingual } from "../../../src/lib/genetics/panel";
 import { readResults } from "./vault";
 
 export type CoupleRouteLabel = "information" | "counsellor" | "counsellor_priority";

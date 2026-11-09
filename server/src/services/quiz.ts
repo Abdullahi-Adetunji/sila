@@ -1,23 +1,21 @@
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { and, eq } from "drizzle-orm";
 import { db } from "../db/client";
 import { quizResponses } from "../db/schema";
-import { allQuizItems, getQuizItem } from "@/content/quiz";
-import type { QuizItem } from "@/content/quiz";
+import { allQuizItems, getQuizItem } from "../../../src/content/quiz";
+import type { QuizItem } from "../../../src/content/quiz";
 import type { Volunteer } from "./volunteer";
 import {
   assessCouple,
   type PersonResult,
-} from "@/lib/genetics/engine";
+} from "../../../src/lib/genetics/engine";
 import type { ResultsByGene } from "./vault";
+import { dataPath } from "../lib/paths";
 
 type Phase = "before" | "after";
 type Form = "A" | "B";
 
-const here = dirname(fileURLToPath(import.meta.url));
-const couplesJsonPath = resolve(here, "../../../data/synthetic/couples.json");
+const couplesJsonPath = dataPath("synthetic", "couples.json");
 
 interface SyntheticCouple {
   coupleId: string;

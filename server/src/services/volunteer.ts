@@ -1,14 +1,12 @@
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { eq } from "drizzle-orm";
 import { db } from "../db/client";
 import { volunteers, quizResponses, timeToReferralEvents } from "../db/schema";
 import { newParticipantCode } from "../lib/participantCode";
 import { volunteerHmac } from "../lib/volunteerHmac";
+import { dataPath } from "../lib/paths";
 
-const here = dirname(fileURLToPath(import.meta.url));
-const couplesJsonPath = resolve(here, "../../../data/synthetic/couples.json");
+const couplesJsonPath = dataPath("synthetic", "couples.json");
 
 let COUPLE_IDS: string[] | null = null;
 function coupleIds(): string[] {

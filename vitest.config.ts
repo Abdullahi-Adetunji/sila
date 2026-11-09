@@ -15,6 +15,7 @@ export default defineConfig({
       // 32 bytes of zeros, base64url-encoded (43 chars). Test-only.
       SILA_KEK: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
       SESSION_SECRET: "test_session_secret_" + "x".repeat(32),
+      VOLUNTEER_HMAC_KEY: "test_volunteer_hmac_" + "y".repeat(32),
       NODE_ENV: "test",
     },
     testTimeout: 20_000,

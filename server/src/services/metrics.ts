@@ -1,6 +1,4 @@
 import { readFileSync, existsSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { desc, eq } from "drizzle-orm";
 import { db } from "../db/client";
 import {
@@ -9,12 +7,12 @@ import {
   timeToReferralEvents,
   volunteers,
 } from "../db/schema";
+import { dataPath } from "../lib/paths";
 
 const MIN_GROUP = 5;
 
-const here = dirname(fileURLToPath(import.meta.url));
-const privacyReportPath = resolve(here, "../../../data/review/privacy_report.json");
-const attackReportPath = resolve(here, "../../../data/review/attack_report.json");
+const privacyReportPath = dataPath("review", "privacy_report.json");
+const attackReportPath = dataPath("review", "attack_report.json");
 
 export type Language = "en" | "ar";
 export type ReadingBand = "low" | "medium" | "high" | "unknown";

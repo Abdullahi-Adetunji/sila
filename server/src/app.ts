@@ -33,7 +33,14 @@ export const MOUNTS: ReadonlyArray<{ prefix: string; router: Router }> = [
 
 export function createApp(): Express {
   const app = express();
-  app.set("trust proxy", 1);
+  // Hops in front of Express in production:
+  //   1. Render's edge proxy (adds X-Forwarded-For).
+  //   2. Next.js running in the same container (rewrites /api/* to localhost).
+  // Setting the exact number means req.ip is the real client IP from XFF,
+  // not 127.0.0.1 (which would key every rate-limited action to one bucket
+  // and let one bad actor lock everyone out). Keep this in sync with the
+  // deployment topology; the rateLimit test asserts the behaviour.
+  app.set("trust proxy", 2);
 
   // Hardened security headers. CSP for the API responses is strict by default
   // because the API only ever returns JSON. The Next.js app sets its own
@@ -69,6 +76,15 @@ export function createApp(): Express {
 
   app.use(express.json({ limit: "32kb" }));
   app.use(cookieParser());
+  // Health endpoints served without any DB access. Render polls /api/healthz
+  // from the public internet via the Next.js rewrite; start.sh polls the bare
+  // /healthz on the loopback address while deciding whether to start Next.
+  app.get("/healthz", (_req, res) => {
+    res.status(200).json({ ok: true });
+  });
+  app.get("/api/healthz", (_req, res) => {
+    res.status(200).json({ ok: true });
+  });
   for (const m of MOUNTS) {
     app.use(m.prefix, m.router);
   }

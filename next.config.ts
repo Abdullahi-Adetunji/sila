@@ -38,7 +38,8 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
-  // Required for the Dockerfile.web multi-stage build on Fly.io.
+  // Required for the single-container Render image: Next.js serves itself
+  // from /app/web/server.js and the trimmed node_modules Next copies in.
   output: "standalone",
   async rewrites() {
     return [
