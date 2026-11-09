@@ -20,7 +20,7 @@ PORT="${SILA_API_PORT}" HOST="${SILA_API_HOST}" \
 API_PID=$!
 echo "[start] api pid=${API_PID}"
 
-# Wait for the API to come up before starting Next, so the first /health is
+# Wait for the API to come up before starting Next, so the first /healthz is
 # correct. 30 x 1s is plenty; the production startup check runs during this
 # window and will exit non-zero if the DB role is wrong.
 i=0
@@ -29,7 +29,7 @@ while [ "$i" -lt 30 ]; do
     echo "[start] api exited before coming up; aborting"
     exit 1
   fi
-  if wget -q -O - "http://${SILA_API_HOST}:${SILA_API_PORT}/health" >/dev/null 2>&1; then
+  if wget -q -O - "http://${SILA_API_HOST}:${SILA_API_PORT}/healthz" >/dev/null 2>&1; then
     echo "[start] api is up"
     break
   fi

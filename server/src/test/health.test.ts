@@ -10,19 +10,19 @@ beforeAll(async () => {
 });
 
 describe("liveness vs readiness", () => {
-  it("/health returns 200 without touching the database", async () => {
-    const res = await request(app).get("/health");
+  it("/healthz returns 200 without touching the database", async () => {
+    const res = await request(app).get("/healthz");
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ ok: true });
   });
 
-  it("/api/health returns 200 without touching the database", async () => {
-    const res = await request(app).get("/api/health");
+  it("/api/healthz returns 200 without touching the database", async () => {
+    const res = await request(app).get("/api/healthz");
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ ok: true });
   });
 
-  it("/api/ready is a separate route from /api/health (readiness runs select 1)", async () => {
+  it("/api/ready is a separate route from /api/healthz (readiness runs select 1)", async () => {
     // /api/ready hits the pool and returns 503 if the pool cannot reach a
     // server. In tests the pool points at a fake DATABASE_URL, so 503 is
     // the expected outcome. The point of this test is that readiness is a
