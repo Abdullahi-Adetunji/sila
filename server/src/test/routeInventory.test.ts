@@ -1,10 +1,12 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Router } from "express";
 import { MOUNTS } from "../app";
+import { ROUTE_POLICY, isPolicyRequired } from "../routePolicy";
 
-// Every route must either sit behind requireSession (which lets a downstream
-// authorize() decide) OR appear on the PUBLIC_ALLOWLIST here with a one-line
-// reason. Adding a new route that is neither will fail the suite.
+// Every mounted route must appear in ROUTE_POLICY. Routes that read or
+// write person/couple/referral/relative/consent data must carry a
+// policy action (kind: "policy"). The map is also the single source of
+// the public allowlist — if a route is kind: "public" it is public.
 
 interface InventoryEntry {
   method: string;
@@ -29,12 +31,9 @@ function enumerateRouter(router: Router, prefix: string, out: InventoryEntry[]):
     const handlers = layer.route.stack.map((h) => h.handle?.name ?? h.name ?? "");
     const gated = handlers.includes("requireSession");
     for (const method of methods) {
-      // Normalise paths: strip the trailing '/' that comes from a router
-      // mounted on "/api/x" with a route at "/", so the combined path is
-      // written as "/api/x" (not "/api/x/").
-      let fullPath = `${prefix}${layer.route.path}`;
-      if (fullPath.length > 1 && fullPath.endsWith("/")) fullPath = fullPath.slice(0, -1);
-      out.push({ method: method.toUpperCase(), path: fullPath, gated, handlers });
+      let full = `${prefix}${layer.route.path}`;
+      if (full.length > 1 && full.endsWith("/")) full = full.slice(0, -1);
+      out.push({ method: method.toUpperCase(), path: full, gated, handlers });
     }
   }
 }
@@ -45,27 +44,6 @@ function enumerate(): InventoryEntry[] {
   return out;
 }
 
-const PUBLIC_ALLOWLIST: Array<{ method: string; path: string; reason: string }> = [
-  { method: "POST", path: "/api/auth/signup", reason: "account creation entry point" },
-  { method: "POST", path: "/api/auth/login", reason: "rate-limited login entry point" },
-
-  // Volunteer flow is anonymous; the code is authenticated by the
-  // x-volunteer-code header inside the route (fromHeader + HMAC lookup).
-  { method: "POST", path: "/api/volunteer/join", reason: "anonymous study join" },
-  { method: "GET", path: "/api/volunteer/me", reason: "code-authenticated via header" },
-  { method: "POST", path: "/api/volunteer/consent", reason: "code-authenticated via header" },
-  { method: "POST", path: "/api/volunteer/complete", reason: "code-authenticated via header" },
-  { method: "POST", path: "/api/volunteer/withdraw", reason: "code-authenticated via header" },
-  { method: "GET", path: "/api/volunteer/quiz", reason: "code-authenticated via header" },
-  { method: "POST", path: "/api/volunteer/quiz/response", reason: "code-authenticated via header" },
-  { method: "GET", path: "/api/volunteer/quiz/progress", reason: "code-authenticated via header" },
-  { method: "POST", path: "/api/volunteer/ttr", reason: "code-authenticated via header" },
-  { method: "GET", path: "/api/volunteer/couple-view", reason: "code-authenticated via header" },
-
-  { method: "GET", path: "/api/demo/config", reason: "public feature-flag check" },
-  { method: "POST", path: "/api/demo/login", reason: "DEMO_PASSWORD-authenticated; 404 unless DEMO_MODE" },
-];
-
 describe("route inventory", () => {
   let routes: InventoryEntry[];
 
@@ -73,38 +51,62 @@ describe("route inventory", () => {
     routes = enumerate();
   });
 
-  it("every route is either gated by requireSession or on the public allowlist", () => {
-    const allowed = new Set(PUBLIC_ALLOWLIST.map((e) => `${e.method} ${e.path}`));
-    const missing = routes
-      .filter((r) => !r.gated && !allowed.has(`${r.method} ${r.path}`))
-      .map((r) => `${r.method} ${r.path}`);
-    expect(missing, `uncovered routes (add requireSession or allowlist them): ${missing.join(", ")}`).toEqual([]);
+  it("every mounted route has an entry in ROUTE_POLICY", () => {
+    const missing: string[] = [];
+    for (const r of routes) {
+      const key = `${r.method} ${r.path}`;
+      if (!(key in ROUTE_POLICY)) missing.push(key);
+    }
+    expect(missing, `routes missing from ROUTE_POLICY: ${missing.join(", ")}`).toEqual([]);
   });
 
-  it("no public-allowlist entry names a route that does not exist (prevents dead allowlisting)", () => {
+  it("no ROUTE_POLICY entry names a route that no longer exists", () => {
     const seen = new Set(routes.map((r) => `${r.method} ${r.path}`));
     const dead: string[] = [];
-    for (const entry of PUBLIC_ALLOWLIST) {
-      const key = `${entry.method} ${entry.path}`;
+    for (const key of Object.keys(ROUTE_POLICY)) {
       if (!seen.has(key)) dead.push(key);
     }
-    expect(dead, `stale allowlist entries: ${dead.join(", ")}`).toEqual([]);
+    expect(dead, `stale ROUTE_POLICY entries: ${dead.join(", ")}`).toEqual([]);
   });
 
-  it("the enumerator finds the known gated routes", () => {
-    const gated = new Set(
-      routes.filter((r) => r.gated).map((r) => `${r.method} ${r.path}`),
-    );
-    for (const expected of [
-      "GET /api/auth/me",
-      "POST /api/auth/logout",
-      "GET /api/me/result",
-      "GET /api/me/access-log",
-      "GET /api/couple/risk",
-      "POST /api/consent",
-      "GET /api/evaluator/comprehension/by-language",
-    ]) {
-      expect(gated.has(expected), `${expected} should be gated by requireSession`).toBe(true);
+  it("every sensitive route (/me, /couple, /consent, /partner, /relatives, /referrals, /counsellor) carries kind: policy", () => {
+    const bad: string[] = [];
+    for (const r of routes) {
+      if (!isPolicyRequired(r.path)) continue;
+      const entry = ROUTE_POLICY[`${r.method} ${r.path}`];
+      if (!entry || entry.kind !== "policy" || entry.action.length === 0) {
+        bad.push(`${r.method} ${r.path}`);
+      }
     }
+    expect(
+      bad,
+      `sensitive routes without a policy action: ${bad.join(", ")}`,
+    ).toEqual([]);
+  });
+
+  it("every public and session_only entry carries a reason", () => {
+    const bad: string[] = [];
+    for (const [key, entry] of Object.entries(ROUTE_POLICY)) {
+      if (entry.kind === "policy") continue;
+      if (!entry.reason || entry.reason.trim().length === 0) bad.push(key);
+    }
+    expect(bad, `entries missing a reason: ${bad.join(", ")}`).toEqual([]);
+  });
+
+  it("every non-public route is gated by requireSession in the middleware chain (or is on the volunteer code-auth allowlist)", () => {
+    // Volunteer routes use x-volunteer-code instead of requireSession; they
+    // are already classified session_only in ROUTE_POLICY.
+    const codeAuthPrefix = "/api/volunteer";
+    const missing: string[] = [];
+    for (const r of routes) {
+      const entry = ROUTE_POLICY[`${r.method} ${r.path}`];
+      if (!entry || entry.kind === "public") continue;
+      if (r.path.startsWith(codeAuthPrefix)) continue;
+      if (!r.gated) missing.push(`${r.method} ${r.path}`);
+    }
+    expect(
+      missing,
+      `non-public routes not gated by requireSession: ${missing.join(", ")}`,
+    ).toEqual([]);
   });
 });
