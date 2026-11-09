@@ -15,9 +15,6 @@ import referralsRouter from "./routes/referrals";
 import volunteerRouter from "./routes/volunteer";
 import evaluatorRouter from "./routes/evaluator";
 
-// The mount list is exported so the route-inventory test can enumerate
-// every route with its true mount prefix. Add new routers here, not with
-// a loose app.use() call.
 export const MOUNTS: ReadonlyArray<{ prefix: string; router: Router }> = [
   { prefix: "/api/auth", router: authRouter },
   { prefix: "/api/me", router: meRouter },
@@ -37,7 +34,39 @@ export const MOUNTS: ReadonlyArray<{ prefix: string; router: Router }> = [
 export function createApp(): Express {
   const app = express();
   app.set("trust proxy", 1);
-  app.use(helmet());
+
+  // Hardened security headers. CSP for the API responses is strict by default
+  // because the API only ever returns JSON. The Next.js app sets its own
+  // page-level CSP (see next.config.ts).
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        useDefaults: false,
+        directives: {
+          defaultSrc: ["'none'"],
+          frameAncestors: ["'none'"],
+          baseUri: ["'none'"],
+          formAction: ["'none'"],
+        },
+      },
+      strictTransportSecurity: {
+        maxAge: 60 * 60 * 24 * 365,
+        includeSubDomains: true,
+        preload: true,
+      },
+      referrerPolicy: { policy: "no-referrer" },
+      crossOriginResourcePolicy: { policy: "same-origin" },
+    }),
+  );
+  app.use((_req, res, next) => {
+    // Permissions-Policy is not in helmet's defaults.
+    res.setHeader(
+      "Permissions-Policy",
+      "camera=(), microphone=(), geolocation=(), payment=(), accelerometer=(), gyroscope=()",
+    );
+    next();
+  });
+
   app.use(express.json({ limit: "32kb" }));
   app.use(cookieParser());
   for (const m of MOUNTS) {
@@ -46,10 +75,18 @@ export function createApp(): Express {
   app.use((_req, res) => {
     res.status(404).json({ error: "not found" });
   });
+
+  // Central error handler. In production the response is a short string with
+  // no stack trace. Server-side we still log the full error.
   app.use(
     (err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
       console.error(err);
-      res.status(500).json({ error: "internal error" });
+      if (process.env.NODE_ENV === "production") {
+        res.status(500).json({ error: "internal error" });
+        return;
+      }
+      const message = err instanceof Error ? err.message : "internal error";
+      res.status(500).json({ error: "internal error", message });
     },
   );
   return app;
