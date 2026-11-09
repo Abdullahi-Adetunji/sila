@@ -79,6 +79,7 @@ BASE_URL=http://localhost:3000 npm run screenshots
 - [docs/demo-script.md](docs/demo-script.md) — 3-minute shot list.
 - [docs/evaluation-results.md](docs/evaluation-results.md) — methods + empty slots for volunteer session numbers.
 - [docs/assumptions-and-limitations.md](docs/assumptions-and-limitations.md) — what we assume, what we don't claim.
+- [docs/deploy-runbook.md](docs/deploy-runbook.md) — one-time Fly.io provisioning + verification + KEK rotation.
 
 ## Deadline
 
