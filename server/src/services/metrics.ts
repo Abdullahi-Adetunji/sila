@@ -15,9 +15,12 @@ const MIN_GROUP = 5;
 const here = dirname(fileURLToPath(import.meta.url));
 const privacyReportPath = resolve(here, "../../../data/review/privacy_report.json");
 
+export type Language = "en" | "ar";
+export type ReadingBand = "low" | "medium" | "high" | "unknown";
+
 export interface ComprehensionCell {
-  language: "en" | "ar";
-  readingBand: "low" | "medium" | "high" | "unknown";
+  axis: "language" | "reading_band";
+  value: string;
   n: number;
   beforePct: number | null;
   afterPct: number | null;
@@ -25,7 +28,8 @@ export interface ComprehensionCell {
 }
 
 export interface TtrCell {
-  language: "en" | "ar";
+  axis: "language" | "reading_band";
+  value: string;
   n: number;
   medianClicks: number | null;
   medianMinutes: number | null;
@@ -68,8 +72,7 @@ export async function clinicianAccuracy(): Promise<ClinicianAccuracy> {
     rowsImported: r.rowsImported,
     riskAccuracyPct: r.riskAccuracyPct ?? undefined,
     escalationAccuracyPct: r.escalationAccuracyPct ?? undefined,
-    mismatches:
-      (r.mismatches as ClinicianAccuracy["mismatches"]) ?? [],
+    mismatches: (r.mismatches as ClinicianAccuracy["mismatches"]) ?? [],
     ranAt: r.ranAt,
   };
 }
@@ -97,103 +100,96 @@ export function privacyReport(): PrivacyReport {
   }
 }
 
-export async function comprehensionByCell(): Promise<ComprehensionCell[]> {
-  // Compute pct-correct per volunteer per phase, then average over the cell.
-  const all = await db
+interface VolunteerShape {
+  id: string;
+  language: Language;
+  readingBand: ReadingBand;
+}
+
+async function allVolunteers(): Promise<VolunteerShape[]> {
+  return db
     .select({
       id: volunteers.id,
       language: volunteers.language,
       readingBand: volunteers.readingBand,
     })
     .from(volunteers);
+}
 
-  const responses = await db
+async function perVolunteerScores(): Promise<
+  Map<string, { before: number[]; after: number[]; language: Language; readingBand: ReadingBand }>
+> {
+  const vs = await allVolunteers();
+  const resp = await db
     .select({
       volunteerId: quizResponses.volunteerId,
       phase: quizResponses.phase,
       correct: quizResponses.correct,
     })
     .from(quizResponses);
-
-  const perVolunteer = new Map<
-    string,
-    { before: number[]; after: number[]; language: "en" | "ar"; readingBand: ComprehensionCell["readingBand"] }
-  >();
-  for (const v of all) {
-    perVolunteer.set(v.id, {
-      before: [],
-      after: [],
-      language: v.language,
-      readingBand: v.readingBand,
-    });
+  const map = new Map<string, { before: number[]; after: number[]; language: Language; readingBand: ReadingBand }>();
+  for (const v of vs) {
+    map.set(v.id, { before: [], after: [], language: v.language, readingBand: v.readingBand });
   }
-  for (const r of responses) {
-    const entry = perVolunteer.get(r.volunteerId);
+  for (const r of resp) {
+    const entry = map.get(r.volunteerId);
     if (!entry) continue;
-    if (r.correct < 0) continue; // -1 = not scored (neutrality)
+    if (r.correct < 0) continue;
     (r.phase === "before" ? entry.before : entry.after).push(r.correct);
   }
+  return map;
+}
 
-  type Key = string;
-  const cells = new Map<Key, ComprehensionCell>();
-  const key = (l: string, b: string) => `${l}|${b}`;
-  for (const entry of perVolunteer.values()) {
-    const k = key(entry.language, entry.readingBand);
-    if (!cells.has(k)) {
-      cells.set(k, {
-        language: entry.language,
-        readingBand: entry.readingBand,
-        n: 0,
-        beforePct: null,
-        afterPct: null,
-        changePct: null,
-      });
+function aggregateCells(
+  per: ReturnType<typeof perVolunteerScores> extends Promise<infer T> ? T : never,
+  axis: "language" | "reading_band",
+): ComprehensionCell[] {
+  const buckets = new Map<string, { n: number; before: number; beforeN: number; after: number; afterN: number }>();
+  for (const entry of per.values()) {
+    const key = axis === "language" ? entry.language : entry.readingBand;
+    if (!buckets.has(key)) {
+      buckets.set(key, { n: 0, before: 0, beforeN: 0, after: 0, afterN: 0 });
     }
-    const cell = cells.get(k)!;
-    cell.n += 1;
-    const beforeAvg =
-      entry.before.length > 0
-        ? entry.before.reduce((a, b) => a + b, 0) / entry.before.length
-        : null;
-    const afterAvg =
-      entry.after.length > 0
-        ? entry.after.reduce((a, b) => a + b, 0) / entry.after.length
-        : null;
+    const b = buckets.get(key)!;
+    b.n += 1;
+    const beforeAvg = entry.before.length > 0 ? entry.before.reduce((a, x) => a + x, 0) / entry.before.length : null;
+    const afterAvg = entry.after.length > 0 ? entry.after.reduce((a, x) => a + x, 0) / entry.after.length : null;
     if (beforeAvg !== null) {
-      cell.beforePct = (cell.beforePct ?? 0) + beforeAvg;
+      b.before += beforeAvg;
+      b.beforeN += 1;
     }
     if (afterAvg !== null) {
-      cell.afterPct = (cell.afterPct ?? 0) + afterAvg;
+      b.after += afterAvg;
+      b.afterN += 1;
     }
   }
   const out: ComprehensionCell[] = [];
-  for (const c of cells.values()) {
-    if (c.n < MIN_GROUP) continue;
-    if (c.beforePct !== null) c.beforePct = Math.round((c.beforePct / c.n) * 100);
-    if (c.afterPct !== null) c.afterPct = Math.round((c.afterPct / c.n) * 100);
-    if (c.beforePct !== null && c.afterPct !== null) c.changePct = c.afterPct - c.beforePct;
-    out.push(c);
+  for (const [value, b] of buckets.entries()) {
+    if (b.n < MIN_GROUP) continue;
+    const beforePct = b.beforeN > 0 ? Math.round((b.before / b.beforeN) * 100) : null;
+    const afterPct = b.afterN > 0 ? Math.round((b.after / b.afterN) * 100) : null;
+    const changePct = beforePct !== null && afterPct !== null ? afterPct - beforePct : null;
+    out.push({ axis, value, n: b.n, beforePct, afterPct, changePct });
   }
   return out;
 }
 
-export async function timeToReferralByLanguage(): Promise<TtrCell[]> {
-  // For each volunteer, find opened_result and submitted_referral and compute
-  // the elapsed time and click count. Then aggregate by language with n>=5.
-  const volunteersAll = await db
-    .select({ id: volunteers.id, language: volunteers.language })
-    .from(volunteers);
+export async function comprehensionByLanguage(): Promise<ComprehensionCell[]> {
+  const per = await perVolunteerScores();
+  return aggregateCells(per, "language");
+}
 
-  const cells = new Map<"en" | "ar", TtrCell>();
-  for (const lang of ["en", "ar"] as const) {
-    cells.set(lang, { language: lang, n: 0, medianClicks: null, medianMinutes: null });
-  }
-  const samplesByLang: Record<"en" | "ar", { clicks: number[]; minutes: number[] }> = {
-    en: { clicks: [], minutes: [] },
-    ar: { clicks: [], minutes: [] },
-  };
+export async function comprehensionByReadingBand(): Promise<ComprehensionCell[]> {
+  const per = await perVolunteerScores();
+  return aggregateCells(per, "reading_band");
+}
 
-  for (const v of volunteersAll) {
+async function ttrSamples(): Promise<
+  Array<{ language: Language; readingBand: ReadingBand; clicks: number; minutes: number }>
+> {
+  const vs = await allVolunteers();
+  const out: Array<{ language: Language; readingBand: ReadingBand; clicks: number; minutes: number }> = [];
+  for (const v of vs) {
     const evs = await db
       .select({ kind: timeToReferralEvents.kind, at: timeToReferralEvents.at })
       .from(timeToReferralEvents)
@@ -201,26 +197,10 @@ export async function timeToReferralByLanguage(): Promise<TtrCell[]> {
     const opened = evs.find((e) => e.kind === "opened_result");
     const submitted = evs.find((e) => e.kind === "submitted_referral");
     if (!opened || !submitted) continue;
-    const minutes =
-      (new Date(submitted.at).getTime() - new Date(opened.at).getTime()) / 60_000;
-    samplesByLang[v.language].clicks.push(evs.length);
-    samplesByLang[v.language].minutes.push(minutes);
+    const minutes = (new Date(submitted.at).getTime() - new Date(opened.at).getTime()) / 60_000;
+    out.push({ language: v.language, readingBand: v.readingBand, clicks: evs.length, minutes });
   }
-
-  for (const [lang, sample] of Object.entries(samplesByLang) as Array<[
-    "en" | "ar",
-    { clicks: number[]; minutes: number[] },
-  ]>) {
-    const cell = cells.get(lang)!;
-    cell.n = sample.clicks.length;
-    if (cell.n >= MIN_GROUP) {
-      cell.medianClicks = median(sample.clicks);
-      cell.medianMinutes = Number(median(sample.minutes).toFixed(1));
-    } else {
-      cell.n = 0; // hide below the threshold entirely
-    }
-  }
-  return [...cells.values()].filter((c) => c.n >= MIN_GROUP);
+  return out;
 }
 
 function median(xs: number[]): number {
@@ -229,7 +209,37 @@ function median(xs: number[]): number {
   return s.length % 2 === 0 ? (s[m - 1] + s[m]) / 2 : s[m];
 }
 
-// Simple CSV encoder shared by every endpoint's ?format=csv variant.
+function ttrByAxis(samples: Awaited<ReturnType<typeof ttrSamples>>, axis: "language" | "reading_band"): TtrCell[] {
+  const buckets = new Map<string, { clicks: number[]; minutes: number[] }>();
+  for (const s of samples) {
+    const key = axis === "language" ? s.language : s.readingBand;
+    if (!buckets.has(key)) buckets.set(key, { clicks: [], minutes: [] });
+    const b = buckets.get(key)!;
+    b.clicks.push(s.clicks);
+    b.minutes.push(s.minutes);
+  }
+  const out: TtrCell[] = [];
+  for (const [value, b] of buckets.entries()) {
+    if (b.clicks.length < MIN_GROUP) continue;
+    out.push({
+      axis,
+      value,
+      n: b.clicks.length,
+      medianClicks: median(b.clicks),
+      medianMinutes: Number(median(b.minutes).toFixed(1)),
+    });
+  }
+  return out;
+}
+
+export async function ttrByLanguage(): Promise<TtrCell[]> {
+  return ttrByAxis(await ttrSamples(), "language");
+}
+
+export async function ttrByReadingBand(): Promise<TtrCell[]> {
+  return ttrByAxis(await ttrSamples(), "reading_band");
+}
+
 export function toCsv(rows: Array<Record<string, unknown>>): string {
   if (rows.length === 0) return "\n";
   const keys = Object.keys(rows[0]);

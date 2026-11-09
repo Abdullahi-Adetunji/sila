@@ -28,15 +28,19 @@ async function makeEvaluator(email: string): Promise<AuthedUser> {
   return u;
 }
 
+const ENDPOINTS = [
+  "/api/evaluator/clinician-accuracy",
+  "/api/evaluator/privacy",
+  "/api/evaluator/comprehension/by-language",
+  "/api/evaluator/comprehension/by-reading-band",
+  "/api/evaluator/time-to-referral/by-language",
+  "/api/evaluator/time-to-referral/by-reading-band",
+];
+
 describe("evaluator dashboard endpoints", () => {
   it("non-evaluator sessions get 403 on every endpoint and the attempt is logged", async () => {
     const p = await signupAs(app, "p@example.com");
-    for (const url of [
-      "/api/evaluator/clinician-accuracy",
-      "/api/evaluator/privacy",
-      "/api/evaluator/comprehension",
-      "/api/evaluator/time-to-referral",
-    ]) {
+    for (const url of ENDPOINTS) {
       const r = await request(app).get(url).set("Cookie", p.cookie);
       expect(r.status).toBe(403);
       expect(r.body.reason).toBe("not_evaluator");
@@ -46,7 +50,7 @@ describe("evaluator dashboard endpoints", () => {
       (e: { action: string; outcome: string }) =>
         e.action === "read_evaluator_dashboard" && e.outcome === "denied",
     );
-    expect(denied.length).toBeGreaterThanOrEqual(1);
+    expect(denied.length).toBeGreaterThanOrEqual(ENDPOINTS.length);
   });
 
   it("clinician-accuracy reports awaiting_clinical_review when no import has run", async () => {
@@ -58,32 +62,32 @@ describe("evaluator dashboard endpoints", () => {
     expect(r.body.status).toBe("awaiting_clinical_review");
   });
 
-  it("comprehension hides cells with n < 5", async () => {
+  it("every by-axis endpoint hides cells with n < 5 and never seeds numbers", async () => {
     const e = await makeEvaluator("e2@example.com");
-    // No volunteers yet — every cell should be < 5 → empty.
-    const r = await request(app)
-      .get("/api/evaluator/comprehension")
-      .set("Cookie", e.cookie);
-    expect(r.status).toBe(200);
-    expect(r.body.cells).toEqual([]);
-    expect(r.body.minGroup).toBe(5);
+    for (const url of ENDPOINTS.filter((u) => u.includes("/comprehension/") || u.includes("/time-to-referral/"))) {
+      const r = await request(app).get(url).set("Cookie", e.cookie);
+      expect(r.status).toBe(200);
+      expect(r.body.cells).toEqual([]);
+      expect(r.body.minGroup).toBe(5);
+    }
   });
 
-  it("time-to-referral hides cells with n < 5 and never seeds numbers", async () => {
+  it("responses never include totals or a grand n that would let a hidden cell be subtracted out", async () => {
     const e = await makeEvaluator("e3@example.com");
-    const r = await request(app)
-      .get("/api/evaluator/time-to-referral")
-      .set("Cookie", e.cookie);
-    expect(r.status).toBe(200);
-    expect(r.body.cells).toEqual([]);
+    for (const url of ENDPOINTS.filter((u) => u.includes("/comprehension/") || u.includes("/time-to-referral/"))) {
+      const r = await request(app).get(url).set("Cookie", e.cookie);
+      for (const forbidden of ["total", "grandN", "sum", "allN"]) {
+        expect(Object.keys(r.body)).not.toContain(forbidden);
+      }
+    }
   });
 
-  it("CSV export is served as text/csv", async () => {
+  it("CSV export is served as text/csv for every by-axis endpoint", async () => {
     const e = await makeEvaluator("e4@example.com");
-    const r = await request(app)
-      .get("/api/evaluator/comprehension?format=csv")
-      .set("Cookie", e.cookie);
-    expect(r.status).toBe(200);
-    expect(r.headers["content-type"] ?? "").toMatch(/text\/csv/);
+    for (const url of ENDPOINTS.filter((u) => u.includes("/comprehension/") || u.includes("/time-to-referral/"))) {
+      const r = await request(app).get(`${url}?format=csv`).set("Cookie", e.cookie);
+      expect(r.status).toBe(200);
+      expect(r.headers["content-type"] ?? "").toMatch(/text\/csv/);
+    }
   });
 });

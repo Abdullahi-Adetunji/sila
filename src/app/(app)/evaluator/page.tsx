@@ -17,44 +17,45 @@ interface PrivacyReport {
   passed?: number;
   failed?: number;
   blocked?: number;
-  files?: Array<{ file: string; counts: Record<string, number> }>;
   endedAt?: string;
 }
-interface ComprehensionCell {
-  language: "en" | "ar";
-  readingBand: string;
+interface Cell {
+  axis: "language" | "reading_band";
+  value: string;
   n: number;
-  beforePct: number | null;
-  afterPct: number | null;
-  changePct: number | null;
-}
-interface TtrCell {
-  language: "en" | "ar";
-  n: number;
-  medianClicks: number | null;
-  medianMinutes: number | null;
+  beforePct?: number | null;
+  afterPct?: number | null;
+  changePct?: number | null;
+  medianClicks?: number | null;
+  medianMinutes?: number | null;
 }
 
 export default function EvaluatorDashboard() {
   const { user } = useSession();
   const [clinician, setClinician] = useState<ClinicianAccuracy | null>(null);
   const [privacy, setPrivacy] = useState<PrivacyReport | null>(null);
-  const [comp, setComp] = useState<ComprehensionCell[] | null>(null);
-  const [ttr, setTtr] = useState<TtrCell[] | null>(null);
+  const [compLang, setCompLang] = useState<Cell[] | null>(null);
+  const [compBand, setCompBand] = useState<Cell[] | null>(null);
+  const [ttrLang, setTtrLang] = useState<Cell[] | null>(null);
+  const [ttrBand, setTtrBand] = useState<Cell[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
-      const [c, p, co, t] = await Promise.all([
+      const [c, p, cL, cB, tL, tB] = await Promise.all([
         api.get<ClinicianAccuracy>("/api/evaluator/clinician-accuracy"),
         api.get<PrivacyReport>("/api/evaluator/privacy"),
-        api.get<{ cells: ComprehensionCell[] }>("/api/evaluator/comprehension"),
-        api.get<{ cells: TtrCell[] }>("/api/evaluator/time-to-referral"),
+        api.get<{ cells: Cell[] }>("/api/evaluator/comprehension/by-language"),
+        api.get<{ cells: Cell[] }>("/api/evaluator/comprehension/by-reading-band"),
+        api.get<{ cells: Cell[] }>("/api/evaluator/time-to-referral/by-language"),
+        api.get<{ cells: Cell[] }>("/api/evaluator/time-to-referral/by-reading-band"),
       ]);
       setClinician(c);
       setPrivacy(p);
-      setComp(co.cells);
-      setTtr(t.cells);
+      setCompLang(cL.cells);
+      setCompBand(cB.cells);
+      setTtrLang(tL.cells);
+      setTtrBand(tB.cells);
     } catch (e: unknown) {
       if (isApiError(e) && e.status === 403) setError("evaluator-only");
       else setError("load_failed");
@@ -82,8 +83,9 @@ export default function EvaluatorDashboard() {
     <main>
       <h1 className="text-2xl font-semibold">Evaluator dashboard</h1>
       <p className="mt-2 text-sm text-muted">
-        Aggregates only, with group size n shown. Groups with fewer than 5 are hidden. No
-        significance claims at this sample size. Each card has a CSV export.
+        Each table is a single axis (by language OR by reading band — never crossed).
+        Any cell with n &lt; 5 is hidden. No totals are shown, so no hidden cell can be
+        worked out by subtraction. No significance claims at this sample size.
       </p>
       {error && error !== "evaluator-only" && (
         <p className="mt-3 text-sm text-red-600">Could not load dashboard data.</p>
@@ -118,80 +120,124 @@ export default function EvaluatorDashboard() {
         )}
       </Card>
 
-      <Card title="Comprehension by language and reading band" csv={asCsvLink("/evaluator/comprehension")}>
-        {comp && comp.length === 0 && (
-          <p className="text-sm text-muted">No cells with n &ge; 5 yet.</p>
-        )}
-        {comp && comp.length > 0 && (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs text-muted">
-                <th>language</th>
-                <th>reading band</th>
-                <th>n</th>
-                <th>before %</th>
-                <th>after %</th>
-                <th>change</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comp.map((c, i) => (
-                <tr key={i} className="border-t border-line">
-                  <td>{c.language}</td>
-                  <td>{c.readingBand}</td>
-                  <td>{c.n}</td>
-                  <td>{c.beforePct ?? "—"}</td>
-                  <td>{c.afterPct ?? "—"}</td>
-                  <td>{c.changePct ?? "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </Card>
+      <ComprehensionTable
+        title="Comprehension by language"
+        csv={asCsvLink("/evaluator/comprehension/by-language")}
+        rows={compLang}
+        axisLabel="language"
+      />
+      <ComprehensionTable
+        title="Comprehension by reading band"
+        csv={asCsvLink("/evaluator/comprehension/by-reading-band")}
+        rows={compBand}
+        axisLabel="reading band"
+      />
 
-      <Card title="Time to referral (real volunteer sessions)" csv={asCsvLink("/evaluator/time-to-referral")}>
-        {ttr && ttr.length === 0 && (
-          <p className="text-sm text-muted">Awaiting sessions (n &lt; 5).</p>
-        )}
-        {ttr && ttr.length > 0 && (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs text-muted">
-                <th>language</th>
-                <th>n</th>
-                <th>median clicks</th>
-                <th>median minutes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ttr.map((c, i) => (
-                <tr key={i} className="border-t border-line">
-                  <td>{c.language}</td>
-                  <td>{c.n}</td>
-                  <td>{c.medianClicks ?? "—"}</td>
-                  <td>{c.medianMinutes ?? "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </Card>
+      <TtrTable
+        title="Time to referral by language"
+        csv={asCsvLink("/evaluator/time-to-referral/by-language")}
+        rows={ttrLang}
+        axisLabel="language"
+      />
+      <TtrTable
+        title="Time to referral by reading band"
+        csv={asCsvLink("/evaluator/time-to-referral/by-reading-band")}
+        rows={ttrBand}
+        axisLabel="reading band"
+      />
 
       {user && <p className="mt-6 text-xs text-muted">Signed in as {user.email}.</p>}
     </main>
   );
 }
 
-function Card({
+function ComprehensionTable({
   title,
   csv,
-  children,
+  rows,
+  axisLabel,
 }: {
   title: string;
   csv: string;
-  children: React.ReactNode;
+  rows: Cell[] | null;
+  axisLabel: string;
 }) {
+  return (
+    <Card title={title} csv={csv}>
+      {rows && rows.length === 0 && (
+        <p className="text-sm text-muted">No cells with n &ge; 5 yet.</p>
+      )}
+      {rows && rows.length > 0 && (
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-xs text-muted">
+              <th>{axisLabel}</th>
+              <th>n</th>
+              <th>before %</th>
+              <th>after %</th>
+              <th>change</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((c, i) => (
+              <tr key={i} className="border-t border-line">
+                <td>{c.value}</td>
+                <td>{c.n}</td>
+                <td>{c.beforePct ?? "—"}</td>
+                <td>{c.afterPct ?? "—"}</td>
+                <td>{c.changePct ?? "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </Card>
+  );
+}
+
+function TtrTable({
+  title,
+  csv,
+  rows,
+  axisLabel,
+}: {
+  title: string;
+  csv: string;
+  rows: Cell[] | null;
+  axisLabel: string;
+}) {
+  return (
+    <Card title={title} csv={csv}>
+      {rows && rows.length === 0 && (
+        <p className="text-sm text-muted">Awaiting sessions (n &lt; 5).</p>
+      )}
+      {rows && rows.length > 0 && (
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-xs text-muted">
+              <th>{axisLabel}</th>
+              <th>n</th>
+              <th>median clicks</th>
+              <th>median minutes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((c, i) => (
+              <tr key={i} className="border-t border-line">
+                <td>{c.value}</td>
+                <td>{c.n}</td>
+                <td>{c.medianClicks ?? "—"}</td>
+                <td>{c.medianMinutes ?? "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </Card>
+  );
+}
+
+function Card({ title, csv, children }: { title: string; csv: string; children: React.ReactNode }) {
   return (
     <section className="mt-6 rounded-2xl border border-line bg-surface p-4">
       <div className="flex items-center justify-between gap-2">
