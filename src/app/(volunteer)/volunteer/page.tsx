@@ -1,14 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api, isApiError } from "../../lib/api";
 import { PrototypeBanner } from "../../components/PrototypeBanner";
 import { LangSwitch } from "../../components/LangSwitch";
 import { VOLUNTEER } from "@/lib/content-volunteer";
-import { type Lang } from "@/lib/content";
+import { T, conditionName, phenotypeName, type Lang } from "@/lib/content";
+import { getTemplate } from "@/content/templates";
+import { SectionLabel } from "../../components/SectionLabel";
+import { ChildrenPicture } from "@/components/ChildrenPicture";
+import type { ChildOutcome } from "@/lib/genetics/engine";
 
-type Stage = "info" | "consent" | "code" | "resume";
+type Stage =
+  | "info"
+  | "consent"
+  | "code"
+  | "quiz_before"
+  | "result"
+  | "quiz_after"
+  | "done"
+  | "resume";
 
 interface VolunteerShape {
   id: string;
@@ -20,7 +31,42 @@ interface VolunteerShape {
   completedAt: string | null;
 }
 
+interface QuizItem {
+  id: string;
+  concept: string;
+  form: "A" | "B";
+  question: string;
+  choices: string[];
+}
+
+interface CoupleView {
+  route: "information" | "counsellor" | "counsellor_priority";
+  reasons: Array<"shared_risk_serious" | "shared_risk" | "incomplete" | "needs_review">;
+  genes: Array<{
+    gene: string;
+    computable: boolean;
+    outcomes: ChildOutcome[];
+    affectedQuarters: number;
+    status: "ready" | "uncertain" | "incomplete";
+  }>;
+}
+
 const CODE_KEY = "sila_participant_code";
+
+async function volunteerFetch<T>(path: string, code: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(path, {
+    ...init,
+    headers: {
+      ...(init?.headers ?? {}),
+      "x-volunteer-code": code,
+      "content-type": init?.body ? "application/json" : "",
+    },
+    credentials: "same-origin",
+  });
+  if (!res.ok) throw new Error(String(res.status));
+  if (res.status === 204) return null as T;
+  return (await res.json()) as T;
+}
 
 export default function VolunteerLanding() {
   const router = useRouter();
@@ -40,21 +86,29 @@ export default function VolunteerLanding() {
     }
   }, []);
 
+  useEffect(() => {
+    if (volunteer?.language) setLang(volunteer.language);
+  }, [volunteer]);
+
   const dir = lang === "ar" ? "rtl" : "ltr";
 
   async function join() {
     setError(null);
     try {
-      const res = await api.post<{ volunteer: VolunteerShape }>("/api/volunteer/join", {
-        language: lang,
-        readingBand,
+      const res = await fetch("/api/volunteer/join", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ language: lang, readingBand }),
       });
+      if (!res.ok) throw new Error(String(res.status));
+      const body = (await res.json()) as { volunteer: VolunteerShape };
       try {
-        localStorage.setItem(CODE_KEY, res.volunteer.id);
+        localStorage.setItem(CODE_KEY, body.volunteer.id);
       } catch {
         /* ignore */
       }
-      setVolunteer(res.volunteer);
+      setVolunteer(body.volunteer);
       setStage("consent");
     } catch {
       setError("Could not start the study.");
@@ -65,15 +119,12 @@ export default function VolunteerLanding() {
     if (!volunteer) return;
     setError(null);
     try {
-      const res = await fetch("/api/volunteer/consent", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: {
-          "content-type": "application/json",
-          "x-volunteer-code": volunteer.id,
-        },
-      });
-      if (!res.ok) throw new Error(String(res.status));
+      const body = await volunteerFetch<{ volunteer: VolunteerShape }>(
+        "/api/volunteer/consent",
+        volunteer.id,
+        { method: "POST" },
+      );
+      setVolunteer(body.volunteer);
       setStage("code");
     } catch {
       setError("Could not record consent.");
@@ -83,22 +134,19 @@ export default function VolunteerLanding() {
   async function resume() {
     setError(null);
     try {
-      const res = await fetch("/api/volunteer/me", {
-        headers: { "x-volunteer-code": resumeCode },
-      });
-      if (!res.ok) throw new Error(String(res.status));
-      const body = (await res.json()) as { volunteer: VolunteerShape };
-      setVolunteer(body.volunteer);
+      const body = await volunteerFetch<{ volunteer: VolunteerShape }>(
+        "/api/volunteer/me",
+        resumeCode,
+      );
       try {
         localStorage.setItem(CODE_KEY, body.volunteer.id);
       } catch {
         /* ignore */
       }
-      setStage("code");
-    } catch (e: unknown) {
-      if (isApiError(e) || e instanceof Error) {
-        setError("Unknown or withdrawn code.");
-      }
+      setVolunteer(body.volunteer);
+      setStage(body.volunteer.consentedAt ? "code" : "consent");
+    } catch {
+      setError("Unknown or withdrawn code.");
     }
   }
 
@@ -217,10 +265,59 @@ export default function VolunteerLanding() {
             <p className="mt-4 rounded-xl border border-teal bg-teal-soft p-4 text-center font-mono text-xl tracking-widest">
               {volunteer.id}
             </p>
-            <p className="mt-6 text-sm text-muted">
+            <button
+              onClick={() => setStage("quiz_before")}
+              className="mt-6 rounded-full bg-teal px-5 py-2.5 text-sm font-medium text-white"
+            >
+              {lang === "en" ? "Start quiz (before)" : "ابدأ الاختبار (قبل)"}
+            </button>
+            <button
+              onClick={withdraw}
+              className="mt-3 block rounded-full border border-line px-4 py-2 text-xs text-muted"
+            >
+              {VOLUNTEER.withdrawButton[lang]}
+            </button>
+          </>
+        )}
+
+        {stage === "quiz_before" && volunteer && (
+          <Quiz
+            phase="before"
+            lang={lang}
+            volunteer={volunteer}
+            onDone={() => setStage("result")}
+          />
+        )}
+
+        {stage === "result" && volunteer && (
+          <CoupleResultView lang={lang} volunteer={volunteer} onContinue={() => setStage("quiz_after")} />
+        )}
+
+        {stage === "quiz_after" && volunteer && (
+          <Quiz
+            phase="after"
+            lang={lang}
+            volunteer={volunteer}
+            onDone={async () => {
+              try {
+                await volunteerFetch("/api/volunteer/complete", volunteer.id, { method: "POST" });
+              } catch {
+                /* ignore */
+              }
+              setStage("done");
+            }}
+          />
+        )}
+
+        {stage === "done" && volunteer && (
+          <>
+            <h2 className="text-2xl font-semibold">
+              {lang === "en" ? "Thank you" : "شكراً لك"}
+            </h2>
+            <p className="mt-3 text-sm text-muted">
               {lang === "en"
-                ? "The quiz and the study flow come next. The server-side flow is in place; the UI for step 2 will arrive in the next commit."
-                : "يأتي الاختبار وتدفق الدراسة بعد ذلك. تدفق الخادم جاهز، وستصل واجهة الخطوة 2 في الإصدار القادم."}
+                ? "Your answers help us measure whether the explanation worked for you. You can withdraw and delete them at any time with your code."
+                : "إجاباتك تساعدنا في قياس مدى وضوح الشرح لك. يمكنك الانسحاب وحذفها في أي وقت باستخدام رمزك."}
             </p>
             <button
               onClick={withdraw}
@@ -261,5 +358,169 @@ export default function VolunteerLanding() {
         )}
       </main>
     </div>
+  );
+}
+
+function Quiz({
+  phase,
+  lang,
+  volunteer,
+  onDone,
+}: {
+  phase: "before" | "after";
+  lang: Lang;
+  volunteer: VolunteerShape;
+  onDone: () => void;
+}) {
+  const [items, setItems] = useState<QuizItem[] | null>(null);
+  const [index, setIndex] = useState(0);
+
+  const load = useCallback(async () => {
+    const body = await volunteerFetch<{ items: QuizItem[] }>(
+      `/api/volunteer/quiz?phase=${phase}`,
+      volunteer.id,
+    );
+    setItems(body.items);
+  }, [phase, volunteer.id]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function answer(a: number) {
+    if (!items) return;
+    const it = items[index];
+    await volunteerFetch("/api/volunteer/quiz/response", volunteer.id, {
+      method: "POST",
+      body: JSON.stringify({ phase, itemId: it.id, answer: a }),
+    });
+    if (index + 1 >= items.length) onDone();
+    else setIndex(index + 1);
+  }
+
+  if (!items)
+    return (
+      <p className="text-sm text-muted">{lang === "en" ? "Loading…" : "جار التحميل…"}</p>
+    );
+
+  const it = items[index];
+  return (
+    <>
+      <p className="text-xs text-muted">
+        {lang === "en"
+          ? `Quiz (${phase}) · question ${index + 1} of ${items.length}`
+          : `اختبار (${phase === "before" ? "قبل" : "بعد"}) · سؤال ${index + 1} من ${items.length}`}
+      </p>
+      <h2 className="mt-2 text-xl font-semibold">{it.question}</h2>
+      <ul className="mt-5 space-y-2">
+        {it.choices.map((c, i) => (
+          <li key={i}>
+            <button
+              onClick={() => answer(i)}
+              className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-start text-sm hover:border-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+            >
+              {c}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+function CoupleResultView({
+  lang,
+  volunteer,
+  onContinue,
+}: {
+  lang: Lang;
+  volunteer: VolunteerShape;
+  onContinue: () => void;
+}) {
+  const [view, setView] = useState<CoupleView | null>(null);
+
+  useEffect(() => {
+    volunteerFetch<CoupleView>("/api/volunteer/couple-view", volunteer.id).then(setView);
+  }, [volunteer.id]);
+
+  if (!view)
+    return (
+      <p className="text-sm text-muted">{lang === "en" ? "Loading…" : "جار التحميل…"}</p>
+    );
+
+  const shared = view.genes.filter((g) => g.affectedQuarters > 0);
+  const nothingToFlag = view.reasons.length === 0;
+  const dualFraming = (q: number) => {
+    const id =
+      q === 1
+        ? "couple.chance.affected.1_in_4"
+        : q === 2
+          ? "couple.chance.affected.1_in_2"
+          : q === 3
+            ? "couple.chance.affected.3_in_4"
+            : "couple.chance.affected.every";
+    return getTemplate(id).text[lang];
+  };
+  const routeTmpl = getTemplate(
+    view.route === "information"
+      ? "route.information"
+      : view.route === "counsellor"
+        ? "route.counsellor"
+        : "route.counsellor_priority",
+  );
+
+  return (
+    <>
+      <h2 className="text-2xl font-semibold">{T.screenTitle[lang]}</h2>
+      <p
+        className="mt-3 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-muted"
+        role="note"
+      >
+        {lang === "en"
+          ? "This is an educational result, not a diagnosis. A qualified genetic counsellor is the person who gives clinical advice."
+          : "هذه نتيجة تثقيفية وليست تشخيصاً. المرشد الوراثي المؤهّل هو من يقدّم الاستشارة السريرية."}
+      </p>
+
+      {shared.map((g) => {
+        const affected = g.outcomes.filter((o) => o.kind === "affected");
+        return (
+          <section key={g.gene} className="mt-6 rounded-2xl border border-line bg-surface p-5">
+            <div className="flex flex-wrap items-center gap-2">
+              <SectionLabel section="education" lang={lang} />
+              <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                {conditionName(lang, g.gene)}
+              </p>
+            </div>
+            {affected.map((o) => (
+              <p key={o.phenotype} className="mt-2 text-lg font-semibold leading-snug">
+                {dualFraming(o.quarters)}{" "}
+                <span className="text-muted">({phenotypeName(lang, o.phenotype!)})</span>
+              </p>
+            ))}
+            <ChildrenPicture outcomes={g.outcomes} lang={lang} />
+            <p className="mt-4 text-sm text-ink">{getTemplate("couple.independence").text[lang]}</p>
+          </section>
+        );
+      })}
+
+      {nothingToFlag && (
+        <section className="mt-6 rounded-2xl border border-line bg-surface p-5">
+          <p className="text-lg font-semibold">{T.noSharedTitle[lang]}</p>
+          <p className="mt-2 text-sm text-muted">{T.noSharedBody[lang]}</p>
+        </section>
+      )}
+
+      <section className="mt-6 rounded-2xl bg-teal-soft p-5">
+        <SectionLabel section={routeTmpl.sectionLabel} lang={lang} />
+        <p className="mt-2 text-base font-medium">{routeTmpl.text[lang]}</p>
+      </section>
+
+      <button
+        onClick={onContinue}
+        className="mt-6 rounded-full bg-teal px-5 py-2.5 text-sm font-medium text-white"
+      >
+        {lang === "en" ? "Continue to the after-quiz" : "متابعة إلى اختبار البعد"}
+      </button>
+    </>
   );
 }
