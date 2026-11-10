@@ -3,7 +3,8 @@ import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { sql, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/client";
-import { users } from "../db/schema";
+import { adminTotp, users } from "../db/schema";
+import { totpVerify } from "../lib/totp";
 import { hashPassword, needsRehash, verifyPassword } from "../lib/password";
 import { checkPasswordStrength } from "../lib/weakPassword";
 import { SESSION_COOKIE, SESSION_TTL_MS, createSession, deleteSession } from "../lib/session";
@@ -20,6 +21,11 @@ const signupSchema = z.object({
 const loginSchema = z.object({
   email: z.string().email().max(254),
   password: z.string().min(1).max(1024),
+  // Optional. Only required when the account is staff and has enrolled a
+  // TOTP second factor. The client calls login once with just email +
+  // password; if the response is `totp_required`, it re-calls with the
+  // code.
+  totpCode: z.string().regex(/^\d{6}$/).optional(),
 });
 
 const loginLimiter = rateLimit({
@@ -83,12 +89,13 @@ router.post("/login", loginLimiter, async (req: Request, res: Response) => {
     res.status(400).json({ error: "invalid request" });
     return;
   }
-  const { email, password } = parsed.data;
+  const { email, password, totpCode } = parsed.data;
   const rows = await db
     .select({
       id: users.id,
       email: users.email,
       role: users.role,
+      status: users.status,
       locale: users.locale,
       passwordHash: users.passwordHash,
     })
@@ -99,6 +106,30 @@ router.post("/login", loginLimiter, async (req: Request, res: Response) => {
   if (!ok || !row) {
     res.status(401).json({ error: "invalid email or password" });
     return;
+  }
+  // Deactivated accounts cannot log in.
+  if (row.status === "deactivated") {
+    res.status(403).json({ error: "account_deactivated" });
+    return;
+  }
+  // Staff accounts require a second factor if one is enrolled. Person
+  // accounts never do. The response is a 401 with a distinct error code
+  // the client uses to prompt for the 6-digit TOTP and re-submit.
+  if (row.role !== "person") {
+    const [totpRow] = await db
+      .select({ secret: adminTotp.secret })
+      .from(adminTotp)
+      .where(eq(adminTotp.userId, row.id));
+    if (totpRow) {
+      if (!totpCode) {
+        res.status(401).json({ error: "totp_required" });
+        return;
+      }
+      if (!totpVerify(totpRow.secret, totpCode)) {
+        res.status(401).json({ error: "invalid_totp" });
+        return;
+      }
+    }
   }
   // Transparent rehash on login when the stored hash uses parameters that
   // differ from the current ARGON2_OPTIONS. Failure to update is tolerated:
@@ -111,6 +142,7 @@ router.post("/login", loginLimiter, async (req: Request, res: Response) => {
       console.error("password rehash failed", e);
     }
   }
+  await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, row.id));
   const session = await createSession(row.id);
   res
     .cookie(SESSION_COOKIE, session.id, sessionCookieOptions())

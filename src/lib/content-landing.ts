@@ -122,6 +122,8 @@ export const LANDING = {
     partnerA: { en: "Sign in as Partner A", ar: "تسجيل الدخول كـ شريك أ" },
     partnerB: { en: "Sign in as Partner B", ar: "تسجيل الدخول كـ شريك ب" },
     counsellor: { en: "Sign in as counsellor", ar: "تسجيل الدخول كـ مرشد" },
+    lab: { en: "Sign in as lab", ar: "تسجيل الدخول كـ مختبر" },
+    admin: { en: "Sign in as admin", ar: "تسجيل الدخول كـ مسؤول" },
     reset: { en: "Reset demo accounts", ar: "إعادة ضبط حسابات العرض" },
     resetNote: {
       en: "The reset restores the demo accounts to their seeded state and is logged in the access log.",

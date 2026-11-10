@@ -26,10 +26,12 @@ const DEMO_ACCOUNTS: Record<string, string> = {
   "partner.a": "partner.a@demo.sila",
   "partner.b": "partner.b@demo.sila",
   counsellor: "counsellor@demo.sila",
+  lab: "lab@demo.sila",
+  admin: "admin@demo.sila",
 };
 
 const loginSchema = z.object({
-  account: z.enum(["partner.a", "partner.b", "counsellor"]),
+  account: z.enum(["partner.a", "partner.b", "counsellor", "lab", "admin"]),
 });
 
 router.post("/login", async (req: Request, res: Response) => {

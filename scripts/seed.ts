@@ -33,7 +33,7 @@ interface CoupleFile {
 
 async function upsertUser(
   email: string,
-  role: "person" | "counsellor" | "lab" | "evaluator",
+  role: "person" | "counsellor" | "lab" | "evaluator" | "admin",
   locale: "en" | "ar" = "en",
 ): Promise<string> {
   const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email));
@@ -74,6 +74,9 @@ async function main() {
   const demoB = await upsertUser("partner.b@demo.sila", "person");
   const demoCounsellor = await upsertUser("counsellor@demo.sila", "counsellor");
   const demoEvaluator = await upsertUser("evaluator@demo.sila", "evaluator");
+  // Demo admin — appears in the one-click panel, uses DEMO_PASSWORD, and
+  // is the ONLY admin account that bypasses TOTP (gated on DEMO_MODE).
+  const demoAdmin = await upsertUser("admin@demo.sila", "admin");
 
   const HBS_CARRIER: ResultsByGene = {
     HBB: { status: "tested", variants: ["HbS"] },
@@ -97,9 +100,11 @@ async function main() {
   console.log("  partner.b@demo.sila    (password: DEMO_PASSWORD)");
   console.log("  counsellor@demo.sila   (password: DEMO_PASSWORD)");
   console.log("  lab@demo.sila          (password: DEMO_PASSWORD)");
+  console.log("  admin@demo.sila        (password: DEMO_PASSWORD, skips TOTP in DEMO_MODE)");
   console.log("  evaluator@demo.sila    (password: EVALUATOR_PASSWORD, NOT on one-click panel)");
   console.log(`  counsellor id: ${demoCounsellor}`);
   console.log(`  evaluator id:  ${demoEvaluator}`);
+  console.log(`  admin id:      ${demoAdmin}`);
 }
 
 main()

@@ -168,9 +168,18 @@ describe("demo scoping on a live site", () => {
     expect(r.status).toBe(400);
   });
 
-  it("the demo one-click panel rejects an unseeded account like 'lab'", async () => {
+  it("the demo one-click panel accepts 'lab' (DEMO_MODE adds it)", async () => {
     await seedDemoAccounts();
     const r = await request(app).post("/api/demo/login").send({ account: "lab" });
+    // lab@demo.sila is seeded and the demo panel now exposes it so a
+    // judge can walk through the lab-submit flow with no extra setup.
+    expect(r.status).toBe(200);
+    expect(r.body.user.role).toBe("lab");
+  });
+
+  it("the demo one-click panel rejects an unknown account name", async () => {
+    await seedDemoAccounts();
+    const r = await request(app).post("/api/demo/login").send({ account: "sysadmin" });
     expect(r.status).toBe(400);
   });
 });

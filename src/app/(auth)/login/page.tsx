@@ -19,6 +19,8 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [totpCode, setTotpCode] = useState("");
+  const [needsTotp, setNeedsTotp] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -27,11 +29,28 @@ export default function LoginPage() {
     setSubmitting(true);
     setError(null);
     try {
-      const r = await api.post<{ user: { role: string } }>("/api/auth/login", { email, password });
+      const r = await api.post<{ user: { role: string } }>("/api/auth/login", {
+        email,
+        password,
+        ...(needsTotp ? { totpCode } : {}),
+      });
       router.push(startPathFor((r.user?.role ?? "person") as Role));
     } catch (e: unknown) {
-      if (isApiError(e) && e.status === 401) setError("Incorrect email or password.");
-      else setError("Could not log you in. Please try again.");
+      if (isApiError(e)) {
+        const msg = (e.body as { error?: string } | null)?.error ?? "";
+        if (e.status === 401 && msg === "totp_required") {
+          setNeedsTotp(true);
+          setError(null);
+        } else if (e.status === 401 && msg === "invalid_totp") {
+          setError("That 6-digit code didn't match. Wait for a fresh one and try again.");
+        } else if (e.status === 403 && msg === "account_deactivated") {
+          setError("This account has been deactivated. Contact an admin.");
+        } else if (e.status === 401) {
+          setError("Incorrect email or password.");
+        } else {
+          setError("Could not log you in. Please try again.");
+        }
+      } else setError("Could not log you in. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -117,6 +136,23 @@ export default function LoginPage() {
                 required
               />
             </label>
+            {needsTotp && (
+              <label className="block text-sm font-medium">
+                Two-step code
+                <input
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  placeholder="123456"
+                  required
+                  className="mt-1.5 w-full rounded-lg border border-line bg-surface px-3 py-2.5 font-mono text-lg tracking-widest outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-teal/20"
+                />
+                <span className="mt-1.5 inline-block text-xs text-muted">
+                  Open your authenticator app and enter the 6-digit code.
+                </span>
+              </label>
+            )}
             {error && (
               <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
                 {error}

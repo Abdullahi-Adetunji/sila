@@ -7,7 +7,7 @@ import { startPathFor, type Role } from "../lib/roleRouting";
 import { LANDING } from "@/lib/content-landing";
 import { type Lang } from "@/lib/content";
 
-type DemoAccount = "partner.a" | "partner.b" | "counsellor";
+type DemoAccount = "partner.a" | "partner.b" | "counsellor" | "lab" | "admin";
 
 // Only visible when the server reports DEMO_MODE=true. onDark prop kept
 // for compatibility but ignored — the whole app now runs on one palette.
@@ -96,6 +96,20 @@ export function DemoPanel({ lang }: { lang: Lang; onDark?: boolean }) {
           className="rounded-full border border-teal/40 bg-surface px-4 py-2 text-sm font-medium text-teal transition-colors hover:border-teal disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
         >
           {LANDING.demo.counsellor[lang]}
+        </button>
+        <button
+          onClick={() => signIn("lab")}
+          disabled={busy !== null}
+          className="rounded-full border border-teal/40 bg-surface px-4 py-2 text-sm font-medium text-teal transition-colors hover:border-teal disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+        >
+          {LANDING.demo.lab[lang]}
+        </button>
+        <button
+          onClick={() => signIn("admin")}
+          disabled={busy !== null}
+          className="rounded-full border border-teal/40 bg-surface px-4 py-2 text-sm font-medium text-teal transition-colors hover:border-teal disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+        >
+          {LANDING.demo.admin[lang]}
         </button>
         <button
           onClick={reset}
