@@ -3,8 +3,15 @@ import { requireSession } from "../middleware/requireSession";
 import { requirePersonRole } from "../middleware/requirePersonRole";
 import { readResults } from "../services/vault";
 import { appendAudit } from "../lib/audit";
+import { silaIdFor } from "../lib/silaId";
 
 const router: Router = Router();
+
+// Per-person stable identifier, derived from HMAC(user.id, SILA_ID_SALT).
+// Shown to the person; they hand it to the lab or clinic when tested.
+router.get("/sila-id", requireSession, requirePersonRole, (req: Request, res: Response) => {
+  res.json({ silaId: silaIdFor(req.session!.userId) });
+});
 
 router.get("/result", requireSession, requirePersonRole, async (req: Request, res: Response) => {
   const userId = req.session!.userId;

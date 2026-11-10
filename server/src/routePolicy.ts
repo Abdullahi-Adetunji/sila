@@ -22,6 +22,7 @@ export const ROUTE_POLICY: Record<string, RouteClass> = {
   "GET /api/auth/me": { kind: "session_only", reason: "returns own session metadata" },
 
   // --- Person data (self) ---
+  "GET /api/me/sila-id": { kind: "policy", action: "canReadOwnSilaId" },
   "GET /api/me/result": { kind: "policy", action: "canReadOwnResult" },
   "GET /api/me/access-log": { kind: "policy", action: "canReadOwnAccessLog" },
 
@@ -157,6 +158,11 @@ export const ROUTE_POLICY: Record<string, RouteClass> = {
   },
   "GET /api/admin/actions": { kind: "session_only", reason: "admin's own action feed" },
   "GET /api/admin/stats": { kind: "session_only", reason: "admin header counts" },
+
+  // --- Lab submit ---
+  // Lab accounts can WRITE results via /submit. There is no GET; labs
+  // cannot read any result back. requireLabRole gates every mutation.
+  "POST /api/lab/submit": { kind: "session_only", reason: "lab-only write; no read" },
 };
 
 // Path prefixes whose routes MUST carry kind: "policy". Used by the test to

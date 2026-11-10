@@ -35,6 +35,9 @@ export default function MyResultPage() {
     if (user?.locale) setLang(user.locale);
   }, [user]);
 
+  const [silaId, setSilaId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     api
       .get<{ results: ResultsByGene }>("/api/me/result")
@@ -46,7 +49,22 @@ export default function MyResultPage() {
         if (isApiError(e) && e.status === 404) setState("empty");
         else setState("error");
       });
+    api
+      .get<{ silaId: string }>("/api/me/sila-id")
+      .then((r) => setSilaId(r.silaId))
+      .catch(() => {});
   }, []);
+
+  async function copySilaId() {
+    if (!silaId) return;
+    try {
+      await navigator.clipboard.writeText(silaId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* ignore */
+    }
+  }
 
   const hasNoVariantFound =
     results &&
@@ -70,6 +88,28 @@ export default function MyResultPage() {
           <LangSwitch lang={lang} onChange={setLang} />
         </header>
       </Reveal>
+
+      {silaId && (
+        <Reveal>
+          <section className="tile mb-6 flex flex-wrap items-center gap-3 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+              {lang === "en" ? "Your Sila ID" : "معرّف صلة الخاص بك"}
+            </p>
+            <p className="font-mono text-xl tracking-widest text-ink">{silaId}</p>
+            <button
+              onClick={copySilaId}
+              className="rounded-full border border-line px-3 py-1 text-xs text-muted transition-colors hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+            >
+              {copied ? (lang === "en" ? "Copied" : "تم النسخ") : lang === "en" ? "Copy" : "نسخ"}
+            </button>
+            <p className="ml-auto text-xs text-muted">
+              {lang === "en"
+                ? "Hand this ID to the lab or clinic when you are tested."
+                : "اعطِ هذا المعرّف للمختبر أو العيادة عند إجراء الفحص."}
+            </p>
+          </section>
+        </Reveal>
+      )}
 
       {state === "loading" && (
         <p className="text-sm text-muted">{lang === "en" ? "Loading…" : "جار التحميل…"}</p>
