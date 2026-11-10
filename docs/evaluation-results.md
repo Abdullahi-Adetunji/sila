@@ -86,18 +86,31 @@
 
 | metric | value |
 | --- | --- |
-| Blocked attempts (passed privacy tests) |  |
-| Failed privacy assertions |  |
-| Last run |  |
+| Blocked attempts (passed privacy tests) | 80 |
+| Failed privacy assertions | 0 |
+| Last run | 2026-11-10T10:52:59Z |
 
 ### 2.7 Attack suite results (latest black-box run)
 
 | metric | value |
 | --- | --- |
-| BASE_URL |  |
-| Cases passed |  |
-| Cases failed |  |
-| Last run |  |
+| BASE_URL | https://sila-a7fx.onrender.com |
+| Cases passed | 31 |
+| Cases failed | 0 |
+| Last run | 2026-11-10T10:59:18Z |
+
+Coverage: IDOR (×4), CSRF (×4), consent revocation takes effect immediately for every purpose (×5), session hygiene incl. id rotation + logout invalidation + cookie flags (×3), brute-force resistance incl. login cap + XFF-spoof resistance + random partner-invite + random participant-code (×4), privilege escalation incl. mass-assignment + cross-role (×3), **counsellor hits 403 on every person-only API route (×1, covers 13 routes)**, demo-mode-off assurances (×3), and demo-on scoping (×4).
+
+### 2.8 Accessibility (axe, WCAG 2.2 AA)
+
+Automated axe sweep via `@axe-core/playwright`, run against the live site. Scans: eight pages (landing, login, signup, me, couple, consent, options, volunteer), two languages (English + Arabic where a LangSwitch is present), two viewports (phone 400×900, desktop 1280×800). Serious and critical violations fail the test; moderate and minor land in `data/review/a11y_report.jsonl` for review.
+
+| metric | value |
+| --- | --- |
+| BASE_URL | https://sila-a7fx.onrender.com |
+| Scans | 26 (13 page+lang combinations × 2 viewports) |
+| Serious or critical violations | 0 |
+| Last run | 2026-11-10T11:00Z |
 
 ### 2.8 Neutrality distribution (from the neutrality quiz item)
 

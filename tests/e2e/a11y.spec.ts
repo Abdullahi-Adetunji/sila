@@ -74,7 +74,12 @@ for (const s of SCANS) {
     if (s.switchOnPage && s.lang === "ar") {
       await switchLang(page, "ar");
     }
-    // Wait briefly for reveal animations to settle so axe reads final colours.
+    // Force every scroll-reveal element into its visible state so axe reads
+    // the final rendered colours — the IntersectionObserver may not have
+    // fired for below-the-fold sections otherwise, and axe will flag the
+    // half-transitioned opacity-0 pass. This is a test-time concern, not a
+    // real contrast regression.
+    await page.addStyleTag({ content: `.reveal { opacity: 1 !important; transform: none !important; transition: none !important; }` });
     await page.waitForTimeout(400);
 
     const results = await new AxeBuilder({ page })
