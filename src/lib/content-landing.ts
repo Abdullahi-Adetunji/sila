@@ -106,5 +106,6 @@ export const LANDING = {
   footer: {
     builtBy: { en: "Built by CEDELA for the Future Health Digital Innovation Challenge.", ar: "بُنيت على يد سيديلا لتحدّي الابتكار الرقمي في الصحة المستقبلية." },
     governance: { en: "Read our data governance", ar: "اطّلع على حوكمة البيانات" },
+    liveUrl: { en: "Live pilot · sila-a7fx.onrender.com", ar: "النسخة التجريبية · sila-a7fx.onrender.com" },
   },
 } as const satisfies Record<string, Record<string, Bilingual> | Bilingual>;

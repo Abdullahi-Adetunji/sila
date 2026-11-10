@@ -30,8 +30,13 @@ export default function SignupPage() {
       await api.post("/api/auth/signup", { email, password, locale });
       router.push("/home");
     } catch (e: unknown) {
-      if (isApiError(e) && e.status === 400) setError("Password must be at least 8 characters.");
-      else if (isApiError(e) && e.status === 409) setError("That email is already registered.");
+      if (isApiError(e) && e.status === 400) {
+        // The server returns a specific reason for every failed strength
+        // check (length, common password, digits-only, email-prefix, few
+        // distinct chars). Surface it verbatim so people know what to fix.
+        const msg = (e.body as { error?: string } | null)?.error;
+        setError(msg || "Password did not meet the strength requirements.");
+      } else if (isApiError(e) && e.status === 409) setError("That email is already registered.");
       else setError("Could not sign you up. Please try again.");
     } finally {
       setSubmitting(false);
@@ -43,8 +48,8 @@ export default function SignupPage() {
   const hint =
     password.length === 0
       ? ""
-      : password.length < 8
-        ? `${8 - password.length} more characters needed`
+      : password.length < 12
+        ? `${12 - password.length} more characters needed`
         : "Looks good.";
 
   return (
@@ -127,19 +132,19 @@ export default function SignupPage() {
                 onChange={setPassword}
                 autoComplete="new-password"
                 required
-                minLength={8}
+                minLength={12}
               />
               <span
                 aria-live="polite"
                 className={`mt-1.5 inline-block text-xs ${
                   password.length === 0
                     ? "text-muted"
-                    : password.length < 8
+                    : password.length < 12
                       ? "text-carrier"
                       : "text-teal"
                 }`}
               >
-                {hint || "At least 8 characters."}
+                {hint || "At least 12 characters; avoid common passwords and all-digit sequences."}
               </span>
             </label>
             <label className="block text-sm font-medium">

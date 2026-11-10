@@ -35,6 +35,44 @@ export async function run(r: CaseReporter): Promise<void> {
     expect(found === 0, `${found} random invite codes were accepted`);
   });
 
+  await r.run(
+    "BRUTE-FORCE: XFF-spoofed bad logins still hit the 20/15min cap",
+    async () => {
+      // trust proxy=3 is only safe if the hosting edge (Cloudflare) strips or
+      // rewrites client-supplied X-Forwarded-For. If it doesn't, an attacker
+      // can put a fresh fake IP in XFF on every request and the per-IP cap
+      // never trips. We spoof a fresh forwarded chain per attempt and expect
+      // the 429 to still fire within ~30 attempts, which proves the real
+      // client IP survived to req.ip.
+      const email = `xff-${Date.now()}@example.com`;
+      await signup(email);
+      let limited = false;
+      let attempts = 0;
+      for (let i = 0; i < 30; i++) {
+        attempts += 1;
+        const a = 203;
+        const b = i;
+        const res = await http("POST", "/api/auth/login", {
+          body: { email, password: `wrong ${i}` },
+          headers: {
+            // Fresh three-entry XFF chain every request. If Express trusted
+            // more than three hops, it would pick 203.0.113.i each time —
+            // distinct bucket per request — and never hit 20.
+            "x-forwarded-for": `${a}.0.113.${b}, 198.51.100.${b}, 10.0.0.${b}`,
+          },
+        });
+        if (res.status === 429) {
+          limited = true;
+          break;
+        }
+      }
+      expect(
+        limited,
+        `no 429 after ${attempts} spoofed-XFF attempts — trust proxy may be too permissive`,
+      );
+    },
+  );
+
   await r.run("BRUTE-FORCE: random participant codes return 401 on /api/volunteer/me", async () => {
     const alphabet = "BCDFGHJKMNPQRSTVWXZ23456789";
     let authed = 0;

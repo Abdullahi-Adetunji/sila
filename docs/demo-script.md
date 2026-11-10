@@ -2,7 +2,7 @@
 
 **Audience.** The 3-minute video narrator. Matches the Playwright `judge.spec.ts` click path so every step can be captured.
 
-**Live URL:** _to be filled in after the first Fly.io deploy_.
+**Live URL:** https://sila-a7fx.onrender.com
 
 **Total runtime:** 3:00 ± 0:05.
 

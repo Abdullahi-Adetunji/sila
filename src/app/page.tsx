@@ -244,8 +244,18 @@ export default function LandingPage() {
 
           {/* Footer */}
           <footer className="mt-16 border-t border-white/10 pt-6 text-xs text-glass-ink-muted">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p>{LANDING.footer.builtBy[lang]}</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p>{LANDING.footer.builtBy[lang]}</p>
+                <p className="mt-1">
+                  <a
+                    href="https://sila-a7fx.onrender.com"
+                    className="font-mono text-accent-mint underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
+                  >
+                    {LANDING.footer.liveUrl[lang]}
+                  </a>
+                </p>
+              </div>
               <Link
                 href="/docs/data-governance"
                 className="text-accent-mint underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"

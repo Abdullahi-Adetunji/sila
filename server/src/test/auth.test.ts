@@ -43,6 +43,35 @@ describe("auth routes", () => {
     expect(res.status).toBe(400);
   });
 
+  // Each row: [label, password, expected reason fragment]. The reason is a
+  // substring match — the server returns the full user-facing sentence; the
+  // test only asserts the signal survives, not the exact wording.
+  const WEAK_CASES: Array<[string, string, string]> = [
+    ["common password (lowercase)", "password1234", "common"],
+    ["common password (mixed case)", "PASSWORD1234", "common"],
+    ["common keyboard walk", "qwertyuiop[]", "common"],
+    ["all digits", "748392015673", "digits"],
+    ["few distinct characters", "aaaaaaaaaaaaaa", "distinct"],
+    ["contains email prefix", "alice-wonderland-123", "email"],
+  ];
+
+  for (const [label, password, reasonFragment] of WEAK_CASES) {
+    it(`rejects ${label}`, async () => {
+      const res = await request(app)
+        .post("/api/auth/signup")
+        .send({ email: "alice@example.com", password });
+      expect(res.status).toBe(400);
+      expect(String(res.body.error ?? "").toLowerCase()).toContain(reasonFragment);
+    });
+  }
+
+  it("accepts a strong passphrase (long, high entropy, not common)", async () => {
+    const res = await request(app)
+      .post("/api/auth/signup")
+      .send({ email: "strong@example.com", password: "copper-sunset-meadow-47" });
+    expect(res.status).toBe(201);
+  });
+
   it("rejects a duplicate email (case-insensitive)", async () => {
     const payload = { email: "dup@example.com", password: "correct horse battery staple" };
     const first = await request(app).post("/api/auth/signup").send(payload);

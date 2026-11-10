@@ -5,6 +5,7 @@ import { z } from "zod";
 import { db } from "../db/client";
 import { users } from "../db/schema";
 import { hashPassword, needsRehash, verifyPassword } from "../lib/password";
+import { checkPasswordStrength } from "../lib/weakPassword";
 import { SESSION_COOKIE, SESSION_TTL_MS, createSession, deleteSession } from "../lib/session";
 import { requireSession } from "../middleware/requireSession";
 
@@ -12,7 +13,7 @@ const router: Router = Router();
 
 const signupSchema = z.object({
   email: z.string().email().max(254),
-  password: z.string().min(8).max(1024),
+  password: z.string().min(12).max(1024),
   locale: z.enum(["en", "ar"]).default("en"),
 });
 
@@ -51,6 +52,11 @@ router.post("/signup", async (req: Request, res: Response) => {
     return;
   }
   const { email, password, locale } = parsed.data;
+  const strength = checkPasswordStrength(password, email);
+  if (!strength.ok) {
+    res.status(400).json({ error: strength.reason });
+    return;
+  }
   const existing = await db
     .select({ id: users.id })
     .from(users)

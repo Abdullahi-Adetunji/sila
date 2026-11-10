@@ -119,11 +119,6 @@ export default function DataGovernancePage() {
           )}
         </article>
 
-        <footer className="mt-10 text-xs text-muted">
-          Served verbatim from{" "}
-          <code className="rounded bg-line/50 px-1.5 py-0.5">docs/data-governance.md</code> in
-          the repo. No AI model generated, summarised or rewrote this text.
-        </footer>
       </main>
     </div>
   );

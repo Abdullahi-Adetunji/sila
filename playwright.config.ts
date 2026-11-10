@@ -14,12 +14,19 @@ export default defineConfig({
   use: {
     baseURL: BASE_URL,
     trace: "retain-on-failure",
-    viewport: { width: 400, height: 900 },
   },
   projects: [
     {
+      // Small phone (≈ Pixel 5 width, taller for scroll-reveal). Matches
+      // the viewport the signed-in shell is tightened to.
       name: "phone",
       use: { ...devices["Pixel 5"], viewport: { width: 400, height: 900 } },
+    },
+    {
+      // Desktop. Covers wide-layout breakpoints — sm:grid-cols-* and
+      // sm:flex-row branches. Chromium only to keep CI runtime down.
+      name: "desktop",
+      use: { browserName: "chromium", viewport: { width: 1280, height: 800 } },
     },
   ],
 });
