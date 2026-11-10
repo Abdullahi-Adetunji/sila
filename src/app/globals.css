@@ -176,7 +176,7 @@ body {
   height: 2px;
   background: var(--teal);
   border-radius: 2px;
-  margin-right: 8px;
+  margin-inline-end: 8px;
   vertical-align: middle;
 }
 

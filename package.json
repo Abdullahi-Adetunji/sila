@@ -24,6 +24,7 @@
     "clinician:import": "tsx --env-file-if-exists=.env scripts/clinician-import.ts",
     "attack": "tsx attack/index.ts",
     "kek:rotate": "tsx --env-file-if-exists=.env scripts/kek-rotate.ts",
+    "admin:create": "tsx --env-file-if-exists=.env scripts/admin-create.ts",
     "test:e2e": "playwright test",
     "screenshots": "tsx scripts/screenshots.ts"
   },
