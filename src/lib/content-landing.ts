@@ -25,6 +25,33 @@ export const LANDING = {
     ctaSignIn: { en: "Sign in", ar: "تسجيل الدخول" },
   },
 
+  // Numbers strip
+  stats: {
+    heading: { en: "The pilot, in numbers", ar: "النسخة التجريبية بالأرقام" },
+    body: {
+      en: "Everything on this page is backed by something in the repo — the synthetic couples file, the panel definition, the current attack suite and the latest privacy test run.",
+      ar: "كل ما يظهر هنا مدعوم بشيء في المستودع — ملف الأزواج الاصطناعيين، تعريف الفحص، مجموعة اختبارات الهجوم الحالية، ونتائج اختبارات الخصوصية.",
+    },
+  },
+
+  // Security flow
+  flow: {
+    heading: { en: "Nine steps from the lab to a couple view", ar: "تسع خطوات من المختبر إلى النتيجة المشتركة" },
+    body: {
+      en: "Each tile mirrors a concrete code path. There is no AI in the risk calculation and no AI in any user-facing text.",
+      ar: "كل مربّع يقابل مساراً فعلياً في الكود. لا يوجد ذكاء اصطناعي في حساب الخطر ولا في أيّ نصّ يظهر للمستخدمين.",
+    },
+  },
+
+  // Panel coverage
+  panel: {
+    heading: { en: "Conditions this pilot screens", ar: "الحالات التي يفحصها هذا النموذج التجريبي" },
+    body: {
+      en: "Three genes in this pilot; adding a gene is a clinical decision, not a developer one.",
+      ar: "ثلاثة جينات في هذه المرحلة. إضافة جين قرار سريري وليس قراراً تقنياً.",
+    },
+  },
+
   // How it works
   how: {
     heading: { en: "How Sila works", ar: "كيف تعمل صلة" },

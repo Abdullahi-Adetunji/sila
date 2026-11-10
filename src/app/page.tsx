@@ -10,6 +10,9 @@ import { LangSwitch } from "./components/LangSwitch";
 import { DemoPanel } from "./components/DemoPanel";
 import { BackgroundAurora } from "./components/BackgroundAurora";
 import { Reveal } from "./components/Reveal";
+import { StatStrip } from "./components/StatStrip";
+import { SecurityFlow } from "./components/SecurityFlow";
+import { PanelGrid } from "./components/PanelGrid";
 import {
   IconArrowRight,
   IconChevronDown,
@@ -120,8 +123,18 @@ export default function LandingPage() {
             </div>
           </section>
 
+          {/* Numbers strip — immediately under the hero so a skimming reader
+              sees defensible figures without having to scroll. */}
+          <Reveal as="section" className="mt-6">
+            <SectionHeader eyebrow="At a glance" title={LANDING.stats.heading[lang]} />
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-glass-ink-muted">
+              {LANDING.stats.body[lang]}
+            </p>
+            <StatStrip />
+          </Reveal>
+
           {/* How it works */}
-          <Reveal as="section" className="mt-8">
+          <Reveal as="section" className="mt-20">
             <SectionHeader
               eyebrow="Process"
               title={LANDING.how.heading[lang]}
@@ -169,6 +182,15 @@ export default function LandingPage() {
             </ol>
           </Reveal>
 
+          {/* Security flow — concrete, mirrors the code path. */}
+          <Reveal as="section" className="mt-20">
+            <SectionHeader eyebrow="Mechanics" title={LANDING.flow.heading[lang]} />
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-glass-ink-muted">
+              {LANDING.flow.body[lang]}
+            </p>
+            <SecurityFlow lang={lang} />
+          </Reveal>
+
           {/* Privacy promises */}
           <Reveal as="section" className="mt-20">
             <SectionHeader
@@ -204,6 +226,16 @@ export default function LandingPage() {
                 </Reveal>
               ))}
             </ul>
+          </Reveal>
+
+          {/* Panel coverage — the only honest answer to 'what does Sila
+              screen for'. Rendered straight from src/lib/genetics/panel.ts. */}
+          <Reveal as="section" className="mt-20">
+            <SectionHeader eyebrow="Coverage" title={LANDING.panel.heading[lang]} />
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-glass-ink-muted">
+              {LANDING.panel.body[lang]}
+            </p>
+            <PanelGrid lang={lang} />
           </Reveal>
 
           {/* What Sila is / isn't */}
@@ -242,26 +274,136 @@ export default function LandingPage() {
             <DemoPanel lang={lang} onDark />
           </Reveal>
 
-          {/* Footer */}
-          <footer className="mt-16 border-t border-white/10 pt-6 text-xs text-glass-ink-muted">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          {/* Footer — scope statement, mark + live URL, three link columns
+              (governance, repo, contact-less contact). No stock imagery, no
+              social buttons, no newsletter. */}
+          <footer className="mt-20 border-t border-white/10 pt-10 text-sm text-glass-ink-muted">
+            <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               <div>
-                <p>{LANDING.footer.builtBy[lang]}</p>
-                <p className="mt-1">
+                <div className="flex items-center gap-2 text-glass-ink">
+                  <span
+                    aria-hidden
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-accent-mint"
+                  >
+                    <IconHelix />
+                  </span>
+                  <span className="text-lg font-semibold tracking-tight">{T.appName[lang]}</span>
+                </div>
+                <p className="mt-4 text-xs leading-relaxed">{LANDING.footer.builtBy[lang]}</p>
+                <p className="mt-3 text-xs">
                   <a
                     href="https://sila-a7fx.onrender.com"
-                    className="font-mono text-accent-mint underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
+                    className="inline-flex items-center gap-1 rounded-full border border-accent-mint/30 bg-accent-mint/10 px-2.5 py-1 font-mono text-accent-mint transition-colors hover:border-accent-mint/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint"
                   >
+                    <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--accent-mint)" }} />
                     {LANDING.footer.liveUrl[lang]}
                   </a>
                 </p>
               </div>
-              <Link
-                href="/docs/data-governance"
-                className="text-accent-mint underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
-              >
-                {LANDING.footer.governance[lang]}
-              </Link>
+
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-glass-ink">
+                  {lang === "en" ? "Documentation" : "التوثيق"}
+                </p>
+                <ul className="mt-4 space-y-2 text-xs">
+                  <li>
+                    <Link
+                      href="/docs/data-governance"
+                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
+                    >
+                      {LANDING.footer.governance[lang]}
+                    </Link>
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/docs/threat-model.md"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
+                    >
+                      {lang === "en" ? "Threat model (STRIDE)" : "نموذج التهديدات (STRIDE)"}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/docs/security-controls.md"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
+                    >
+                      {lang === "en" ? "Security controls" : "ضوابط الأمن"}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/docs/evaluation-results.md"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
+                    >
+                      {lang === "en" ? "Evaluation results" : "نتائج التقييم"}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-glass-ink">
+                  {lang === "en" ? "Source" : "الشيفرة"}
+                </p>
+                <ul className="mt-4 space-y-2 text-xs">
+                  <li>
+                    <a
+                      href="https://github.com/Abdullahi-Adetunji/sila"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
+                    >
+                      {lang === "en" ? "Repository on GitHub" : "المستودع على GitHub"}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/data/synthetic/couples.json"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
+                    >
+                      {lang === "en" ? "Synthetic dataset" : "البيانات الاصطناعية"}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/src/lib/genetics/panel.ts"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
+                    >
+                      {lang === "en" ? "Panel definition" : "تعريف الفحص"}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-glass-ink">
+                  {lang === "en" ? "Scope" : "النطاق"}
+                </p>
+                <p className="mt-4 text-xs leading-relaxed">
+                  {lang === "en"
+                    ? "Prototype using synthetic data. Not medical advice. Not a diagnosis. No real genetic data is collected or processed."
+                    : "نموذج تجريبي باستخدام بيانات اصطناعية. ليس استشارة طبية. ليس تشخيصاً. لا تُجمَع أو تُعالَج أي بيانات وراثية حقيقية."}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+              <p className="font-mono text-glass-ink-muted">
+                CEDELA Tech Park Solutions · Future Health Digital Innovation Challenge 03
+              </p>
+              <p className="font-mono text-glass-ink-muted">
+                {lang === "en" ? "No AI in risk calculation. No AI in clinical text." : "لا ذكاء اصطناعي في حساب الخطر. لا ذكاء اصطناعي في النصوص السريرية."}
+              </p>
             </div>
           </footer>
         </main>
