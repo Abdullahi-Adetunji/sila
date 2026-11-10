@@ -116,6 +116,14 @@ export function IconArrowRight(p: IconProps) {
   );
 }
 
+export function IconArrowLeft(p: IconProps) {
+  return (
+    <svg {...common(p)}>
+      <path d="M20 12H4M10 18l-6-6 6-6" />
+    </svg>
+  );
+}
+
 export function IconEyeOff(p: IconProps) {
   return (
     <svg {...common(p)}>
