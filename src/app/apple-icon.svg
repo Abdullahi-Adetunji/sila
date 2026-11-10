@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Sila">
+  <title>Sila</title>
+  <!-- Apple home-screen icon. Apple applies its own rounded-rect mask on
+       iOS 7+, but we draw our own rounded-rect too so Android and web
+       show the same rounded-square chip. -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f6e6a" />
+      <stop offset="1" stop-color="#0a4846" />
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="40" ry="40" fill="url(#g)" />
+  <g fill="none" stroke="#f3fbf6" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M50 40C78 62 100 78 128 118" />
+    <path d="M50 140C78 118 100 102 128 62" />
+    <path d="M64 62H116" />
+    <path d="M72 90H108" />
+    <path d="M64 118H116" />
+  </g>
+</svg>

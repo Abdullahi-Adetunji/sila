@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sila">
+  <title>Sila</title>
+  <!-- Rounded square background — deep teal gradient so the mark reads on both
+       light and dark browser chrome. Matches the landing accent gradient
+       (teal → mint) so the favicon ties back to the site. -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f6e6a" />
+      <stop offset="1" stop-color="#0a4846" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" ry="14" fill="url(#g)" />
+  <!-- Helix: two crossed sine curves with three rungs. Same glyph as the
+       in-app IconHelix, bolder strokes so it reads at 16×16. -->
+  <g fill="none" stroke="#f3fbf6" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 14C28 22 36 28 46 42" />
+    <path d="M18 50C28 42 36 36 46 22" />
+    <path d="M23 22H41" />
+    <path d="M26 32H38" />
+    <path d="M23 42H41" />
+  </g>
+</svg>
