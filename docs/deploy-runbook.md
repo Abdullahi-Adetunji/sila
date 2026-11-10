@@ -249,33 +249,20 @@ git push origin v1.0.0-pilot
 
 ## 10. Backup restore drill (before any volunteer uses the site)
 
-The daily workflow writes an encrypted artifact. Do one practice restore.
+The daily `backup.yml` workflow writes an encrypted artifact. The restore drill lives in `.github/workflows/restore-drill.yml`. **The age private key and the Neon branch URL are never passed as workflow_dispatch inputs** — inputs persist in the run's parameters forever and are visible to anyone with repo read access. Use two **ephemeral repository secrets** instead:
 
-```sh
-# Download the most recent artifact.
-gh run list --workflow=backup.yml --limit 1 --json databaseId -q '.[0].databaseId' > /tmp/run_id
-gh run download "$(cat /tmp/run_id)" --name "sila-db-backup-$(cat /tmp/run_id)" --dir /tmp/backup
-ls /tmp/backup/*.dump.age
+1. **Create a disposable Neon branch.** Neon console → Branches → *Create branch* off `main` → name it `restore-drill-YYYYMMDD` → copy its **direct-endpoint** connection URL (not pooled).
+2. **Add two repo secrets.** GitHub → Settings → *Secrets and variables* → Actions → New repository secret:
+   - `RESTORE_BRANCH_URL` = the Neon branch URL
+   - `RESTORE_AGE_KEY` = the full contents of `~/.sila/sila-backup-key.txt` (including the `AGE-SECRET-KEY-…` line)
+3. **Run the workflow.** GitHub → Actions → **Restore drill** → *Run workflow*. Optional `backup_run_id` input picks a specific backup run; blank uses the newest successful one.
+4. The job pulls the artifact, age-decrypts it into a temp file (never logged), `pg_restore`s into the Neon branch, and prints a side-by-side `table | live | restored` row-count table. It fails on any mismatch.
+5. **Clean up.** As soon as the drill is done:
+   - GitHub → Settings → Actions → **DELETE** both `RESTORE_AGE_KEY` and `RESTORE_BRANCH_URL`.
+   - Neon console → Branches → **DELETE** the disposable branch.
+6. **Age key rotation note.** If you ever rotate the age keypair (`age-keygen -o ~/.sila/sila-backup-key.txt`), **keep the OLD private key for at least the artifact retention window (30 days)**. Backups made before the rotation are still encrypted to the old public key and cannot be decrypted without it. Only destroy the old key once every artifact it can decrypt has expired.
 
-# Decrypt with the private key held locally.
-age -d -i ~/.sila/sila-backup-key.txt -o /tmp/backup/latest.dump /tmp/backup/*.dump.age
-
-# Create a Neon branch (so we don't disturb prod).
-# In the Neon console: Branches → Create branch from current → name "restore-drill".
-# Copy its connection URL as $RESTORE_URL.
-pg_restore --no-owner --clean --if-exists -d "$RESTORE_URL" /tmp/backup/latest.dump
-
-# Sanity check row counts.
-psql "$RESTORE_URL" -c "select
-  (select count(*) from users) as users,
-  (select count(*) from vault_results) as results,
-  (select count(*) from volunteers) as volunteers,
-  (select count(*) from audit_log) as audit_rows;"
-
-# Delete the Neon branch when you're done.
-```
-
-If the row counts match production within a reasonable delta for the time of day, the backup is good. Record the test in [evaluation-results.md](evaluation-results.md) under "privacy and backups".
+Record the drill result in [evaluation-results.md](evaluation-results.md) under "privacy and backups".
 
 ## 11. Rotating `SILA_KEK` in production
 

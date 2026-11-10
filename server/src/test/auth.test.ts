@@ -134,6 +134,88 @@ describe("auth routes", () => {
     expect(after.status).toBe(401);
   });
 
+  // TOTP enforcement. The intent is 'fail closed': a staff account that
+  // has no admin_totp row cannot log in via /api/auth/login, even with
+  // the correct password. The demo admin bypass lives exclusively on
+  // /api/demo/login.
+  it("refuses staff login (403 totp_not_enrolled) when no TOTP row exists", async () => {
+    // Sign up as a person then promote to counsellor in the DB; no
+    // admin_totp row is inserted.
+    const signup = await request(app)
+      .post("/api/auth/signup")
+      .send({ email: "staff-noTOTP@example.com", password: "correct horse battery staple" });
+    expect(signup.status).toBe(201);
+    const userId = signup.body.user.id as string;
+    const { db } = await import("../db/client");
+    const { users } = await import("../db/schema");
+    const { eq } = await import("drizzle-orm");
+    await db.update(users).set({ role: "counsellor" }).where(eq(users.id, userId));
+
+    const res = await request(app)
+      .post("/api/auth/login")
+      .send({ email: "staff-noTOTP@example.com", password: "correct horse battery staple" });
+    expect(res.status).toBe(403);
+    expect(res.body.error).toBe("totp_not_enrolled");
+    // Sending a code doesn't help: there is no secret to verify against.
+    const withCode = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: "staff-noTOTP@example.com",
+        password: "correct horse battery staple",
+        totpCode: "123456",
+      });
+    expect(withCode.status).toBe(403);
+    expect(withCode.body.error).toBe("totp_not_enrolled");
+  });
+
+  it("succeeds for a staff account that HAS admin_totp when the code matches", async () => {
+    const signup = await request(app)
+      .post("/api/auth/signup")
+      .send({ email: "staff-withTOTP@example.com", password: "correct horse battery staple" });
+    const userId = signup.body.user.id as string;
+    const { db } = await import("../db/client");
+    const { users, adminTotp } = await import("../db/schema");
+    const { eq } = await import("drizzle-orm");
+    const { generateSecret, totpGenerate } = await import("../lib/totp");
+    await db.update(users).set({ role: "counsellor" }).where(eq(users.id, userId));
+    const secret = generateSecret();
+    await db.insert(adminTotp).values({
+      userId,
+      secret,
+      recoveryCodes: "",
+      verifiedAt: new Date(),
+    });
+    // No code -> 401 totp_required.
+    const noCode = await request(app)
+      .post("/api/auth/login")
+      .send({ email: "staff-withTOTP@example.com", password: "correct horse battery staple" });
+    expect(noCode.status).toBe(401);
+    expect(noCode.body.error).toBe("totp_required");
+
+    // Wrong code -> 401 invalid_totp.
+    const wrongCode = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: "staff-withTOTP@example.com",
+        password: "correct horse battery staple",
+        totpCode: "000000",
+      });
+    expect(wrongCode.status).toBe(401);
+    expect(wrongCode.body.error).toBe("invalid_totp");
+
+    // Correct code -> 200.
+    const code = totpGenerate(secret);
+    const ok = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: "staff-withTOTP@example.com",
+        password: "correct horse battery staple",
+        totpCode: code,
+      });
+    expect(ok.status).toBe(200);
+    expect(ok.body.user.role).toBe("counsellor");
+  });
+
   it("stores a password hash, not the plaintext", async () => {
     const password = "correct horse battery staple";
     await request(app).post("/api/auth/signup").send({ email: "hash@example.com", password });

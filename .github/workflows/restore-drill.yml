@@ -3,34 +3,32 @@ name: Restore drill
 # A manual job that proves the daily backup is actually restorable.
 #
 # Picks the newest `sila-db-backup-*` artifact produced by backup.yml,
-# age-decrypts it using the operator-pasted private key, restores the
-# dump into the Neon branch whose URL the operator pastes, then compares
-# per-table row counts between the live database and the restored copy.
-# The operator deletes the Neon branch afterwards.
+# age-decrypts it using the operator-set private key, restores the dump
+# into a disposable Neon branch, then compares per-table row counts
+# between the live database and the restored copy.
 #
-# Security notes
-# - The age private key is a workflow_dispatch input, not a GitHub secret.
-#   It is persisted in the workflow run's parameters alongside the run,
-#   which is why we only use this flow occasionally and recommend rotating
-#   the key after each drill. The first step masks the key in logs with
-#   ::add-mask:: so it does not appear in any log line that happens to
-#   print it.
-# - The branch URL must point at a Neon BRANCH, not the primary. Rows are
-#   written only to that branch; live data is read-only (row counts only).
-# - DATABASE_ADMIN_URL continues to point at the primary — for read-only
-#   SELECT count(*) comparisons.
+# Security-critical: the age private key and the branch URL come from
+# repository secrets (RESTORE_AGE_KEY, RESTORE_BRANCH_URL), NOT from
+# workflow_dispatch inputs. Inputs persist in the run's parameters
+# forever and are visible to anyone with read access to the Actions
+# tab — rotating after the fact does not protect the backups already
+# made with that key.
+#
+# Operator flow:
+#   1. Create a disposable Neon branch; copy its direct-endpoint URL.
+#   2. GitHub repo -> Settings -> Secrets and variables -> Actions:
+#      add `RESTORE_BRANCH_URL` (the Neon branch URL) and
+#      add `RESTORE_AGE_KEY`    (the contents of ~/.sila/sila-backup-key.txt).
+#   3. GitHub -> Actions -> Restore drill -> Run workflow.
+#   4. When the job finishes, DELETE both secrets AND the Neon branch.
+#
+# Rotation note: if the age keypair is ever rotated, keep the OLD
+# private key for at least the artifact retention window (30 days)
+# because older backups are still encrypted to the old public key.
 
 on:
   workflow_dispatch:
     inputs:
-      branch_url:
-        description: "Neon branch connection string (restore target). Must be a disposable branch — this workflow will pg_restore into it."
-        required: true
-        type: string
-      age_key:
-        description: "Contents of ~/.sila/sila-backup-key.txt (the AGE-SECRET-KEY-... line). Will be masked in logs. Rotate it after the drill."
-        required: true
-        type: string
       backup_run_id:
         description: "Specific backup.yml run id to restore from. Leave blank for the newest successful run."
         required: false
@@ -44,13 +42,20 @@ jobs:
   drill:
     runs-on: ubuntu-latest
     steps:
-      - name: Mask the age key in logs
+      - name: Require restore secrets
         env:
-          AGE_KEY: ${{ inputs.age_key }}
+          RESTORE_AGE_KEY: ${{ secrets.RESTORE_AGE_KEY }}
+          RESTORE_BRANCH_URL: ${{ secrets.RESTORE_BRANCH_URL }}
         run: |
-          # Drop the secret into the log masker before anything else runs.
-          # The key itself never gets echoed.
-          printf '::add-mask::%s\n' "$AGE_KEY"
+          # Fail fast if either secret is missing. Do NOT echo their values.
+          if [ -z "${RESTORE_AGE_KEY:-}" ]; then
+            echo "::error::RESTORE_AGE_KEY secret is not set. Add it, re-run, delete it afterwards."
+            exit 1
+          fi
+          if [ -z "${RESTORE_BRANCH_URL:-}" ]; then
+            echo "::error::RESTORE_BRANCH_URL secret is not set. Add it, re-run, delete it afterwards."
+            exit 1
+          fi
 
       - name: Install postgres-client-16 and age
         run: |
@@ -112,12 +117,14 @@ jobs:
 
       - name: Decrypt the dump
         env:
-          AGE_KEY: ${{ inputs.age_key }}
+          RESTORE_AGE_KEY: ${{ secrets.RESTORE_AGE_KEY }}
         run: |
           set -euo pipefail
           umask 077
           key_file=$(mktemp)
-          printf '%s\n' "$AGE_KEY" > "$key_file"
+          # Secret contents never appear in the log — GitHub masks them,
+          # and we write to a temp file instead of echoing.
+          printf '%s\n' "$RESTORE_AGE_KEY" > "$key_file"
           plain="${DUMP_FILE%.age}"
           age --decrypt -i "$key_file" -o "$plain" "$DUMP_FILE"
           rm -f "$key_file"
@@ -126,27 +133,27 @@ jobs:
 
       - name: Restore into the Neon branch
         env:
-          BRANCH_URL: ${{ inputs.branch_url }}
+          RESTORE_BRANCH_URL: ${{ secrets.RESTORE_BRANCH_URL }}
         run: |
           set -euo pipefail
-          echo "::add-mask::${BRANCH_URL}"
+          # The URL is already masked by GitHub as a secret. Pass it in
+          # via env only; pg_restore never echoes its connection string.
           pg_restore --no-owner --no-privileges --clean --if-exists \
-            --dbname="$BRANCH_URL" "$PLAIN"
+            --dbname="$RESTORE_BRANCH_URL" "$PLAIN"
 
       - name: Row-count comparison (live vs restored)
         env:
           LIVE: ${{ secrets.DATABASE_ADMIN_URL }}
-          BRANCH_URL: ${{ inputs.branch_url }}
+          RESTORE_BRANCH_URL: ${{ secrets.RESTORE_BRANCH_URL }}
         run: |
           set -euo pipefail
-          echo "::add-mask::${BRANCH_URL}"
-          tables="users sessions vault_keys vault_results partner_links consents relatives referrals referral_steps volunteers volunteer_quiz volunteer_ttr audit_log"
+          tables="users sessions vault_keys vault_results partner_links consents relatives referrals referral_steps volunteers volunteer_quiz volunteer_ttr audit_log admin_invites admin_totp"
           mismatches=0
           printf '%-24s  %10s  %10s\n' TABLE LIVE RESTORED
           printf '%-24s  %10s  %10s\n' "------" "------" "------"
           for t in $tables; do
             live_n=$(psql "$LIVE" -At -c "select count(*) from \"$t\";" 2>/dev/null || echo "-")
-            back_n=$(psql "$BRANCH_URL" -At -c "select count(*) from \"$t\";" 2>/dev/null || echo "-")
+            back_n=$(psql "$RESTORE_BRANCH_URL" -At -c "select count(*) from \"$t\";" 2>/dev/null || echo "-")
             printf '%-24s  %10s  %10s\n' "$t" "$live_n" "$back_n"
             if [ "$live_n" != "$back_n" ]; then
               mismatches=$((mismatches + 1))
@@ -158,11 +165,12 @@ jobs:
           fi
           echo "All tables matched."
 
-      - name: Reminder — delete the Neon branch and rotate the age key
+      - name: Reminder — delete the secrets and the Neon branch
         run: |
           echo "Restore drill complete. Operator actions:"
-          echo "  1. Open the Neon console and DELETE the branch you created for this drill."
-          echo "  2. Rotate ~/.sila/sila-backup-key.txt (the age key you pasted is now part of this run's metadata)."
-          echo "     - Generate a new keypair: age-keygen -o ~/.sila/sila-backup-key.txt"
-          echo "     - Update the AGE_RECIPIENT GitHub repo secret to the new public key."
-          echo "     - The next backup.yml run will encrypt to the new key; older dumps still need the old key."
+          echo "  1. GitHub -> Settings -> Secrets and variables -> Actions:"
+          echo "     DELETE 'RESTORE_AGE_KEY' and 'RESTORE_BRANCH_URL'."
+          echo "  2. Neon console -> Branches: DELETE the disposable branch you created."
+          echo "  3. If you rotate the age keypair later, keep the OLD private key"
+          echo "     for at least 30 days — older encrypted backups are still"
+          echo "     encrypted to the old public key."

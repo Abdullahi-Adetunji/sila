@@ -112,23 +112,33 @@ router.post("/login", loginLimiter, async (req: Request, res: Response) => {
     res.status(403).json({ error: "account_deactivated" });
     return;
   }
-  // Staff accounts require a second factor if one is enrolled. Person
-  // accounts never do. The response is a 401 with a distinct error code
-  // the client uses to prompt for the 6-digit TOTP and re-submit.
+  // Staff accounts MUST have a second factor enrolled to log in via this
+  // endpoint. "Required once enrolled" would let a staff account whose
+  // admin_totp row is missing (dropped migration, cleanup script, DB
+  // restore from before TOTP was mandatory, etc.) slip past the check,
+  // so we fail closed: if the staff account has no TOTP row, refuse the
+  // login with 403 'totp_not_enrolled'.
+  //
+  // The demo admin (admin@demo.sila) is explicitly allowed to log in
+  // without TOTP via /api/demo/login, which is a separate endpoint that
+  // is 404 outside DEMO_MODE. This endpoint (/api/auth/login) applies
+  // the strict rule to every staff account including the demo ones.
   if (row.role !== "person") {
     const [totpRow] = await db
       .select({ secret: adminTotp.secret })
       .from(adminTotp)
       .where(eq(adminTotp.userId, row.id));
-    if (totpRow) {
-      if (!totpCode) {
-        res.status(401).json({ error: "totp_required" });
-        return;
-      }
-      if (!totpVerify(totpRow.secret, totpCode)) {
-        res.status(401).json({ error: "invalid_totp" });
-        return;
-      }
+    if (!totpRow) {
+      res.status(403).json({ error: "totp_not_enrolled" });
+      return;
+    }
+    if (!totpCode) {
+      res.status(401).json({ error: "totp_required" });
+      return;
+    }
+    if (!totpVerify(totpRow.secret, totpCode)) {
+      res.status(401).json({ error: "invalid_totp" });
+      return;
     }
   }
   // Transparent rehash on login when the stored hash uses parameters that

@@ -45,6 +45,10 @@ export default function LoginPage() {
           setError("That 6-digit code didn't match. Wait for a fresh one and try again.");
         } else if (e.status === 403 && msg === "account_deactivated") {
           setError("This account has been deactivated. Contact an admin.");
+        } else if (e.status === 403 && msg === "totp_not_enrolled") {
+          setError(
+            "Two-step verification isn't enrolled on this account. Open a fresh staff invite from an admin to set it up.",
+          );
         } else if (e.status === 401) {
           setError("Incorrect email or password.");
         } else {
