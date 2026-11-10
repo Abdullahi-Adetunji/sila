@@ -274,9 +274,10 @@ export default function LandingPage() {
             <DemoPanel lang={lang} onDark />
           </Reveal>
 
-          {/* Footer — scope statement, mark + live URL, three link columns
-              (governance, repo, contact-less contact). No stock imagery, no
-              social buttons, no newsletter. */}
+          {/* Footer — three columns of in-app links + a scope paragraph. The
+              live URL is not repeated here because the reader is already on
+              it. Doc links go to in-app pages rendered from the markdown
+              files in the repo. */}
           <footer className="mt-20 border-t border-white/10 pt-10 text-sm text-glass-ink-muted">
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               <div>
@@ -290,15 +291,6 @@ export default function LandingPage() {
                   <span className="text-lg font-semibold tracking-tight">{T.appName[lang]}</span>
                 </div>
                 <p className="mt-4 text-xs leading-relaxed">{LANDING.footer.builtBy[lang]}</p>
-                <p className="mt-3 text-xs">
-                  <a
-                    href="https://sila-a7fx.onrender.com"
-                    className="inline-flex items-center gap-1 rounded-full border border-accent-mint/30 bg-accent-mint/10 px-2.5 py-1 font-mono text-accent-mint transition-colors hover:border-accent-mint/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint"
-                  >
-                    <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--accent-mint)" }} />
-                    {LANDING.footer.liveUrl[lang]}
-                  </a>
-                </p>
               </div>
 
               <div>
@@ -315,72 +307,60 @@ export default function LandingPage() {
                     </Link>
                   </li>
                   <li>
-                    <a
-                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/docs/threat-model.md"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href="/docs/threat-model"
                       className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
                     >
                       {lang === "en" ? "Threat model (STRIDE)" : "نموذج التهديدات (STRIDE)"}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
-                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/docs/security-controls.md"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href="/docs/security-controls"
                       className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
                     >
                       {lang === "en" ? "Security controls" : "ضوابط الأمن"}
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
-                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/docs/evaluation-results.md"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href="/docs/evaluation-results"
                       className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
                     >
                       {lang === "en" ? "Evaluation results" : "نتائج التقييم"}
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
 
               <div>
                 <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-glass-ink">
-                  {lang === "en" ? "Source" : "الشيفرة"}
+                  {lang === "en" ? "Get started" : "ابدأ"}
                 </p>
                 <ul className="mt-4 space-y-2 text-xs">
                   <li>
-                    <a
-                      href="https://github.com/Abdullahi-Adetunji/sila"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href="/signup"
                       className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
                     >
-                      {lang === "en" ? "Repository on GitHub" : "المستودع على GitHub"}
-                    </a>
+                      {LANDING.hero.ctaCreate[lang]}
+                    </Link>
                   </li>
                   <li>
-                    <a
-                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/data/synthetic/couples.json"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href="/login"
                       className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
                     >
-                      {lang === "en" ? "Synthetic dataset" : "البيانات الاصطناعية"}
-                    </a>
+                      {LANDING.hero.ctaSignIn[lang]}
+                    </Link>
                   </li>
                   <li>
-                    <a
-                      href="https://github.com/Abdullahi-Adetunji/sila/blob/main/src/lib/genetics/panel.ts"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href="/volunteer"
                       className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
                     >
-                      {lang === "en" ? "Panel definition" : "تعريف الفحص"}
-                    </a>
+                      {lang === "en" ? "Volunteer (study mode)" : "المشاركة في الدراسة"}
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -402,7 +382,9 @@ export default function LandingPage() {
                 CEDELA Tech Park Solutions · Future Health Digital Innovation Challenge 03
               </p>
               <p className="font-mono text-glass-ink-muted">
-                {lang === "en" ? "No AI in risk calculation. No AI in clinical text." : "لا ذكاء اصطناعي في حساب الخطر. لا ذكاء اصطناعي في النصوص السريرية."}
+                {lang === "en"
+                  ? "No AI in risk calculation. No AI in clinical text."
+                  : "لا ذكاء اصطناعي في حساب الخطر. لا ذكاء اصطناعي في النصوص السريرية."}
               </p>
             </div>
           </footer>
