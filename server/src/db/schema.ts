@@ -13,7 +13,22 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-export const roleEnum = pgEnum("role", ["person", "counsellor", "lab", "evaluator"]);
+export const roleEnum = pgEnum("role", [
+  "person",
+  "counsellor",
+  "lab",
+  "evaluator",
+  // Added for the admin dashboard. An admin can create/deactivate staff
+  // accounts and nothing else. They never have read access to vaults,
+  // consents, couple views, referrals, relatives, volunteer data or any
+  // person's access log — enforced in policy + a dedicated test.
+  "admin",
+]);
+
+// `active` is the default. Deactivating an account stops the account from
+// logging in and kills every existing session (enforced where sessions are
+// resolved). Accounts are never deleted so the audit trail stays intact.
+export const userStatusEnum = pgEnum("user_status", ["active", "deactivated"]);
 
 export const users = pgTable(
   "users",
@@ -22,8 +37,10 @@ export const users = pgTable(
     email: varchar("email", { length: 254 }).notNull(),
     passwordHash: text("password_hash").notNull(),
     role: roleEnum("role").notNull().default("person"),
+    status: userStatusEnum("status").notNull().default("active"),
     locale: varchar("locale", { length: 8 }).notNull().default("en"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   },
   (t) => [uniqueIndex("users_email_lower_idx").on(sql`lower(${t.email})`)],
 );
@@ -303,3 +320,63 @@ export const auditLog = pgTable(
     uniqueIndex("audit_log_hash_unique").on(t.hash),
   ],
 );
+
+// -----------------------------------------------------------------------
+// Admin + staff invites
+// -----------------------------------------------------------------------
+//
+// Staff accounts (counsellor, lab, evaluator, admin) are only ever created
+// through the admin dashboard, never by the signup route. The admin fills
+// in name + email + role and Sila generates a single-use invite. The
+// invite is shown once in the admin UI — Sila sends no email because we
+// deploy with no third-party mail service. The admin passes the link on
+// out of band. The staff member opens the link, chooses their own
+// password and enrols a TOTP second factor.
+//
+// Invites store a SHA-256 hash of the code, not the code itself. The raw
+// code only appears in the admin's browser at creation time and in the
+// URL when the staff member opens it. Rows are never deleted so audit
+// can show every create + consume event.
+
+export const adminInvites = pgTable(
+  "admin_invites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    codeHash: text("code_hash").notNull(),
+    role: roleEnum("role").notNull(),
+    email: varchar("email", { length: 254 }).notNull(),
+    displayName: varchar("display_name", { length: 120 }).notNull(),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    consumedAt: timestamp("consumed_at", { withTimezone: true }),
+    // When consumed, this is the user id that was created.
+    consumedUserId: uuid("consumed_user_id").references(() => users.id, { onDelete: "set null" }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (t) => [
+    uniqueIndex("admin_invites_code_hash_unique").on(t.codeHash),
+    index("admin_invites_email_lower_idx").on(sql`lower(${t.email})`),
+    index("admin_invites_created_by_idx").on(t.createdBy),
+  ],
+);
+
+// Per-user TOTP enrolment. One row per staff account that has enrolled a
+// second factor. Only present for staff; person accounts never enrol.
+// Recovery codes are a comma-separated list of SHA-256 hashes; a used
+// code is overwritten to the empty string in place so an audit of the
+// column always shows how many remain.
+export const adminTotp = pgTable("admin_totp", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  // Base32 secret. Shown to the user only once, during enrolment, so they
+  // can type or scan it into their authenticator app. Stored here because
+  // we have to verify every login — there is no vendor API we can
+  // delegate verification to.
+  secret: text("secret").notNull(),
+  recoveryCodes: text("recovery_codes").notNull(),
+  verifiedAt: timestamp("verified_at", { withTimezone: true }).notNull(),
+});

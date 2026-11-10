@@ -6,7 +6,7 @@ import { sessions, users } from "../db/schema";
 export const SESSION_COOKIE = "sila_session";
 export const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
-export type Role = "person" | "counsellor" | "lab" | "evaluator";
+export type Role = "person" | "counsellor" | "lab" | "evaluator" | "admin";
 
 export interface SessionInfo {
   id: string;

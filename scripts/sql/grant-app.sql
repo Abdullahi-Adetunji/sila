@@ -20,7 +20,13 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE
   quiz_responses,
   time_to_referral_events,
   privacy_report_runs,
-  clinician_import_runs
+  clinician_import_runs,
+  -- Admin + staff invite plumbing (added in migration 0008).
+  -- sila_app needs CRUD on admin_invites so the admin dashboard can
+  -- create / revoke / mark-consumed invites, and on admin_totp so a
+  -- staff account can enrol and verify its second factor.
+  admin_invites,
+  admin_totp
 TO sila_app;
 
 -- The audit log is append-only even for the app itself.
