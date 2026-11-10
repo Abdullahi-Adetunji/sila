@@ -30,7 +30,7 @@ export default function SignupPage() {
       await api.post("/api/auth/signup", { email, password, locale });
       router.push("/home");
     } catch (e: unknown) {
-      if (isApiError(e) && e.status === 400) setError("Password must be at least 12 characters.");
+      if (isApiError(e) && e.status === 400) setError("Password must be at least 8 characters.");
       else if (isApiError(e) && e.status === 409) setError("That email is already registered.");
       else setError("Could not sign you up. Please try again.");
     } finally {
@@ -43,8 +43,8 @@ export default function SignupPage() {
   const hint =
     password.length === 0
       ? ""
-      : password.length < 12
-        ? `${12 - password.length} more characters needed`
+      : password.length < 8
+        ? `${8 - password.length} more characters needed`
         : "Looks good.";
 
   return (
@@ -127,19 +127,19 @@ export default function SignupPage() {
                 onChange={setPassword}
                 autoComplete="new-password"
                 required
-                minLength={12}
+                minLength={8}
               />
               <span
                 aria-live="polite"
                 className={`mt-1.5 inline-block text-xs ${
                   password.length === 0
                     ? "text-muted"
-                    : password.length < 12
+                    : password.length < 8
                       ? "text-carrier"
                       : "text-teal"
                 }`}
               >
-                {hint || "At least 12 characters."}
+                {hint || "At least 8 characters."}
               </span>
             </label>
             <label className="block text-sm font-medium">
