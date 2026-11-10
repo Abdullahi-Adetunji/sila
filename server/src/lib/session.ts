@@ -43,6 +43,7 @@ export async function resolveSession(id: string | undefined): Promise<SessionInf
       csrfToken: sessions.csrfToken,
       expiresAt: sessions.expiresAt,
       role: users.role,
+      status: users.status,
     })
     .from(sessions)
     .innerJoin(users, eq(users.id, sessions.userId))
@@ -53,7 +54,17 @@ export async function resolveSession(id: string | undefined): Promise<SessionInf
     await db.delete(sessions).where(eq(sessions.id, id));
     return null;
   }
+  // Deactivated accounts cannot use a lingering session. Delete the row
+  // so a future resolve is also a no-op.
+  if (s.status === "deactivated") {
+    await db.delete(sessions).where(eq(sessions.id, id));
+    return null;
+  }
   return { id: s.id, userId: s.userId, csrfToken: s.csrfToken, role: s.role as Role };
+}
+
+export async function deleteSessionsForUser(userId: string): Promise<void> {
+  await db.delete(sessions).where(eq(sessions.userId, userId));
 }
 
 export async function deleteSession(id: string): Promise<void> {

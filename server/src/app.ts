@@ -4,6 +4,7 @@ import helmet from "helmet";
 import { pool } from "./db/client";
 import authRouter from "./routes/auth";
 import inviteRouter from "./routes/invite";
+import adminRouter from "./routes/admin";
 import meRouter from "./routes/me";
 import partnerRouter from "./routes/partner";
 import consentRouter from "./routes/consent";
@@ -20,6 +21,7 @@ import evaluatorRouter from "./routes/evaluator";
 export const MOUNTS: ReadonlyArray<{ prefix: string; router: Router }> = [
   { prefix: "/api/auth", router: authRouter },
   { prefix: "/api/invite", router: inviteRouter },
+  { prefix: "/api/admin", router: adminRouter },
   { prefix: "/api/me", router: meRouter },
   { prefix: "/api/partner", router: partnerRouter },
   { prefix: "/api/consent", router: consentRouter },

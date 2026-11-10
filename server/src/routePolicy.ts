@@ -134,6 +134,29 @@ export const ROUTE_POLICY: Record<string, RouteClass> = {
   // of url-safe base64 (~192 bits).
   "GET /api/invite/:code": { kind: "public", reason: "invite code is the credential" },
   "POST /api/invite/:code/claim": { kind: "public", reason: "rate-limited claim flow" },
+
+  // --- Admin dashboard ---
+  // All gated by requireAdminRole; no personal genetic data is returned.
+  "GET /api/admin/staff": { kind: "session_only", reason: "admin-only staff roster" },
+  "POST /api/admin/invite": { kind: "session_only", reason: "admin creates staff invite" },
+  "POST /api/admin/invite/:id/regenerate": {
+    kind: "session_only",
+    reason: "admin reissues staff invite",
+  },
+  "POST /api/admin/invite/:id/revoke": {
+    kind: "session_only",
+    reason: "admin cancels staff invite",
+  },
+  "POST /api/admin/user/:id/deactivate": {
+    kind: "session_only",
+    reason: "admin deactivates staff; sessions killed",
+  },
+  "POST /api/admin/user/:id/reactivate": {
+    kind: "session_only",
+    reason: "admin re-enables staff",
+  },
+  "GET /api/admin/actions": { kind: "session_only", reason: "admin's own action feed" },
+  "GET /api/admin/stats": { kind: "session_only", reason: "admin header counts" },
 };
 
 // Path prefixes whose routes MUST carry kind: "policy". Used by the test to
