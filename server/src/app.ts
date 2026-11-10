@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { pool } from "./db/client";
 import authRouter from "./routes/auth";
+import inviteRouter from "./routes/invite";
 import meRouter from "./routes/me";
 import partnerRouter from "./routes/partner";
 import consentRouter from "./routes/consent";
@@ -18,6 +19,7 @@ import evaluatorRouter from "./routes/evaluator";
 
 export const MOUNTS: ReadonlyArray<{ prefix: string; router: Router }> = [
   { prefix: "/api/auth", router: authRouter },
+  { prefix: "/api/invite", router: inviteRouter },
   { prefix: "/api/me", router: meRouter },
   { prefix: "/api/partner", router: partnerRouter },
   { prefix: "/api/consent", router: consentRouter },

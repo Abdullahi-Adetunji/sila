@@ -127,6 +127,13 @@ export const ROUTE_POLICY: Record<string, RouteClass> = {
     kind: "policy",
     action: "canReadEvaluatorDashboard",
   },
+
+  // --- Admin / staff invites ---
+  // The invite endpoints are public because the invite code itself is
+  // the only credential. They are rate-limited and the code is 32 bytes
+  // of url-safe base64 (~192 bits).
+  "GET /api/invite/:code": { kind: "public", reason: "invite code is the credential" },
+  "POST /api/invite/:code/claim": { kind: "public", reason: "rate-limited claim flow" },
 };
 
 // Path prefixes whose routes MUST carry kind: "policy". Used by the test to
