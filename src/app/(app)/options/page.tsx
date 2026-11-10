@@ -6,6 +6,7 @@ import { type Lang } from "@/lib/content";
 import { useSession } from "../../lib/session";
 import { LangSwitch } from "../../components/LangSwitch";
 import { SectionLabel } from "../../components/SectionLabel";
+import { Reveal } from "../../components/Reveal";
 
 const OPTIONS = [
   "options.talk_counsellor",
@@ -28,35 +29,50 @@ export default function OptionsPage() {
 
   return (
     <main dir={dir} lang={lang}>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">
-          {lang === "en" ? "Options to consider" : "خيارات للتفكير فيها"}
-        </h1>
-        <LangSwitch lang={lang} onChange={setLang} />
-      </div>
+      <Reveal>
+        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted">Choices</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              {lang === "en" ? "Options to consider" : "خيارات للتفكير فيها"}
+            </h1>
+          </div>
+          <LangSwitch lang={lang} onChange={setLang} />
+        </header>
+      </Reveal>
 
-      <section className="mt-4 rounded-2xl border border-line bg-surface p-4">
-        <SectionLabel section={header.sectionLabel} lang={lang} />
-        <p className="mt-2 text-sm">{header.text[lang]}</p>
-      </section>
+      <Reveal>
+        <section className="rounded-2xl border border-line bg-surface p-5">
+          <SectionLabel section={header.sectionLabel} lang={lang} />
+          <p className="mt-3 text-sm leading-relaxed">{header.text[lang]}</p>
+        </section>
+      </Reveal>
 
-      <ul className="mt-6 space-y-3">
-        {OPTIONS.map((id) => {
+      <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+        {OPTIONS.map((id, i) => {
           const t = getTemplate(id);
           return (
-            <li key={id} className="rounded-2xl border border-line bg-surface p-4">
-              <SectionLabel section={t.sectionLabel} lang={lang} />
-              <p className="mt-2 text-sm">{t.text[lang]}</p>
-            </li>
+            <Reveal
+              as="li"
+              key={id}
+              delay={((Math.min(i + 1, 6)) as 1 | 2 | 3 | 4 | 5 | 6)}
+            >
+              <article className="h-full rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-teal/40">
+                <SectionLabel section={t.sectionLabel} lang={lang} />
+                <p className="mt-3 text-sm leading-relaxed">{t.text[lang]}</p>
+              </article>
+            </Reveal>
           );
         })}
       </ul>
 
-      <p className="mt-6 text-xs text-muted">
-        {lang === "en"
-          ? "Sila never recommends a reproductive or marriage decision. The choice is yours."
-          : "لا توصي صلة أبداً باتخاذ قرار إنجابي أو زواجي. القرار لكما."}
-      </p>
+      <Reveal>
+        <p className="mt-8 rounded-xl border border-dashed border-line bg-surface p-4 text-xs text-muted">
+          {lang === "en"
+            ? "Sila never recommends a reproductive or marriage decision. The choice is yours."
+            : "لا توصي صلة أبداً باتخاذ قرار إنجابي أو زواجي. القرار لكما."}
+        </p>
+      </Reveal>
     </main>
   );
 }

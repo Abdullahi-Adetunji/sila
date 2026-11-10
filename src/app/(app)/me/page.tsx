@@ -9,6 +9,7 @@ import { getTemplate } from "@/content/templates";
 import { type Lang } from "@/lib/content";
 import { SectionLabel } from "../../components/SectionLabel";
 import { LangSwitch } from "../../components/LangSwitch";
+import { Reveal } from "../../components/Reveal";
 
 type ResultsByGene = Record<string, GeneResult>;
 
@@ -48,76 +49,138 @@ export default function MyResultPage() {
   }, []);
 
   const hasNoVariantFound =
-    results && Object.values(results).some((r) => r.status === "tested" && r.variants.length === 0);
+    results &&
+    Object.values(results).some((r) => r.status === "tested" && r.variants.length === 0);
 
   return (
     <main dir={dir} lang={lang}>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">
-          {lang === "en" ? "Your result" : "نتيجتك"}
-        </h1>
-        <LangSwitch lang={lang} onChange={setLang} />
-      </div>
-      <p className="mt-2 text-sm text-muted">
-        {lang === "en"
-          ? "This page shows your own carrier result only. Your partner cannot see it unless you choose to share it on the Consent page."
-          : "تعرض هذه الصفحة نتيجتك الفردية فقط. لا يمكن لشريك حياتك أن يراها إلا إذا اخترت مشاركتها في صفحة الموافقة."}
-      </p>
+      <Reveal>
+        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted">You</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              {lang === "en" ? "Your result" : "نتيجتك"}
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
+              {lang === "en"
+                ? "This page shows your own carrier result only. Your partner cannot see it unless you choose to share it on the Consent page."
+                : "تعرض هذه الصفحة نتيجتك الفردية فقط. لا يمكن لشريك حياتك أن يراها إلا إذا اخترت مشاركتها في صفحة الموافقة."}
+            </p>
+          </div>
+          <LangSwitch lang={lang} onChange={setLang} />
+        </header>
+      </Reveal>
 
       {state === "loading" && (
-        <p className="mt-6 text-sm text-muted">{lang === "en" ? "Loading…" : "جار التحميل…"}</p>
+        <p className="text-sm text-muted">{lang === "en" ? "Loading…" : "جار التحميل…"}</p>
       )}
       {state === "error" && (
-        <p className="mt-6 text-sm text-red-600">
+        <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           {lang === "en" ? "Could not load your result." : "تعذّر تحميل نتيجتك."}
         </p>
       )}
       {state === "empty" && (
-        <p className="mt-6 rounded-xl border border-line bg-surface p-4 text-sm">
-          {lang === "en"
-            ? "No carrier result has been uploaded to your account yet. In this prototype, a simulated lab uploads results via npm run seed."
-            : "لم تُحمَّل أي نتيجة إلى حسابك بعد. في هذا النموذج الأولي، يرفع مختبر محاكى النتائج عبر npm run seed."}
-        </p>
+        <Reveal>
+          <p className="rounded-2xl border border-dashed border-line bg-surface p-5 text-sm text-muted">
+            {lang === "en"
+              ? "No carrier result has been uploaded to your account yet. In this prototype, a simulated lab uploads results via npm run seed."
+              : "لم تُحمَّل أي نتيجة إلى حسابك بعد. في هذا النموذج الأولي، يرفع مختبر محاكى النتائج عبر npm run seed."}
+          </p>
+        </Reveal>
       )}
 
       {state === "ready" && results && (
         <>
-          <ul className="mt-6 space-y-3">
-            {PANEL.map((gene) => {
+          <ul className="space-y-4">
+            {PANEL.map((gene, i) => {
               const r = results[gene.gene];
               const status = personGeneStatus(r);
               const tmpl = getTemplate(templateIdFor(status));
+              const tone = STATUS_TONE[status];
               return (
-                <li key={gene.gene} className="rounded-2xl border border-line bg-surface p-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <SectionLabel section={tmpl.sectionLabel} lang={lang} />
-                    <p className="text-xs font-medium uppercase tracking-wide text-muted">
-                      {gene.condition[lang]}
-                    </p>
-                  </div>
-                  <p className="mt-2 text-sm font-semibold">{statusHeadline(status, lang)}</p>
-                  <p className="mt-2 text-sm text-ink">{tmpl.text[lang]}</p>
-                </li>
+                <Reveal
+                  as="li"
+                  key={gene.gene}
+                  delay={((Math.min(i + 1, 6)) as 1 | 2 | 3 | 4 | 5 | 6)}
+                >
+                  <article
+                    className={`relative overflow-hidden rounded-2xl border bg-surface p-5 transition-shadow hover:shadow-md ${tone.border}`}
+                  >
+                    <div
+                      aria-hidden
+                      className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${tone.wash} to-transparent`}
+                    />
+                    <div className="relative">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <SectionLabel section={tmpl.sectionLabel} lang={lang} />
+                        <p className="text-xs font-medium uppercase tracking-wider text-muted">
+                          {gene.condition[lang]}
+                        </p>
+                        <span
+                          className={`ml-auto rounded-full px-2.5 py-0.5 text-[11px] font-medium ${tone.pill}`}
+                        >
+                          {statusHeadline(status, lang)}
+                        </span>
+                      </div>
+                      <p className="mt-3 text-sm leading-relaxed text-ink">{tmpl.text[lang]}</p>
+                    </div>
+                  </article>
+                </Reveal>
               );
             })}
           </ul>
 
           {hasNoVariantFound && (
-            <section className="mt-6 rounded-2xl border border-teal bg-teal-soft p-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <SectionLabel section="education" lang={lang} />
-                <p className="text-xs font-medium uppercase tracking-wide text-teal">
-                  {lang === "en" ? "Residual risk" : "الخطر المتبقي"}
+            <Reveal>
+              <section className="mt-6 rounded-2xl border border-teal/40 bg-teal-soft p-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <SectionLabel section="education" lang={lang} />
+                  <p className="text-xs font-medium uppercase tracking-wider text-teal">
+                    {lang === "en" ? "Residual risk" : "الخطر المتبقي"}
+                  </p>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed">
+                  {getTemplate("residual_risk.general").text[lang]}
                 </p>
-              </div>
-              <p className="mt-2 text-sm">{getTemplate("residual_risk.general").text[lang]}</p>
-            </section>
+              </section>
+            </Reveal>
           )}
         </>
       )}
     </main>
   );
 }
+
+const STATUS_TONE: Record<
+  PersonGeneStatus,
+  { border: string; wash: string; pill: string }
+> = {
+  no_variant_found: {
+    border: "border-teal/30",
+    wash: "from-teal-soft/60",
+    pill: "bg-teal-soft text-teal",
+  },
+  carrier: {
+    border: "border-carrier/40",
+    wash: "from-carrier-soft/60",
+    pill: "bg-carrier-soft text-carrier",
+  },
+  affected: {
+    border: "border-affected/40",
+    wash: "from-affected-soft/60",
+    pill: "bg-affected-soft text-affected",
+  },
+  uncertain: {
+    border: "border-carrier/30",
+    wash: "from-carrier-soft/40",
+    pill: "bg-carrier-soft text-ink",
+  },
+  not_tested: {
+    border: "border-line",
+    wash: "from-transparent",
+    pill: "bg-surface text-muted border border-line",
+  },
+};
 
 function statusHeadline(status: PersonGeneStatus, lang: Lang): string {
   const EN: Record<PersonGeneStatus, string> = {

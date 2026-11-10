@@ -6,6 +6,9 @@ import { useSession } from "../../lib/session";
 import { SectionLabel } from "../../components/SectionLabel";
 import { getTemplate } from "@/content/templates";
 import { type Lang } from "@/lib/content";
+import { LangSwitch } from "../../components/LangSwitch";
+import { Reveal } from "../../components/Reveal";
+import { IconUsers } from "../../components/Icons";
 
 interface Relative {
   id: string;
@@ -62,7 +65,6 @@ export default function RelativesPage() {
     if (!csrfToken) return;
     try {
       await api.post(`/api/relatives/${id}`, undefined, csrfToken).catch(async () => {
-        // The REST route expects DELETE; fall back if the proxy strips methods.
         await fetch(`/api/relatives/${id}`, {
           method: "DELETE",
           headers: { "x-csrf-token": csrfToken },
@@ -111,95 +113,125 @@ export default function RelativesPage() {
 
   return (
     <main dir={dir} lang={lang}>
-      <h1 className="text-2xl font-semibold">
-        {lang === "en" ? "Relatives" : "الأقارب"}
-      </h1>
+      <Reveal>
+        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted">Extended family</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              {lang === "en" ? "Relatives" : "الأقارب"}
+            </h1>
+          </div>
+          <LangSwitch lang={lang} onChange={setLang} />
+        </header>
+      </Reveal>
 
-      <section className="mt-4 rounded-2xl border border-line bg-surface p-4">
-        <SectionLabel section={explainer.sectionLabel} lang={lang} />
-        <p className="mt-2 text-sm">{explainer.text[lang]}</p>
-      </section>
+      <Reveal>
+        <section className="rounded-2xl border border-line bg-surface p-5">
+          <SectionLabel section={explainer.sectionLabel} lang={lang} />
+          <p className="mt-3 text-sm leading-relaxed">{explainer.text[lang]}</p>
+        </section>
+      </Reveal>
 
-      <form onSubmit={add} className="mt-6 flex gap-2">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={lang === "en" ? "Relative display name" : "اسم القريب للعرض"}
-          className="flex-1 rounded-lg border border-line bg-surface px-3 py-2 text-sm"
-        />
-        <button
-          type="submit"
-          disabled={!name.trim()}
-          className="rounded-full bg-teal px-4 py-2 text-xs font-medium text-white disabled:opacity-50"
-        >
-          {lang === "en" ? "Add relative" : "إضافة قريب"}
-        </button>
-      </form>
+      <Reveal>
+        <form onSubmit={add} className="mt-6 flex flex-col gap-2 sm:flex-row">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={lang === "en" ? "Relative display name" : "اسم القريب للعرض"}
+            className="flex-1 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-teal/20"
+          />
+          <button
+            type="submit"
+            disabled={!name.trim()}
+            className="rounded-full bg-teal px-4 py-2.5 text-sm font-medium text-white transition-[filter,transform] hover:brightness-110 hover:translate-y-[-1px] disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+          >
+            {lang === "en" ? "Add relative" : "إضافة قريب"}
+          </button>
+        </form>
+      </Reveal>
 
       <ul className="mt-6 space-y-3">
-        {relatives.map((r) => {
+        {relatives.map((r, i) => {
           const share = activeShareFor(r.id);
           return (
-            <li key={r.id} className="rounded-2xl border border-line bg-surface p-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-base font-semibold">{r.displayName}</p>
-                <button
-                  onClick={() => remove(r.id)}
-                  className="rounded-full border border-line px-3 py-1 text-xs text-muted hover:text-ink"
-                >
-                  {lang === "en" ? "Remove" : "حذف"}
-                </button>
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {share ? (
-                  <>
-                    <span className="rounded-full bg-teal-soft px-3 py-1 text-xs text-teal">
-                      {lang === "en" ? "Shared: " : "مشارَك: "}
-                      {share.scope === "full_result"
-                        ? lang === "en"
-                          ? "full result"
-                          : "النتيجة الكاملة"
-                        : lang === "en"
-                          ? "conditions carried"
-                          : "الحالات المحمولة"}
+            <Reveal
+              as="li"
+              key={r.id}
+              delay={((Math.min(i + 1, 6)) as 1 | 2 | 3 | 4 | 5 | 6)}
+            >
+              <article className="rounded-2xl border border-line bg-surface p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span
+                      aria-hidden
+                      className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-soft text-teal"
+                    >
+                      <IconUsers />
                     </span>
-                    <button
-                      onClick={() => revoke(r.id)}
-                      className="rounded-full border border-teal px-3 py-1 text-xs text-teal"
-                    >
-                      {lang === "en" ? "Revoke share" : "سحب المشاركة"}
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => grant(r.id, "conditions_carried")}
-                      className="rounded-full bg-teal px-3 py-1 text-xs text-white"
-                    >
-                      {lang === "en" ? "Share conditions carried" : "مشاركة الحالات المحمولة"}
-                    </button>
-                    <button
-                      onClick={() => grant(r.id, "full_result")}
-                      className="rounded-full border border-teal px-3 py-1 text-xs text-teal"
-                    >
-                      {lang === "en" ? "Share full result" : "مشاركة النتيجة الكاملة"}
-                    </button>
-                  </>
-                )}
-              </div>
-            </li>
+                    <p className="text-base font-semibold">{r.displayName}</p>
+                  </div>
+                  <button
+                    onClick={() => remove(r.id)}
+                    className="rounded-full border border-line px-3 py-1 text-xs text-muted transition-colors hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+                  >
+                    {lang === "en" ? "Remove" : "حذف"}
+                  </button>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {share ? (
+                    <>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-teal px-3 py-1 text-xs font-medium text-white">
+                        {lang === "en" ? "Shared: " : "مشارَك: "}
+                        {share.scope === "full_result"
+                          ? lang === "en"
+                            ? "full result"
+                            : "النتيجة الكاملة"
+                          : lang === "en"
+                            ? "conditions carried"
+                            : "الحالات المحمولة"}
+                      </span>
+                      <button
+                        onClick={() => revoke(r.id)}
+                        className="rounded-full border border-teal px-3 py-1 text-xs font-medium text-teal transition-colors hover:bg-teal-soft/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+                      >
+                        {lang === "en" ? "Revoke share" : "سحب المشاركة"}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => grant(r.id, "conditions_carried")}
+                        className="rounded-full bg-teal px-3 py-1 text-xs font-medium text-white transition-[filter,transform] hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+                      >
+                        {lang === "en" ? "Share conditions carried" : "مشاركة الحالات المحمولة"}
+                      </button>
+                      <button
+                        onClick={() => grant(r.id, "full_result")}
+                        className="rounded-full border border-teal px-3 py-1 text-xs font-medium text-teal transition-colors hover:bg-teal-soft/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+                      >
+                        {lang === "en" ? "Share full result" : "مشاركة النتيجة الكاملة"}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </article>
+            </Reveal>
           );
         })}
         {relatives.length === 0 && (
-          <li className="rounded-xl border border-line bg-surface p-4 text-sm text-muted">
-            {lang === "en"
-              ? "No relatives added yet."
-              : "لم يُضَف أي قريب بعد."}
-          </li>
+          <Reveal as="li">
+            <p className="rounded-2xl border border-dashed border-line bg-surface p-5 text-sm text-muted">
+              {lang === "en" ? "No relatives added yet." : "لم يُضَف أي قريب بعد."}
+            </p>
+          </Reveal>
         )}
       </ul>
 
-      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {error}
+        </p>
+      )}
     </main>
   );
 }
