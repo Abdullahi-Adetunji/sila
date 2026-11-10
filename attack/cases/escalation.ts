@@ -3,12 +3,15 @@ import { CaseReporter, expect, extractSessionCookie, http } from "../helpers";
 export async function run(r: CaseReporter): Promise<void> {
   await r.run("ESCALATION: signup cannot set role via mass assignment", async () => {
     const email = `esc-${Date.now()}@example.com`;
+    // Probe the real mass-assignment vector (the `role` field) only. An extra
+    // decoy like `is_admin: true` trips the hosting provider's WAF before
+    // Express ever sees the body, which turns this test into a false
+    // negative — the WAF returning 403 is defense-in-depth, not proof.
     const res = await http<{ user: { role: string } }>("POST", "/api/auth/signup", {
       body: {
         email,
         password: "correct horse battery staple",
         role: "counsellor",
-        is_admin: true,
       },
     });
     expect(res.status === 201, `signup expected 201, got ${res.status}`);

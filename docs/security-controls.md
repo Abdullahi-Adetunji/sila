@@ -6,7 +6,7 @@
 
 - HTTPS only at the edge. Render terminates TLS on `*.onrender.com`; HSTS is set from Next.js (one year, `includeSubDomains; preload`). HTTP requests redirect to HTTPS.
 - Strict CSP on API responses (`default-src 'none'` — only JSON leaves). Looser CSP on Next.js pages, with the `'unsafe-inline'` residual risk recorded in the threat model.
-- `trust proxy = 2` on Express. The two trusted hops are Render's edge proxy and Next.js in the same container. `req.ip` is the real client IP, not 127.0.0.1 — proven by `server/src/test/rateLimit.test.ts`.
+- `trust proxy = 3` on Express. The three trusted hops are Cloudflare (Render's free tier is fronted by Cloudflare — responses carry a `cf-ray` header), Render's internal edge proxy, and Next.js in the same container. `req.ip` is the real client IP, not 127.0.0.1 and not a floating Cloudflare edge address — proven by `server/src/test/rateLimit.test.ts`.
 
 ## 2. Process isolation inside the container
 
@@ -45,7 +45,7 @@ The previous setting was m=64 MiB, t=3. The downgrade was a deliberate operation
 
 ## 6. Rate limiting
 
-- Login: `express-rate-limit` keyed on `(real client IP, lower-cased email)`, 20 attempts per 15 minutes. Because `trust proxy = 2`, the IP part is the real client, not 127.0.0.1 — see `rateLimit.test.ts`.
+- Login: `express-rate-limit` keyed on `(real client IP, lower-cased email)`, 20 attempts per 15 minutes. Because `trust proxy = 3`, the IP part is the real client, not 127.0.0.1 and not a Cloudflare edge — see `rateLimit.test.ts`.
 - Participant code probes: the code alphabet is 27 characters and codes are 10 chars long, giving ~48 bits of entropy. The volunteer code is HMAC-indexed; probing requires a valid HMAC lookup per guess, with normal rate-limiting via Render's edge.
 
 ## 7. Vault encryption
@@ -75,7 +75,7 @@ The previous setting was m=64 MiB, t=3. The downgrade was a deliberate operation
 | Role separation (`sila_app` least-privilege) | A compromised API process rewriting the audit log | `roles.test.ts` (CI) |
 | Append-only trigger + hash chain on `audit_log` | Tampering with history by any role | `audit.test.ts` |
 | Preflight startup check | A misconfigured `DATABASE_URL` giving owner rights | `preflight.ts` (exits process) |
-| trust proxy = 2 + rate-limit per (IP, email) | One person's failed logins locking out everyone | `rateLimit.test.ts` |
+| trust proxy = 3 + rate-limit per (IP, email) | One person's failed logins locking out everyone; fragmented buckets letting brute force slip past the cap | `rateLimit.test.ts` + attack suite's `BRUTE-FORCE: login rate-limits` |
 | CSP `default-src 'none'` on API | XSS reaching JSON responses | `securityHeaders.test.ts` |
 | Pool wake-retry | Neon suspend/resume flakiness on first request | `dbWake.test.ts` |
 | AAD-bound vault envelope | Ciphertext relocation attacks | `vault.test.ts` |

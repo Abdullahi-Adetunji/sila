@@ -35,13 +35,16 @@ export const MOUNTS: ReadonlyArray<{ prefix: string; router: Router }> = [
 export function createApp(): Express {
   const app = express();
   // Hops in front of Express in production:
-  //   1. Render's edge proxy (adds X-Forwarded-For).
-  //   2. Next.js running in the same container (rewrites /api/* to localhost).
+  //   1. Cloudflare (Render's free tier is fronted by Cloudflare — a request
+  //      has `server: cloudflare` and a `cf-ray` header).
+  //   2. Render's internal edge proxy (adds X-Forwarded-For).
+  //   3. Next.js running in the same container (rewrites /api/* to localhost).
   // Setting the exact number means req.ip is the real client IP from XFF,
-  // not 127.0.0.1 (which would key every rate-limited action to one bucket
-  // and let one bad actor lock everyone out). Keep this in sync with the
-  // deployment topology; the rateLimit test asserts the behaviour.
-  app.set("trust proxy", 2);
+  // not 127.0.0.1 and not a floating Cloudflare edge address (either of
+  // which would fragment the rate-limit buckets per request and defeat the
+  // "20 bad logins per 15 min" cap). Keep this in sync with the deployment
+  // topology; the rateLimit test asserts the exact number.
+  app.set("trust proxy", 3);
 
   // Hardened security headers. CSP for the API responses is strict by default
   // because the API only ever returns JSON. The Next.js app sets its own
