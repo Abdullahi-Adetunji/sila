@@ -9,11 +9,17 @@
   --ink: #1d2433;
   --muted: #5d6678;
   --line: #e3e0d8;
-  --teal: #0f6e6a;
+  /* Brand accents. The darker bodies here (vs the earlier pilot palette)
+     mean every `text-<accent>` on its matching `bg-<accent>-soft` clears
+     WCAG AA (ratios ~6:1 – ~8:1), and white text on the solid accent still
+     clears AA on buttons. Axe flagged the pre-shift values; this shift
+     is the fix. Changing the ink here changes every pill, badge and
+     accent border uniformly instead of spreading overrides. */
+  --teal: #0a4846;
   --teal-soft: #e3f1ef;
-  --affected: #b4533a;
+  --affected: #8a3821;
   --affected-soft: #f6e5df;
-  --carrier: #c08a2b;
+  --carrier: #7a5516;
   --carrier-soft: #f7edd9;
 
   /* Landing-only palette: a deep near-black navy with teal/emerald highlights,

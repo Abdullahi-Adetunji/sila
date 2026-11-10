@@ -60,7 +60,9 @@ describe("counsellor read of a person's result", () => {
     expect(res.status).toBe(403);
     expect(res.body.reason).toBe("no_counsellor_access");
 
-    const log = await request(app).get("/api/me/access-log").set("Cookie", counsellor.cookie);
+    // /api/me/access-log is now person-only. The person is the TARGET of
+    // the denied counsellor read, so the person's own access-log shows it.
+    const log = await request(app).get("/api/me/access-log").set("Cookie", person.cookie);
     const denied = log.body.entries.find(
       (e: { action: string; outcome: string; targetId: string }) =>
         e.action === "read_person_result_as_counsellor" &&
@@ -68,6 +70,13 @@ describe("counsellor read of a person's result", () => {
         e.targetId === person.id,
     );
     expect(denied).toBeDefined();
+
+    // And the counsellor themselves no longer has access to a person-scoped
+    // /access-log — proves the person-role gate is wired.
+    const counsellorLog = await request(app)
+      .get("/api/me/access-log")
+      .set("Cookie", counsellor.cookie);
+    expect(counsellorLog.status).toBe(403);
   });
 
   it("returns 200 when the person has an active counsellor_access consent naming this counsellor", async () => {

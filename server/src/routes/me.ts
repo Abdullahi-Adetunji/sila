@@ -1,11 +1,12 @@
 import { Router, type Request, type Response } from "express";
 import { requireSession } from "../middleware/requireSession";
+import { requirePersonRole } from "../middleware/requirePersonRole";
 import { readResults } from "../services/vault";
 import { appendAudit } from "../lib/audit";
 
 const router: Router = Router();
 
-router.get("/result", requireSession, async (req: Request, res: Response) => {
+router.get("/result", requireSession, requirePersonRole, async (req: Request, res: Response) => {
   const userId = req.session!.userId;
   const results = await readResults(userId);
   await appendAudit({

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, isApiError } from "../lib/api";
+import { startPathFor, type Role } from "../lib/roleRouting";
 import { LANDING } from "@/lib/content-landing";
 import { type Lang } from "@/lib/content";
 
@@ -37,8 +38,8 @@ export function DemoPanel({
     setBusy(account);
     setError(null);
     try {
-      await api.post("/api/demo/login", { account });
-      router.push("/home");
+      const r = await api.post<{ user: { role: string } }>("/api/demo/login", { account });
+      router.push(startPathFor((r.user?.role ?? "person") as Role));
     } catch (e: unknown) {
       if (isApiError(e) && e.status === 401) {
         setError("Demo accounts are not seeded. Run `npm run seed` first.");

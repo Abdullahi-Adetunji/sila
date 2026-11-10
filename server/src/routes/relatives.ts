@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { z } from "zod";
 import { requireSession } from "../middleware/requireSession";
+import { requirePersonRole } from "../middleware/requirePersonRole";
 import { requireCsrf } from "../middleware/requireCsrf";
 import {
   addRelative,
@@ -16,7 +17,7 @@ const addSchema = z.object({
   displayName: z.string().trim().min(1).max(120),
 });
 
-router.get("/", requireSession, async (req: Request, res: Response) => {
+router.get("/", requireSession, requirePersonRole, async (req: Request, res: Response) => {
   const rows = await listRelatives(req.session!.userId);
   res.json({
     relatives: rows.map((r) => ({
@@ -27,7 +28,7 @@ router.get("/", requireSession, async (req: Request, res: Response) => {
   });
 });
 
-router.post("/", requireSession, requireCsrf, async (req: Request, res: Response) => {
+router.post("/", requireSession, requirePersonRole, requireCsrf, async (req: Request, res: Response) => {
   const parsed = addSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "invalid request" });
@@ -44,7 +45,7 @@ router.post("/", requireSession, requireCsrf, async (req: Request, res: Response
   res.status(201).json({ relative: { id: relative.id, displayName: relative.displayName } });
 });
 
-router.delete("/:id", requireSession, requireCsrf, async (req: Request, res: Response) => {
+router.delete("/:id", requireSession, requirePersonRole, requireCsrf, async (req: Request, res: Response) => {
   const relativeId = String(req.params.id);
   const relative = await getRelative(req.session!.userId, relativeId);
   if (!relative) {

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { api, isApiError } from "../../lib/api";
+import { startPathFor, type Role } from "../../lib/roleRouting";
 import { PasswordInput } from "../../components/PasswordInput";
 import {
   IconArrowLeft,
@@ -26,8 +27,8 @@ export default function LoginPage() {
     setSubmitting(true);
     setError(null);
     try {
-      await api.post("/api/auth/login", { email, password });
-      router.push("/home");
+      const r = await api.post<{ user: { role: string } }>("/api/auth/login", { email, password });
+      router.push(startPathFor((r.user?.role ?? "person") as Role));
     } catch (e: unknown) {
       if (isApiError(e) && e.status === 401) setError("Incorrect email or password.");
       else setError("Could not log you in. Please try again.");

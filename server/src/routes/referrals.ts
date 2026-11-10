@@ -2,6 +2,7 @@ import { Router, type Request, type Response } from "express";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { requireSession } from "../middleware/requireSession";
+import { requirePersonRole } from "../middleware/requirePersonRole";
 import { requireCsrf } from "../middleware/requireCsrf";
 import { db } from "../db/client";
 import { users } from "../db/schema";
@@ -24,23 +25,15 @@ const createSchema = z.object({
   counsellorId: z.string().uuid(),
 });
 
-router.get("/", requireSession, async (req: Request, res: Response) => {
+router.get("/", requireSession, requirePersonRole, async (req: Request, res: Response) => {
   const actorId = req.session!.userId;
-  const [actor] = await db
-    .select({ role: users.role })
-    .from(users)
-    .where(eq(users.id, actorId));
-  // Persons see their own referrals. Counsellors see referrals they have been
-  // granted access to via counsellor_access.
+  // Person-only: list the signed-in person's own referrals. Counsellors
+  // see referrals through /api/counsellor/queue, not here.
   const rows = await listReferralsFor(actorId);
-  if (actor?.role !== "counsellor") {
-    res.json({ referrals: rows });
-    return;
-  }
   res.json({ referrals: rows });
 });
 
-router.post("/", requireSession, requireCsrf, async (req: Request, res: Response) => {
+router.post("/", requireSession, requirePersonRole, requireCsrf, async (req: Request, res: Response) => {
   const parsed = createSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "invalid request" });

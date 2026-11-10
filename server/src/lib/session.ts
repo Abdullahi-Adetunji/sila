@@ -1,15 +1,20 @@
 import { randomBytes } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { db } from "../db/client";
-import { sessions } from "../db/schema";
+import { sessions, users } from "../db/schema";
 
 export const SESSION_COOKIE = "sila_session";
 export const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
+
+export type Role = "person" | "counsellor" | "lab" | "evaluator";
 
 export interface SessionInfo {
   id: string;
   userId: string;
   csrfToken: string;
+  // Carried on the session so middleware (requirePersonRole, future
+  // requireCounsellorRole, etc.) can gate without a second round trip.
+  role: Role;
 }
 
 export function newToken(): string {
@@ -25,7 +30,8 @@ export async function createSession(userId: string): Promise<SessionInfo> {
     csrfToken,
     expiresAt: new Date(Date.now() + SESSION_TTL_MS),
   });
-  return { id, userId, csrfToken };
+  const [u] = await db.select({ role: users.role }).from(users).where(eq(users.id, userId));
+  return { id, userId, csrfToken, role: (u?.role ?? "person") as Role };
 }
 
 export async function resolveSession(id: string | undefined): Promise<SessionInfo | null> {
@@ -36,8 +42,10 @@ export async function resolveSession(id: string | undefined): Promise<SessionInf
       userId: sessions.userId,
       csrfToken: sessions.csrfToken,
       expiresAt: sessions.expiresAt,
+      role: users.role,
     })
     .from(sessions)
+    .innerJoin(users, eq(users.id, sessions.userId))
     .where(eq(sessions.id, id));
   const s = rows[0];
   if (!s) return null;
@@ -45,7 +53,7 @@ export async function resolveSession(id: string | undefined): Promise<SessionInf
     await db.delete(sessions).where(eq(sessions.id, id));
     return null;
   }
-  return { id: s.id, userId: s.userId, csrfToken: s.csrfToken };
+  return { id: s.id, userId: s.userId, csrfToken: s.csrfToken, role: s.role as Role };
 }
 
 export async function deleteSession(id: string): Promise<void> {

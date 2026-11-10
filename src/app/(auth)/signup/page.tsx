@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { api, isApiError } from "../../lib/api";
+import { startPathFor, type Role } from "../../lib/roleRouting";
 import { PasswordInput } from "../../components/PasswordInput";
 import {
   IconArrowLeft,
@@ -27,8 +28,12 @@ export default function SignupPage() {
     setSubmitting(true);
     setError(null);
     try {
-      await api.post("/api/auth/signup", { email, password, locale });
-      router.push("/home");
+      const r = await api.post<{ user: { role: string } }>("/api/auth/signup", {
+        email,
+        password,
+        locale,
+      });
+      router.push(startPathFor((r.user?.role ?? "person") as Role));
     } catch (e: unknown) {
       if (isApiError(e) && e.status === 400) {
         // The server returns a specific reason for every failed strength

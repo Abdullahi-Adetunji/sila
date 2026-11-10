@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { z } from "zod";
 import { requireSession } from "../middleware/requireSession";
+import { requirePersonRole } from "../middleware/requirePersonRole";
 import { requireCsrf } from "../middleware/requireCsrf";
 import {
   CURRENT_WORDING_VERSION,
@@ -35,7 +36,7 @@ const revokeSchema = z.object({
   targetOther: z.string().max(200).nullish(),
 });
 
-router.get("/", requireSession, async (req: Request, res: Response) => {
+router.get("/", requireSession, requirePersonRole, async (req: Request, res: Response) => {
   const rows = await listActiveConsentsBy(req.session!.userId);
   res.json({
     wordingVersion: CURRENT_WORDING_VERSION,
@@ -50,7 +51,7 @@ router.get("/", requireSession, async (req: Request, res: Response) => {
   });
 });
 
-router.post("/", requireSession, requireCsrf, async (req: Request, res: Response) => {
+router.post("/", requireSession, requirePersonRole, requireCsrf, async (req: Request, res: Response) => {
   const parsed = grantSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "invalid request" });
@@ -86,7 +87,7 @@ router.post("/", requireSession, requireCsrf, async (req: Request, res: Response
   res.status(201).json({ id: result.id });
 });
 
-router.post("/revoke", requireSession, requireCsrf, async (req: Request, res: Response) => {
+router.post("/revoke", requireSession, requirePersonRole, requireCsrf, async (req: Request, res: Response) => {
   const parsed = revokeSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "invalid request" });

@@ -7,21 +7,34 @@ import { api } from "../lib/api";
 import { useEffect } from "react";
 import { PrototypeBanner } from "../components/PrototypeBanner";
 import { IconHelix } from "../components/Icons";
+import { isAllowedPath, startPathFor, tabsFor, type Role } from "../lib/roleRouting";
 
-// The signed-in shell. Everything a signed-in person, counsellor, lab or
-// evaluator sees is wrapped by this layout. It keeps the chrome calm and
-// clinical: a thin gradient accent on top links the page back to the
-// landing aesthetic, the nav tabs animate their active state, and content
-// below sits on the existing light surface so forms and result cards stay
-// legible.
+// The signed-in shell. Every signed-in page sits inside this layout; the
+// tabs and the start-page redirect are driven by the user's role so a
+// counsellor, lab, evaluator or admin never sees the person navigation.
+// Server-side middleware (requirePersonRole and friends) refuses cross-role
+// API calls separately; this layer is the UI mirror.
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, csrfToken, loading, refresh } = useSession();
   const router = useRouter();
   const pathname = usePathname();
 
+  // Not signed in -> login.
   useEffect(() => {
     if (!loading && !user) router.replace("/login");
   }, [loading, user, router]);
+
+  // Signed in but on a page not in this role's tabs -> role's start page.
+  // We skip the redirect while loading so we don't flash a redirect before
+  // the session is ready. The server-side guards return 403 if a client
+  // ever skips this hop.
+  useEffect(() => {
+    if (loading || !user) return;
+    const role = user.role as Role;
+    if (!isAllowedPath(role, pathname)) {
+      router.replace(startPathFor(role));
+    }
+  }, [loading, user, pathname, router]);
 
   async function logout() {
     if (!csrfToken) return;
@@ -43,29 +56,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
   if (!user) return null;
 
-  const tabs: Array<{ href: string; label: string }> = [
-    { href: "/home", label: "Home" },
-    { href: "/me", label: "My result" },
-    { href: "/partner", label: "Partner" },
-    { href: "/consent", label: "Consent" },
-    { href: "/couple", label: "Couple result" },
-    { href: "/relatives", label: "Relatives" },
-    { href: "/referrals", label: "Referrals" },
-    { href: "/options", label: "Options" },
-    { href: "/access-log", label: "Access log" },
-  ];
-  if (user.role === "counsellor") {
-    tabs.push({ href: "/counsellor-queue", label: "Queue" });
-  }
-  if (user.role === "evaluator") {
-    tabs.push({ href: "/evaluator", label: "Evaluator" });
-  }
+  const role = user.role as Role;
+  const tabs = tabsFor(role);
+  const start = startPathFor(role);
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Accent gradient strip — the only bit of the landing's palette that
-          comes through on signed-in pages. It makes the site feel like one
-          product without dragging the dark hero into clinical screens. */}
       <div
         aria-hidden
         className="h-[3px] w-full"
@@ -79,7 +75,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-20 border-b border-line bg-surface/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
           <Link
-            href="/home"
+            href={start}
             className="group inline-flex items-center gap-2 text-lg font-semibold tracking-tight text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded-sm"
           >
             <span
@@ -90,7 +86,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </span>
             Sila
           </Link>
-          <div className="hidden text-xs text-muted sm:block">{user.email}</div>
+          <div className="hidden items-center gap-2 text-xs text-muted sm:flex">
+            <span>{user.email}</span>
+            <span
+              aria-label={`Role: ${role}`}
+              className="rounded-full border border-line bg-surface px-2 py-0.5 text-[10px] uppercase tracking-wider"
+            >
+              {role}
+            </span>
+          </div>
           <button
             onClick={logout}
             className="rounded-full border border-line px-3 py-1 text-xs text-muted transition-colors hover:border-teal hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
@@ -104,7 +108,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 pb-2 text-sm"
         >
           {tabs.map((t) => {
-            const active = pathname === t.href;
+            const active = pathname === t.href || pathname.startsWith(`${t.href}/`);
             return (
               <Link
                 key={t.href}

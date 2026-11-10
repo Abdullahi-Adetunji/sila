@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { z } from "zod";
 import { requireSession } from "../middleware/requireSession";
+import { requirePersonRole } from "../middleware/requirePersonRole";
 import { requireCsrf } from "../middleware/requireCsrf";
 import {
   acceptInvite,
@@ -13,7 +14,7 @@ import { appendAudit } from "../lib/audit";
 
 const router: Router = Router();
 
-router.get("/", requireSession, async (req: Request, res: Response) => {
+router.get("/", requireSession, requirePersonRole, async (req: Request, res: Response) => {
   const userId = req.session!.userId;
   const active = await getActiveLinkFor(userId);
   if (active) {
@@ -34,7 +35,7 @@ router.get("/", requireSession, async (req: Request, res: Response) => {
   });
 });
 
-router.post("/invite", requireSession, requireCsrf, async (req: Request, res: Response) => {
+router.post("/invite", requireSession, requirePersonRole, requireCsrf, async (req: Request, res: Response) => {
   const existing = await getActiveLinkFor(req.session!.userId);
   if (existing) {
     res.status(409).json({ error: "already linked" });
@@ -53,7 +54,7 @@ router.post("/invite", requireSession, requireCsrf, async (req: Request, res: Re
 
 const acceptSchema = z.object({ code: z.string().min(1).max(32) });
 
-router.post("/accept", requireSession, requireCsrf, async (req: Request, res: Response) => {
+router.post("/accept", requireSession, requirePersonRole, requireCsrf, async (req: Request, res: Response) => {
   const parsed = acceptSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "invalid request" });

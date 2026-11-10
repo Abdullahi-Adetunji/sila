@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { and, desc, eq, or } from "drizzle-orm";
 import { requireSession } from "../middleware/requireSession";
+import { requirePersonRole } from "../middleware/requirePersonRole";
 import { db } from "../db/client";
 import { auditLog } from "../db/schema";
 
@@ -9,7 +10,7 @@ const router: Router = Router();
 // A person sees every audit entry they were the actor of, plus every entry
 // where they were the target of a user-type access. They never see other
 // users' actions on other users.
-router.get("/access-log", requireSession, async (req: Request, res: Response) => {
+router.get("/access-log", requireSession, requirePersonRole, async (req: Request, res: Response) => {
   const userId = req.session!.userId;
   const rows = await db
     .select({

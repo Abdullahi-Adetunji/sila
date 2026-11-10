@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import { requireSession } from "../middleware/requireSession";
+import { requirePersonRole } from "../middleware/requirePersonRole";
 import { canReadCoupleRisk } from "../lib/policy";
 import { getActiveLinkFor, partnerOf } from "../services/partnerLink";
 import { computeCoupleView } from "../services/coupleRisk";
@@ -7,7 +8,7 @@ import { appendAudit } from "../lib/audit";
 
 const router: Router = Router();
 
-router.get("/risk", requireSession, async (req: Request, res: Response) => {
+router.get("/risk", requireSession, requirePersonRole, async (req: Request, res: Response) => {
   const actorId = req.session!.userId;
   const link = await getActiveLinkFor(actorId);
   const partnerId = link ? partnerOf(link, actorId) : null;

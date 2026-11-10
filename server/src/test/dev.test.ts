@@ -74,12 +74,14 @@ describe("GET /api/dev/clock and POST /api/dev/clock/advance", () => {
       .send({ ms: 60 * 60 * 1000 });
     expect(a.status).toBe(200);
 
-    const log = await request(app).get("/api/me/access-log").set("Cookie", e.cookie);
-    const entry = log.body.entries.find(
-      (x: { action: string; outcome: string }) =>
-        x.action === "dev_clock_advance" && x.outcome === "allowed",
+    // /api/me/access-log is person-only now, so verify the audit entry
+    // via a direct DB probe instead. (Evaluators cannot read a person-
+    // scoped access log; this is the designed behaviour.)
+    const rows = await handle.query<{ action: string; outcome: string }>(
+      "select action, outcome from audit_log where actor_id = $1 and action = 'dev_clock_advance' and outcome = 'allowed'",
+      [e.id],
     );
-    expect(entry).toBeDefined();
+    expect(rows.rows.length).toBeGreaterThan(0);
   });
 
   it("a demo account can advance; the shift only touches demo users", async () => {
