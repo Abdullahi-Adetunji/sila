@@ -54,10 +54,14 @@ async function clickLangIfNeeded(page: Page, lang: "en" | "ar"): Promise<void> {
 }
 
 async function demoSignInPartnerA(ctx: BrowserContext): Promise<void> {
+  await demoSignInAs(ctx, /sign in as partner a/i, /\/home/);
+}
+
+async function demoSignInAs(ctx: BrowserContext, buttonName: RegExp, urlPattern: RegExp): Promise<void> {
   const page = await ctx.newPage();
   await page.goto(`${BASE}/`);
-  await page.getByRole("button", { name: /sign in as partner a/i }).click();
-  await page.waitForURL(/\/home/);
+  await page.getByRole("button", { name: buttonName }).click();
+  await page.waitForURL(urlPattern);
   await page.close();
 }
 
@@ -101,12 +105,51 @@ async function main() {
           await page.close();
         }
         await authCtx.close();
+
+        // Admin dashboard (demo admin, no TOTP in DEMO_MODE).
+        const adminCtx = await browser.newContext({ viewport: { width: w.width, height: w.height } });
+        await demoSignInAs(adminCtx, /sign in as admin/i, /\/admin/);
+        const adminPage = await adminCtx.newPage();
+        await adminPage.goto(`${BASE}/admin`);
+        await adminPage.waitForLoadState("networkidle").catch(() => {});
+        await adminPage.screenshot({
+          path: resolve(dir, `admin.png`),
+          fullPage: true,
+        });
+        await adminPage.close();
+        await adminCtx.close();
+
+        // Lab submission page (demo lab).
+        const labCtx = await browser.newContext({ viewport: { width: w.width, height: w.height } });
+        await demoSignInAs(labCtx, /sign in as lab/i, /\/lab/);
+        const labPage = await labCtx.newPage();
+        await labPage.goto(`${BASE}/lab`);
+        await labPage.waitForLoadState("networkidle").catch(() => {});
+        await labPage.screenshot({
+          path: resolve(dir, `lab.png`),
+          fullPage: true,
+        });
+        await labPage.close();
+        await labCtx.close();
+
+        // Counsellor queue (demo counsellor).
+        const coCtx = await browser.newContext({ viewport: { width: w.width, height: w.height } });
+        await demoSignInAs(coCtx, /sign in as counsellor/i, /\/counsellor-queue/);
+        const coPage = await coCtx.newPage();
+        await coPage.goto(`${BASE}/counsellor-queue`);
+        await coPage.waitForLoadState("networkidle").catch(() => {});
+        await coPage.screenshot({
+          path: resolve(dir, `counsellor-queue.png`),
+          fullPage: true,
+        });
+        await coPage.close();
+        await coCtx.close();
       }
     }
   } finally {
     await browser.close();
   }
-  console.log(`screenshots: wrote ${PUBLIC_PAGES.length + AUTHED_PAGES.length} × ${LANGS.length} × ${WIDTHS.length} to ${OUT}`);
+  console.log(`screenshots: wrote ${PUBLIC_PAGES.length + AUTHED_PAGES.length + 3} × ${LANGS.length} × ${WIDTHS.length} to ${OUT}`);
 }
 
 main().catch((err) => {
