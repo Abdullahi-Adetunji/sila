@@ -53,9 +53,18 @@ jobs:
         run: npm audit --audit-level=high --omit=dev
 
       - name: Secret scan (gitleaks)
-        uses: gitleaks/gitleaks-action@v2
-        with:
-          args: detect --no-git --redact --exit-code=1 --source=.
+        # The gitleaks/gitleaks-action wrapper now requires a paid licence
+        # and 403s most CI runs over GitHub-API rate-limit on the licence
+        # check. We use the upstream binary directly; same scanner, no
+        # third-party service in the loop.
+        run: |
+          set -euo pipefail
+          GL_VERSION=8.21.4
+          curl -fsSL -o /tmp/gl.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GL_VERSION}/gitleaks_${GL_VERSION}_linux_x64.tar.gz"
+          tar -xzf /tmp/gl.tar.gz -C /tmp gitleaks
+          /tmp/gitleaks version
+          /tmp/gitleaks detect --no-git --redact --exit-code=1 --source=.
 
       - name: Set up Sila roles + grants on the test Postgres
         run: |
