@@ -12,6 +12,10 @@
 
 # testing
 /coverage
+# Playwright trace + error-context artefacts; the json report lives in
+# data/review/ which is intentional and committed.
+/test-results
+/playwright-report
 
 # next.js
 /.next/
