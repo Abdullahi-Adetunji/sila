@@ -25,6 +25,16 @@
 - **No AI in the risk calculation.** The engine is deterministic Mendelian arithmetic in `src/lib/genetics/engine.ts`.
 - **No AI in the clinical text.** Every user-facing explanation comes from a fixed template in `src/content/templates/catalog.ts`.
 
+## 3b. Staff administration (single login, admin-created staff, TOTP in prod)
+
+- **One `/login` for everyone.** Person, counsellor, lab, evaluator and admin all use the same page. After login, each role is sent to its own start page (`/home`, `/counsellor-queue`, `/lab`, `/evaluator`, `/admin`) and its navigation shows only its own pages. Server-side `requirePersonRole` / `requireLabRole` / `requireAdminRole` middleware returns 403 on cross-role access, audit-logged on every attempt.
+- **Signup always creates a `person`.** The zod schema on `/api/auth/signup` has no `role` field; staff accounts can never be created through signup, only via the admin invite flow.
+- **Staff accounts come from an admin, not from a seed.** The first admin is created by `npm run admin:create` from a trusted shell; it prints a one-time setup URL to stdout and does not send email. Every subsequent staff account (counsellor, lab, evaluator, additional admins) is created through `/admin` by an existing admin.
+- **TOTP second factor is required for every staff account in production.** `POST /api/auth/login` returns `401 { error: "totp_required" }` for any staff account that has an `admin_totp` row; the login page then reveals a 6-digit input and re-submits. The TOTP library is in-house (no third-party), RFC 6238, ±1-step verification window, SHA-256-hashed recovery codes.
+- **The demo admin skips TOTP — DEMO_MODE only.** `admin@demo.sila` is reachable only through the one-click panel on the landing page, which calls `/api/demo/login`. That endpoint is 404 outside `DEMO_MODE`. The seeded demo admin exists so judges can exercise the admin dashboard without enrolling a real authenticator. In a production deployment (`DEMO_MODE=false`), no such bypass exists; the admin must enrol TOTP via `/invite/<code>` like every other staff account.
+- **Admins never read person data.** The admin role has no `/api/me/*`, `/api/couple/*`, `/api/consent/*`, `/api/partner/*`, `/api/relatives/*`, `/api/referrals/*`, `/api/counsellor/*`, or `/api/evaluator/*` route. `attack/cases/admin_lab.ts` probes all of them with a signed-in admin cookie and expects 403 on every one.
+- **Deactivation is instant; accounts are never deleted.** Deactivating a staff account sets `users.status = 'deactivated'`, deletes every live session for that user, and the row stays so the audit chain remains intact. An admin cannot deactivate themselves (avoids the last-admin-locks-themselves-out footgun) and cannot touch person accounts (persons use the withdraw flow).
+
 ## 4. Known limitations
 
 - **Phase of two variants.** A screening report often does not state whether two variants in the same gene are on the same copy (cis) or on different copies (trans). The engine treats `variants.length === 2` as `affected`; the `individual.affected` draft template hedges accordingly. Resolving this cleanly needs the clinician's call (see [panel-decisions.md](panel-decisions.md) decision 9).

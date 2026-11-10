@@ -95,11 +95,11 @@
 | metric | value |
 | --- | --- |
 | BASE_URL | https://sila-a7fx.onrender.com |
-| Cases passed | 31 |
+| Cases passed | 37 |
 | Cases failed | 0 |
-| Last run | 2026-11-10T10:59:18Z |
+| Last run | 2026-11-10T16:14Z |
 
-Coverage: IDOR (×4), CSRF (×4), consent revocation takes effect immediately for every purpose (×5), session hygiene incl. id rotation + logout invalidation + cookie flags (×3), brute-force resistance incl. login cap + XFF-spoof resistance + random partner-invite + random participant-code (×4), privilege escalation incl. mass-assignment + cross-role (×3), **counsellor hits 403 on every person-only API route (×1, covers 13 routes)**, demo-mode-off assurances (×3), and demo-on scoping (×4).
+Coverage: IDOR (×4), CSRF (×4), consent revocation takes effect immediately for every purpose (×5), session hygiene incl. id rotation + logout invalidation + cookie flags (×3), brute-force resistance incl. login cap + XFF-spoof resistance + random partner-invite + random participant-code (×4), privilege escalation incl. mass-assignment + cross-role (×3), **counsellor hits 403 on every person-only API route (×1, covers 13 routes)**, **admin hits 403 on every person-only API route + cannot read counsellor queue (×2)**, **lab hits 403 on every person-only API route — no read-back (×1)**, **person hits 403 on /api/admin and /api/lab (×1)**, **unknown Sila ID returns 404 not an oracle (×1)**, **random invite codes return 404 (×1)**, demo-mode-off assurances (×3), and demo-on scoping (×4).
 
 ### 2.8 Accessibility (axe, WCAG 2.2 AA)
 

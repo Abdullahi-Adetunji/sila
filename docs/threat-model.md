@@ -135,6 +135,30 @@ or `attack/cases/`.
 
 ---
 
+### 2.6 Admin (staff administration)
+
+The highest-value account in Sila: an admin can create new staff accounts of any role, and can deactivate any existing staff account. **An admin cannot read any person's data.**
+
+- **What an admin CAN do.**
+  - Create a counsellor, lab, evaluator or admin invite via `POST /api/admin/invite`.
+  - Regenerate (revoke + reissue) or revoke a pending invite.
+  - Deactivate or reactivate any staff account. Deactivation sets `users.status = 'deactivated'` and deletes every live session for that user (`session.ts :: deleteSessionsForUser`), so the deactivated account is forced out at the next request even if their cookie is still warm.
+  - See the staff roster (email, role, status, last login).
+  - See the admin-action feed (`admin_*` audit entries only).
+- **What an admin CANNOT do.** None of these endpoints exist for `role = 'admin'`: `/api/me/result`, `/api/me/access-log`, `/api/me/sila-id`, `/api/couple/risk`, `/api/consent`, `/api/partner`, `/api/relatives`, `/api/referrals`, `/api/counsellor/queue`, `/api/evaluator/*`. The `requirePersonRole`, `requireLabRole` and admin-only guards on each of those routes return `403` and write a denied-by-role audit entry. `attack/cases/admin_lab.ts` probes all eight person routes with a signed-in admin cookie and expects 403 on every one; the admin-action feed is filtered to `admin_%` so even an admin's own view never shows person-scoped audit rows.
+- **Bootstrap.** The first admin is only ever created by `npm run admin:create` from a trusted shell. The script writes a deactivated placeholder row and an invite; the admin then opens `/invite/<code>`, sets a password, enrols TOTP and receives recovery codes. **No default admin exists and no admin credential is ever placed in env.** The admin bootstrap CLI refuses if an active admin for that email already exists and refuses to reuse a person email.
+- **Second factor.** `POST /api/auth/login` requires a TOTP code for any staff account with an `admin_totp` row. The TOTP library is in-house (`server/src/lib/totp.ts`), RFC 6238, verified with a ±1-step window. Recovery codes are SHA-256 hashed in storage and single-use.
+- **Demo admin.** In `DEMO_MODE`, `admin@demo.sila` is reachable via `/api/demo/login` (never via `/api/auth/login`). That endpoint is 404 outside `DEMO_MODE`. The demo admin exists so judges can walk through the staff-management flow without enrolling a real authenticator; this is called out in the dashboard and in `docs/assumptions-and-limitations.md`.
+
+### 2.7 Lab (result submission)
+
+Lab accounts can **write results into a person's vault but can never read them back**.
+
+- **What a lab CAN do.** `POST /api/lab/submit {silaId, results}` — requires the lab role and a valid CSRF token; validates the payload against the current `panel.ts` (unknown genes or alleles are rejected); writes the ciphertext via the vault service with AAD binding to the person's id + record id. Submissions are rate-limited to 100 per 15 minutes per lab account.
+- **What a lab CANNOT do.** There is no `GET` in `/api/lab/*`. `attack/cases/admin_lab.ts` confirms a signed-in lab session gets 403 on `/api/me/result`, `/api/couple/risk`, `/api/consent` and `/api/referrals`.
+- **Sila ID.** The identifier a person hands to the lab is a 10-character base32 string derived from `HMAC_SHA256(user.id, SILA_ID_SALT)`. Nothing in the display reveals the underlying UUID; a leaked Sila ID discloses no other field. Reverse lookup scans the users table (O(N), fine at pilot scale).
+- **Demo lab constraint.** `lab@demo.sila` can only submit to accounts with no existing result; it cannot overwrite seeded results. `attack/cases/demo_on.ts` would need extending to prove this; the unit test `demoScoping.test.ts` confirms it.
+
 ## 3. People threats
 
 Not every threat is an attacker. Three real-world threats that no amount of cryptography removes:
