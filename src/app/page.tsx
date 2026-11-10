@@ -8,14 +8,12 @@ import { T, type Lang } from "@/lib/content";
 import { PrototypeBanner } from "./components/PrototypeBanner";
 import { LangSwitch } from "./components/LangSwitch";
 import { DemoPanel } from "./components/DemoPanel";
-import { BackgroundAurora } from "./components/BackgroundAurora";
 import { Reveal } from "./components/Reveal";
 import { StatStrip } from "./components/StatStrip";
 import { SecurityFlow } from "./components/SecurityFlow";
 import { PanelGrid } from "./components/PanelGrid";
 import {
   IconArrowRight,
-  IconChevronDown,
   IconEye,
   IconHandshake,
   IconHelix,
@@ -38,49 +36,63 @@ export default function LandingPage() {
 
   return (
     <div dir={dir} lang={lang} className="landing-root min-h-screen">
-      <BackgroundAurora />
+      {/* Very soft green-tinted wash in the top-right of the hero. No
+          animation — a clinical app doesn't need motion in the background. */}
+      <div aria-hidden className="aurora" />
 
       <div className="relative z-10">
-        <PrototypeBanner lang={lang} onDark />
+        <PrototypeBanner lang={lang} />
 
         {/* Nav */}
-        <header className="relative z-10">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pb-6 pt-4">
-            <div className="flex items-center gap-2 text-glass-ink">
+        <header className="relative z-10 border-b border-line bg-surface/80 backdrop-blur">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-2 text-ink">
               <span
                 aria-hidden
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-accent-mint"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-teal/30 bg-teal-soft text-teal"
               >
                 <IconHelix />
               </span>
-              <span className="text-xl font-semibold tracking-tight">{T.appName[lang]}</span>
+              <span className="text-lg font-semibold tracking-tight">{T.appName[lang]}</span>
             </div>
-            <LangSwitch lang={lang} onChange={setLang} onDark />
+            <div className="flex items-center gap-3">
+              <LangSwitch lang={lang} onChange={setLang} />
+              <Link
+                href="/login"
+                className="hidden rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:border-teal hover:text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal sm:inline-flex"
+              >
+                {LANDING.hero.ctaSignIn[lang]}
+              </Link>
+              <Link
+                href="/signup"
+                className="inline-flex items-center gap-2 rounded-full bg-teal px-4 py-1.5 text-sm font-medium text-white transition-[filter,transform] hover:brightness-110 hover:translate-y-[-1px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+              >
+                {LANDING.hero.ctaCreate[lang]}
+              </Link>
+            </div>
           </div>
         </header>
 
-        {/* Hero */}
         <main className="mx-auto max-w-6xl px-4 pb-20">
-          <section className="relative pt-10 pb-20 sm:pt-16">
+          {/* Hero */}
+          <section className="relative pt-16 pb-16">
             <Reveal>
-              <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-wider text-glass-ink-muted">
-                <span
-                  aria-hidden
-                  className="h-1.5 w-1.5 rounded-full"
-                  style={{ background: "var(--accent-mint)" }}
-                />
-                Carrier screening, built for couples
+              <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal/20 bg-teal-soft px-3 py-1 text-xs font-medium uppercase tracking-wider text-teal">
+                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-teal" />
+                Carrier screening for couples
               </p>
             </Reveal>
 
             <Reveal delay={1}>
-              <h1 className="max-w-3xl text-balance text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
-                <span className="hero-gradient-text">{LANDING.hero.tagline[lang]}</span>
+              <h1 className="max-w-3xl text-balance text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl md:text-6xl">
+                <span className="hero-gradient-text">
+                  {LANDING.hero.tagline[lang]}
+                </span>
               </h1>
             </Reveal>
 
             <Reveal delay={2}>
-              <p className="mt-6 max-w-2xl text-base leading-relaxed text-glass-ink-muted sm:text-lg">
+              <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
                 {LANDING.scope.isBody[lang]}
               </p>
             </Reveal>
@@ -89,16 +101,19 @@ export default function LandingPage() {
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   href="/signup"
-                  className="group inline-flex items-center gap-2 rounded-full bg-accent-mint px-5 py-2.5 text-sm font-medium text-deep-900 transition-[filter,transform] hover:brightness-110 hover:translate-y-[-1px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint"
+                  className="group inline-flex items-center gap-2 rounded-full bg-teal px-5 py-2.5 text-sm font-medium text-white transition-[filter,transform] hover:brightness-110 hover:translate-y-[-1px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
                 >
                   {LANDING.hero.ctaCreate[lang]}
-                  <span className="transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 rtl:-scale-x-100" aria-hidden>
+                  <span
+                    aria-hidden
+                    className="transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 rtl:-scale-x-100"
+                  >
                     <IconArrowRight />
                   </span>
                 </Link>
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-medium text-glass-ink backdrop-blur transition-colors hover:border-white/30 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint"
+                  className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-teal hover:text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
                 >
                   {LANDING.hero.ctaSignIn[lang]}
                 </Link>
@@ -107,27 +122,17 @@ export default function LandingPage() {
 
             {lang === "ar" && (
               <Reveal delay={4}>
-                <p className="mt-8 inline-block rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-glass-ink-muted">
+                <p className="mt-6 inline-block rounded-xl border border-carrier/40 bg-carrier-soft px-3 py-2 text-xs text-ink">
                   {LANDING.draftNote[lang]}
                 </p>
               </Reveal>
             )}
-
-            {/* Scroll affordance */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center text-glass-ink-muted"
-              style={{ animation: "drift 3.6s ease-in-out infinite" }}
-            >
-              <IconChevronDown />
-            </div>
           </section>
 
-          {/* Numbers strip — immediately under the hero so a skimming reader
-              sees defensible figures without having to scroll. */}
+          {/* Numbers strip */}
           <Reveal as="section" className="mt-6">
             <SectionHeader eyebrow="At a glance" title={LANDING.stats.heading[lang]} />
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-glass-ink-muted">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
               {LANDING.stats.body[lang]}
             </p>
             <StatStrip />
@@ -135,57 +140,36 @@ export default function LandingPage() {
 
           {/* How it works */}
           <Reveal as="section" className="mt-20">
-            <SectionHeader
-              eyebrow="Process"
-              title={LANDING.how.heading[lang]}
-            />
+            <SectionHeader eyebrow="Process" title={LANDING.how.heading[lang]} />
             <ol className="mt-8 grid gap-4 sm:grid-cols-3">
               {([
-                {
-                  title: LANDING.how.step1Title,
-                  body: LANDING.how.step1Body,
-                  Icon: IconLock,
-                },
-                {
-                  title: LANDING.how.step2Title,
-                  body: LANDING.how.step2Body,
-                  Icon: IconUsers,
-                },
-                {
-                  title: LANDING.how.step3Title,
-                  body: LANDING.how.step3Body,
-                  Icon: IconHandshake,
-                },
+                { title: LANDING.how.step1Title, body: LANDING.how.step1Body, Icon: IconLock },
+                { title: LANDING.how.step2Title, body: LANDING.how.step2Body, Icon: IconUsers },
+                { title: LANDING.how.step3Title, body: LANDING.how.step3Body, Icon: IconHandshake },
               ] as const).map((step, i) => (
                 <Reveal as="li" key={i} delay={((i + 1) as 1 | 2 | 3)}>
                   <div className="glass-card h-full p-6">
                     <div className="flex items-center justify-between">
                       <span
                         aria-hidden
-                        className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent-mint/30 bg-accent-mint/10 text-xl text-accent-mint"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-soft text-teal"
                       >
                         <step.Icon />
                       </span>
-                      <span className="font-mono text-xs text-glass-ink-muted">
-                        0{i + 1}
-                      </span>
+                      <span className="font-mono text-xs text-muted">0{i + 1}</span>
                     </div>
-                    <p className="mt-5 text-base font-semibold text-glass-ink">
-                      {step.title[lang]}
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed text-glass-ink-muted">
-                      {step.body[lang]}
-                    </p>
+                    <p className="mt-5 text-base font-semibold text-ink">{step.title[lang]}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted">{step.body[lang]}</p>
                   </div>
                 </Reveal>
               ))}
             </ol>
           </Reveal>
 
-          {/* Security flow — concrete, mirrors the code path. */}
+          {/* Security flow */}
           <Reveal as="section" className="mt-20">
             <SectionHeader eyebrow="Mechanics" title={LANDING.flow.heading[lang]} />
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-glass-ink-muted">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
               {LANDING.flow.body[lang]}
             </p>
             <SecurityFlow lang={lang} />
@@ -193,10 +177,7 @@ export default function LandingPage() {
 
           {/* Privacy promises */}
           <Reveal as="section" className="mt-20">
-            <SectionHeader
-              eyebrow="Guarantees"
-              title={LANDING.privacy.heading[lang]}
-            />
+            <SectionHeader eyebrow="Guarantees" title={LANDING.privacy.heading[lang]} />
             <ul className="mt-8 grid gap-4 sm:grid-cols-2">
               {([
                 { k: "p1", Icon: IconLock },
@@ -214,11 +195,11 @@ export default function LandingPage() {
                     <div className="flex items-start gap-3">
                       <span
                         aria-hidden
-                        className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-accent-mint"
+                        className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-soft text-teal"
                       >
                         <row.Icon />
                       </span>
-                      <p className="text-sm leading-relaxed text-glass-ink">
+                      <p className="text-sm leading-relaxed text-ink">
                         {LANDING.privacy[row.k][lang]}
                       </p>
                     </div>
@@ -228,39 +209,35 @@ export default function LandingPage() {
             </ul>
           </Reveal>
 
-          {/* Panel coverage — the only honest answer to 'what does Sila
-              screen for'. Rendered straight from src/lib/genetics/panel.ts. */}
+          {/* Panel coverage */}
           <Reveal as="section" className="mt-20">
             <SectionHeader eyebrow="Coverage" title={LANDING.panel.heading[lang]} />
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-glass-ink-muted">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
               {LANDING.panel.body[lang]}
             </p>
             <PanelGrid lang={lang} />
           </Reveal>
 
-          {/* What Sila is / isn't */}
+          {/* Scope */}
           <Reveal as="section" className="mt-20">
-            <SectionHeader
-              eyebrow="Scope"
-              title={LANDING.scope.heading[lang]}
-            />
+            <SectionHeader eyebrow="Scope" title={LANDING.scope.heading[lang]} />
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               <Reveal delay={1}>
                 <article className="glass-card glass-card-strong h-full p-6">
-                  <p className="text-xs font-medium uppercase tracking-wider text-accent-mint">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-teal">
                     {LANDING.scope.isTitle[lang]}
                   </p>
-                  <p className="mt-3 text-base leading-relaxed text-glass-ink">
+                  <p className="mt-3 text-base leading-relaxed text-ink">
                     {LANDING.scope.isBody[lang]}
                   </p>
                 </article>
               </Reveal>
               <Reveal delay={2}>
                 <article className="glass-card h-full p-6">
-                  <p className="text-xs font-medium uppercase tracking-wider text-glass-ink-muted">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted">
                     {LANDING.scope.isntTitle[lang]}
                   </p>
-                  <p className="mt-3 text-base leading-relaxed text-glass-ink">
+                  <p className="mt-3 text-base leading-relaxed text-ink">
                     {LANDING.scope.isntBody[lang]}
                   </p>
                 </article>
@@ -268,23 +245,19 @@ export default function LandingPage() {
             </div>
           </Reveal>
 
-          {/* Demo panel (only when DEMO_MODE=true). The component gates on
-              /api/demo/config internally. */}
+          {/* Demo panel */}
           <Reveal as="section">
-            <DemoPanel lang={lang} onDark />
+            <DemoPanel lang={lang} />
           </Reveal>
 
-          {/* Footer — three columns of in-app links + a scope paragraph. The
-              live URL is not repeated here because the reader is already on
-              it. Doc links go to in-app pages rendered from the markdown
-              files in the repo. */}
-          <footer className="mt-20 border-t border-white/10 pt-10 text-sm text-glass-ink-muted">
+          {/* Footer */}
+          <footer className="mt-20 border-t border-line pt-10 text-sm text-muted">
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               <div>
-                <div className="flex items-center gap-2 text-glass-ink">
+                <div className="flex items-center gap-2 text-ink">
                   <span
                     aria-hidden
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-accent-mint"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-teal/30 bg-teal-soft text-teal"
                   >
                     <IconHelix />
                   </span>
@@ -294,39 +267,27 @@ export default function LandingPage() {
               </div>
 
               <div>
-                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-glass-ink">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-ink">
                   {lang === "en" ? "Documentation" : "التوثيق"}
                 </p>
                 <ul className="mt-4 space-y-2 text-xs">
                   <li>
-                    <Link
-                      href="/docs/data-governance"
-                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
-                    >
+                    <Link href="/docs/data-governance" className="hover:text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded-sm">
                       {LANDING.footer.governance[lang]}
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/docs/threat-model"
-                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
-                    >
+                    <Link href="/docs/threat-model" className="hover:text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded-sm">
                       {lang === "en" ? "Threat model (STRIDE)" : "نموذج التهديدات (STRIDE)"}
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/docs/security-controls"
-                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
-                    >
+                    <Link href="/docs/security-controls" className="hover:text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded-sm">
                       {lang === "en" ? "Security controls" : "ضوابط الأمن"}
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/docs/evaluation-results"
-                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
-                    >
+                    <Link href="/docs/evaluation-results" className="hover:text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded-sm">
                       {lang === "en" ? "Evaluation results" : "نتائج التقييم"}
                     </Link>
                   </li>
@@ -334,31 +295,22 @@ export default function LandingPage() {
               </div>
 
               <div>
-                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-glass-ink">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-ink">
                   {lang === "en" ? "Get started" : "ابدأ"}
                 </p>
                 <ul className="mt-4 space-y-2 text-xs">
                   <li>
-                    <Link
-                      href="/signup"
-                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
-                    >
+                    <Link href="/signup" className="hover:text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded-sm">
                       {LANDING.hero.ctaCreate[lang]}
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/login"
-                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
-                    >
+                    <Link href="/login" className="hover:text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded-sm">
                       {LANDING.hero.ctaSignIn[lang]}
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/volunteer"
-                      className="hover:text-glass-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint rounded-sm"
-                    >
+                    <Link href="/volunteer" className="hover:text-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded-sm">
                       {lang === "en" ? "Volunteer (study mode)" : "المشاركة في الدراسة"}
                     </Link>
                   </li>
@@ -366,7 +318,7 @@ export default function LandingPage() {
               </div>
 
               <div>
-                <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-glass-ink">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-ink">
                   {lang === "en" ? "Scope" : "النطاق"}
                 </p>
                 <p className="mt-4 text-xs leading-relaxed">
@@ -377,11 +329,11 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
-              <p className="font-mono text-glass-ink-muted">
+            <div className="mt-10 flex flex-col gap-2 border-t border-line pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+              <p className="font-mono text-muted">
                 CEDELA Tech Park Solutions · Future Health Digital Innovation Challenge 03
               </p>
-              <p className="font-mono text-glass-ink-muted">
+              <p className="font-mono text-muted">
                 {lang === "en"
                   ? "No AI in risk calculation. No AI in clinical text."
                   : "لا ذكاء اصطناعي في حساب الخطر. لا ذكاء اصطناعي في النصوص السريرية."}
@@ -397,8 +349,11 @@ export default function LandingPage() {
 function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div>
-      <p className="text-xs uppercase tracking-[0.2em] text-glass-ink-muted">{eyebrow}</p>
-      <h2 className="mt-2 text-balance text-2xl font-semibold tracking-tight text-glass-ink sm:text-3xl">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">
+        <span aria-hidden className="rule-green" />
+        {eyebrow}
+      </p>
+      <h2 className="mt-3 text-balance text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
         {title}
       </h2>
     </div>

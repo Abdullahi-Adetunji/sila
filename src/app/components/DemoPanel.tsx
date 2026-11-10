@@ -9,17 +9,9 @@ import { type Lang } from "@/lib/content";
 
 type DemoAccount = "partner.a" | "partner.b" | "counsellor";
 
-// Rendered on the landing page below the hero copy. Only visible when the
-// server reports DEMO_MODE=true. The `onDark` prop ships the glass styling
-// used on the landing; without it, the panel keeps its light treatment for
-// any future in-app embed.
-export function DemoPanel({
-  lang,
-  onDark = false,
-}: {
-  lang: Lang;
-  onDark?: boolean;
-}) {
+// Only visible when the server reports DEMO_MODE=true. onDark prop kept
+// for compatibility but ignored — the whole app now runs on one palette.
+export function DemoPanel({ lang }: { lang: Lang; onDark?: boolean }) {
   const router = useRouter();
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [busy, setBusy] = useState<null | DemoAccount | "reset">(null);
@@ -68,62 +60,54 @@ export function DemoPanel({
     }
   }
 
-  const container = onDark
-    ? "glass-card mt-10 p-6"
-    : "mt-10 rounded-2xl border border-line bg-surface p-5";
-  const headingCls = onDark ? "text-lg font-semibold text-glass-ink" : "text-lg font-semibold";
-  const bodyCls = onDark ? "mt-1 text-sm text-glass-ink-muted" : "mt-1 text-sm text-muted";
-  const primaryBtn = onDark
-    ? "bg-accent-mint text-deep-900 hover:brightness-110"
-    : "bg-teal text-white";
-  const ghostBtn = onDark
-    ? "border border-accent-mint/60 text-accent-mint hover:bg-white/5"
-    : "border border-teal text-teal";
-  const resetBtn = onDark
-    ? "border border-white/15 text-glass-ink-muted hover:text-glass-ink"
-    : "border border-line text-muted hover:text-ink";
-  const resetNoteCls = onDark ? "mt-3 text-xs text-glass-ink-muted" : "mt-3 text-xs text-muted";
-  const ring = onDark ? "focus-visible:ring-accent-mint" : "focus-visible:ring-teal";
-
   return (
-    <section aria-labelledby="demo-heading" className={container}>
-      <h2 id="demo-heading" className={headingCls}>
+    <section
+      aria-labelledby="demo-heading"
+      className="glass-card glass-card-strong mt-16 p-6 sm:p-8"
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">
+        <span aria-hidden className="rule-green" />
+        Demo
+      </p>
+      <h2 id="demo-heading" className="mt-3 text-2xl font-semibold tracking-tight text-ink">
         {LANDING.demo.heading[lang]}
       </h2>
-      <p className={bodyCls}>{LANDING.demo.body[lang]}</p>
-      <div className="mt-4 flex flex-wrap gap-2">
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+        {LANDING.demo.body[lang]}
+      </p>
+      <div className="mt-6 flex flex-wrap gap-2">
         <button
           onClick={() => signIn("partner.a")}
           disabled={busy !== null}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition-[filter,background] disabled:opacity-50 focus:outline-none focus-visible:ring-2 ${ring} ${primaryBtn}`}
+          className="rounded-full bg-teal px-4 py-2 text-sm font-medium text-white transition-[filter,transform] hover:brightness-110 hover:translate-y-[-1px] disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
         >
           {LANDING.demo.partnerA[lang]}
         </button>
         <button
           onClick={() => signIn("partner.b")}
           disabled={busy !== null}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition-[filter,background] disabled:opacity-50 focus:outline-none focus-visible:ring-2 ${ring} ${primaryBtn}`}
+          className="rounded-full bg-teal px-4 py-2 text-sm font-medium text-white transition-[filter,transform] hover:brightness-110 hover:translate-y-[-1px] disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
         >
           {LANDING.demo.partnerB[lang]}
         </button>
         <button
           onClick={() => signIn("counsellor")}
           disabled={busy !== null}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition-[filter,background] disabled:opacity-50 focus:outline-none focus-visible:ring-2 ${ring} ${ghostBtn}`}
+          className="rounded-full border border-teal/40 bg-surface px-4 py-2 text-sm font-medium text-teal transition-colors hover:border-teal disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
         >
           {LANDING.demo.counsellor[lang]}
         </button>
         <button
           onClick={reset}
           disabled={busy !== null}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 focus:outline-none focus-visible:ring-2 ${ring} ${resetBtn}`}
+          className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-muted transition-colors hover:text-ink disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
         >
           {LANDING.demo.reset[lang]}
         </button>
       </div>
-      <p className={resetNoteCls}>{LANDING.demo.resetNote[lang]}</p>
+      <p className="mt-3 text-xs text-muted">{LANDING.demo.resetNote[lang]}</p>
       {error && (
-        <p className={onDark ? "mt-3 text-sm text-red-300" : "mt-3 text-sm text-red-600"} role="alert">
+        <p className="mt-3 text-sm text-red-600" role="alert">
           {error}
         </p>
       )}

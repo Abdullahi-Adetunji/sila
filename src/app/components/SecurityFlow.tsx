@@ -113,18 +113,16 @@ export function SecurityFlow({ lang }: { lang: Lang }) {
             <div className="flex items-center justify-between">
               <span
                 aria-hidden
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-accent-mint/30 bg-accent-mint/10 font-mono text-sm font-semibold text-accent-mint"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-soft font-mono text-sm font-semibold text-teal"
               >
                 {String(step.number).padStart(2, "0")}
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-glass-ink-muted">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-muted">
                 {step.anchor}
               </span>
             </div>
-            <p className="mt-4 text-sm font-semibold text-glass-ink">{step.title[lang]}</p>
-            <p className="mt-1.5 text-xs leading-relaxed text-glass-ink-muted">
-              {step.body[lang]}
-            </p>
+            <p className="mt-4 text-sm font-semibold text-ink">{step.title[lang]}</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted">{step.body[lang]}</p>
           </div>
         </Reveal>
       ))}

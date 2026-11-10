@@ -52,7 +52,7 @@ export function StatStrip({ stats = DEFAULT_STATS }: { stats?: Stat[] }) {
     <section
       ref={ref}
       aria-label="Pilot numbers"
-      className="glass-card mt-10 grid gap-x-6 gap-y-5 p-6 sm:grid-cols-2 sm:p-8 md:grid-cols-4"
+      className="tile mt-10 grid gap-x-8 gap-y-6 p-6 sm:grid-cols-2 sm:p-8 md:grid-cols-4"
     >
       {stats.map((s, i) => (
         <StatCell key={i} stat={s} go={visible} delayMs={i * 120} />
@@ -95,15 +95,13 @@ function StatCell({ stat, go, delayMs }: { stat: Stat; go: boolean; delayMs: num
     <div>
       <div
         aria-live="polite"
-        className="flex items-baseline gap-1 font-mono text-4xl font-semibold text-glass-ink"
+        className="flex items-baseline gap-1 font-mono text-4xl font-semibold text-ink"
       >
         <span>{value.toLocaleString()}</span>
-        {stat.suffix && <span className="text-xl text-accent-mint">{stat.suffix}</span>}
+        {stat.suffix && <span className="text-xl text-teal">{stat.suffix}</span>}
       </div>
-      <p className="mt-2 text-sm font-medium text-glass-ink">{stat.label}</p>
-      {stat.sublabel && (
-        <p className="mt-0.5 text-xs text-glass-ink-muted">{stat.sublabel}</p>
-      )}
+      <p className="mt-2 text-sm font-medium text-ink">{stat.label}</p>
+      {stat.sublabel && <p className="mt-0.5 text-xs text-muted">{stat.sublabel}</p>}
     </div>
   );
 }
