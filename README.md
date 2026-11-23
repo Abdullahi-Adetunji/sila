@@ -37,9 +37,9 @@ flowchart LR
         CF[Cloudflare TLS + WAF]
     end
     subgraph Render["Render (Frankfurt) — one container"]
-        NX["Next.js 16<br/>Public: 0.0.0.0:$PORT"]
-        EX["Express 5 API<br/>127.0.0.1:4000<br/>CSP default-src 'none'"]
-        NX -->|/api/* rewrite| EX
+        NX["Next.js 16 — public on PORT"]
+        EX["Express 5 API — 127.0.0.1:4000 — CSP default-src none"]
+        NX -->|rewrite /api| EX
     end
     subgraph Neon["Neon Postgres 16 (Frankfurt)"]
         DB[(Encrypted vaults<br/>Append-only audit log)]
@@ -92,20 +92,19 @@ Any missing or revoked consent returns **403 immediately** and writes a denied a
 
 ```mermaid
 flowchart TB
-    L["/login<br/>(one login page for everyone)"]
-    L --> P[person → /home]
-    L --> C[counsellor → /counsellor-queue]
-    L --> B[lab → /lab]
-    L --> E[evaluator → /evaluator]
-    L --> AD[admin → /admin]
+    L["/login (one login page for everyone)"]
+    L --> P["person → /home"]
+    L --> C["counsellor → /counsellor-queue"]
+    L --> B["lab → /lab"]
+    L --> E["evaluator → /evaluator"]
+    L --> AD["admin → /admin"]
 
-    P -. "person-only routes" .-> PR[/api/me · /api/consent · /api/couple · /api/partner · /api/relatives · /api/referrals/]
-    C -. counsellor-only .-> CR[/api/counsellor/*]
-    B -. lab-only .-> LR[/api/lab/submit — write only, no read-back]
-    E -. evaluator-only .-> ER[/api/evaluator/* — aggregates, n ≥ 5]
-    AD -. admin-only .-> ADR[/api/admin/* — staff + invites + audit feed]
+    P -. "person-only routes" .-> PR["/api/me · /api/consent · /api/couple · /api/partner · /api/relatives · /api/referrals"]
+    C -. "counsellor-only" .-> CR["/api/counsellor/*"]
+    B -. "lab-only" .-> LR["/api/lab/submit — write only, no read-back"]
+    E -. "evaluator-only" .-> ER["/api/evaluator/* — aggregates, n ≥ 5"]
+    AD -. "admin-only" .-> ADR["/api/admin/* — staff + invites + audit feed"]
 
-    classDef deny fill:#fde,stroke:#a33,color:#6a1;
     classDef role fill:#e8f5ee,stroke:#0e7854,color:#0e7854;
     class P,C,B,E,AD role
 ```
