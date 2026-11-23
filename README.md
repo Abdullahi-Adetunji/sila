@@ -236,14 +236,6 @@ See [docs/deploy-runbook.md](docs/deploy-runbook.md) for the full runbook.
 
 ---
 
-## Draft items awaiting a human decision
-
-- Every explanation template and every Arabic string is **DRAFT** until signed off.
-- The clinical adviser has not yet filled in `data/synthetic/clinician_review.csv`.
-- The panel, inheritance logic and routing rules are unchanged from the prototype and await clinician confirmation.
-
----
-
 ## Prototype scope
 
 All data is synthetic. Sila is **not medical advice**, **not a diagnostic tool**, and never recommends a reproductive or marriage decision. Every disclosure of personal data requires an active consent, revocable at any time, logged on the audit trail.
